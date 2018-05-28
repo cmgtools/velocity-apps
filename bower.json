@@ -1,0 +1,29 @@
+{
+  "name": "cmt-vapps",
+  "title": "Velocity Apps",
+  "version": "1.0.0-alpha",
+  "homepage": "https://velocity.cmsgtools.org/",
+  "authors": [
+    "Bhagwat Singh Chouhan"
+  ],
+  "description": "Velocity Apps provides applications and controllers for CMSGears modules.",
+  "keywords": [
+    "cmgtools",
+	"Velocity",
+    "JavaScript library",
+    "mvc",
+    "components",
+    "utilities"
+  ],
+  "license": "GPLv3",
+  "ignore": [
+    ".gitignore",
+    "gruntfile.js",
+    "package.json",
+    "examples"
+  ],
+  "main": "dist/vapps.js",
+  "dependencies": {
+    "jquery": "~2.2.*"
+  }
+}
