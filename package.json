@@ -3,7 +3,7 @@
   "title": "Velocity Apps",
   "version": "1.0.0-alpha1",
   "description": "Velocity Apps provides applications and controllers for CMSGears modules.",
-  "main": "dist/vapps.js",
+  "main": "dist/velocity-apps.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/cmgtools/velocity-apps"
