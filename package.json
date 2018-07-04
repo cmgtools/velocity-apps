@@ -1,12 +1,12 @@
 {
-  "name": "cmt-vapps",
+  "name": "cmt-velocity-apps",
   "title": "Velocity Apps",
   "version": "1.0.0-alpha1",
   "description": "Velocity Apps provides applications and controllers for CMSGears modules.",
   "main": "dist/vapps.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cmgtools/vapps"
+    "url": "https://github.com/cmgtools/velocity-apps"
   },
   "keywords": [
     "cmgtools",
@@ -21,7 +21,7 @@
   "license": "GPL-3.0-or-later",
   "readmeFilename": "README.md",
   "bugs": {
-    "url": "https://github.com/cmgtools/vapps/issues"
+    "url": "https://github.com/cmgtools/velocity-apps/issues"
   },
   "devDependencies": {
     "grunt": "^1.0.2",
