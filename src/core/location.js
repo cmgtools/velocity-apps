@@ -42,21 +42,14 @@ cmg.controllers.location.ProvinceController.prototype.provinceActionPre = functi
 
 cmg.controllers.location.ProvinceController.prototype.provinceActionSuccess = function( requestElement, response ) {
 
-	var selectWrap	= requestElement.parent().find( '.wrap-province .cmt-select-wrap' );
+	var selectWrap = requestElement.parent().find( '.wrap-province .cmt-select-wrap' );
 
 	if( response.data.length <= 0 ) {
 
-		response.data	= '<option value="0">Choose Province</option>';
+		response.data = '<option value="0">Choose Province</option>';
 	}
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
-
-	// OR
-
-	jQuery( '.frm-province .cmt-select-wrap select' ).remove();
-	jQuery( '.frm-province .cmt-select-wrap' ).empty();
-	jQuery( '.frm-province ' ).html( "<label>State/Province</label><select id='wrap-province' class='element-60 cmt-select cmt-change' name='Address[provinceId]'>" + response.data.provinceList + "</select>" );
-	jQuery( '.frm-province .cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
 };
 
 // == City Controller =====================
