@@ -18,7 +18,7 @@ module.exports = function( grunt ) {
         		src: [	'src/core/**/*.js',
 						'src/notify/**/*.js'
 					],
-        		dest: 'dist/vapps.js'
+        		dest: 'dist/velocity-apps.js'
       		}
     	},
     	uglify: {
@@ -31,7 +31,7 @@ module.exports = function( grunt ) {
 			},
       		main_target: {
 	        	files: {
-	          		'dist/vapps.min.js': [ 'dist/vapps.js' ]
+	          		'dist/velocity-apps.min.js': [ 'dist/velocity-apps.js' ]
 	        	}
       		}
     	}

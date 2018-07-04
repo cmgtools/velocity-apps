@@ -1,5 +1,5 @@
 {
-  "name": "cmt-vapps",
+  "name": "cmt-velocity-apps",
   "title": "Velocity Apps",
   "version": "1.0.0-alpha",
   "homepage": "https://velocity.cmsgtools.org/",
@@ -22,7 +22,7 @@
     "package.json",
     "examples"
   ],
-  "main": "dist/vapps.js",
+  "main": "dist/velocity-apps.js",
   "dependencies": {
     "jquery": "~2.2.*"
   }
