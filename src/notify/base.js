@@ -13,6 +13,12 @@ cmg.controllers = cmg.controllers || {};
 
 cmg.controllers.notify = cmg.controllers.notify || {};
 
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.notify = cmg.services.notify || {};
+
 // == Direct Calls ========================
 
 // == Additional Methods ==================

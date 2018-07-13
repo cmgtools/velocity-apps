@@ -4,8 +4,10 @@ jQuery( document ).ready( function() {
 
 	var app = cmt.api.root.getApplication( 'notify' );
 
+	// Map Controllers
 	app.mapController( 'notification', 'cmg.controllers.notify.NotificationController' );
 
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=notify]' ) );
 });
 
@@ -27,7 +29,7 @@ cmg.controllers.notify.NotificationController.prototype.hreadActionSuccess = fun
 	var clickBtn	= requestElement.find( '.cmt-click' );
 	var type		= clickBtn.attr( 'type' );
 	var count		= response.data.unread;
-	
+
 	if( response.data.consumed ) {
 
 		jQuery( ".count-header.count-" + type ).html( count );
@@ -35,7 +37,7 @@ cmg.controllers.notify.NotificationController.prototype.hreadActionSuccess = fun
 		jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).html( count );
 
 		if( count == 0 ) {
-			
+
 			jQuery( ".count-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).fadeOut( 'fast' );

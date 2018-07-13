@@ -3,11 +3,13 @@
 jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'comment', 'cmt.api.Application', { basePath: ajaxUrl } );
-
-	app.mapController( 'comment', 'cmg.controllers.CommentController' );
-	app.mapController( 'review', 'cmg.controllers.ReviewController' );
-	app.mapController( 'feedback', 'cmg.controllers.FeedbackController' );
-
+	
+	// Map Controllers
+	app.mapController( 'comment', 'cmg.controllers.comment.CommentController' );
+	app.mapController( 'review', 'cmg.controllers.comment.ReviewController' );
+	app.mapController( 'feedback', 'cmg.controllers.comment.FeedbackController' );
+	
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=comment]' ) );
 
 	//initCommentListeners();
@@ -15,22 +17,40 @@ jQuery( document ).ready( function() {
 
 // == Controller Namespace ================
 
+var cmg = cmg || {};
+
+cmg.controllers = cmg.controllers || {};
+
+cmg.controllers.comment = cmg.controllers.comment || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.comment = cmg.services.comment || {};
+
 // == Comment Controller ==================
 
-cmg.controllers.CommentController = function() {};
+cmg.controllers.comment.CommentController = function() {};
 
-cmg.controllers.CommentController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.comment.CommentController.inherits( cmt.api.controllers.RequestController );
+
+cmg.controllers.comment.CommentController.prototype.createActionSuccess = function( requestElement, response ) {
+
+	// Reset rating
+	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
+};
 
 // == Review Controller ===================
 
-cmg.controllers.ReviewController = function() {};
+cmg.controllers.comment.ReviewController = function() {};
 
-cmg.controllers.ReviewController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.comment.ReviewController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.ReviewController.prototype.createActionSuccess = function( requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.createActionSuccess = function( requestElement, response ) {
 
 	// Empty Images
-	requestElement.find( '.review-items-wrap' ).html( '' );
+	requestElement.find( '.gallery-review' ).html( '' );
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
@@ -38,14 +58,14 @@ cmg.controllers.ReviewController.prototype.createActionSuccess = function( reque
 
 // == Feedback Controller =================
 
-cmg.controllers.FeedbackController = function() {};
+cmg.controllers.comment.FeedbackController = function() {};
 
-cmg.controllers.FeedbackController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.comment.FeedbackController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.FeedbackController.prototype.createActionSuccess = function( requestElement, response ) {
+cmg.controllers.comment.FeedbackController.prototype.createActionSuccess = function( requestElement, response ) {
 
 	// Empty Images
-	requestElement.find( '.feedback-items-wrap' ).html( '' );
+	requestElement.find( '.gallery-feedback' ).html( '' );
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
@@ -56,6 +76,8 @@ cmg.controllers.FeedbackController.prototype.createActionSuccess = function( req
 // == Additional Methods ==================
 
 // == Additional Methods ==================
+
+/*
 
 function initCommentListeners() {
 
@@ -118,15 +140,13 @@ function resetReviewItemCounter() {
 	});
 }
 
-/*
+// cmg.controllers.comment.CommentController ------------------------------------------
 
-// cmg.controllers.CommentController ------------------------------------------
+cmg.controllers.comment.CommentController	= function() {};
 
-cmg.controllers.CommentController	= function() {};
+cmg.controllers.comment.CommentController.inherits( cmt.api.controllers.BaseController );
 
-cmg.controllers.CommentController.inherits( cmt.api.controllers.BaseController );
-
-cmg.controllers.CommentController.prototype.likeActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.CommentController.prototype.likeActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -141,7 +161,7 @@ cmg.controllers.CommentController.prototype.likeActionPost = function( success, 
 	}
 };
 
-cmg.controllers.CommentController.prototype.dislikeActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.CommentController.prototype.dislikeActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -156,7 +176,7 @@ cmg.controllers.CommentController.prototype.dislikeActionPost = function( succes
 	}
 };
 
-cmg.controllers.CommentController.prototype.followerActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.CommentController.prototype.followerActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -165,7 +185,7 @@ cmg.controllers.CommentController.prototype.followerActionPost = function( succe
 };
 
 
-cmg.controllers.ReviewController.prototype.approveActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.approveActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -188,7 +208,7 @@ cmg.controllers.ReviewController.prototype.approveActionPost = function( success
 	}
 };
 
-cmg.controllers.ReviewController.prototype.deleteActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.deleteActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -212,7 +232,7 @@ cmg.controllers.ReviewController.prototype.deleteActionPost = function( success,
 	}
 };
 
-cmg.controllers.ReviewController.prototype.spamRequestActionPre = function( requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.spamRequestActionPre = function( requestElement, response ) {
 
 	var result = confirm( 'Are you sure you want to submit admin request to mark it as spam ?' );
 
@@ -224,7 +244,7 @@ cmg.controllers.ReviewController.prototype.spamRequestActionPre = function( requ
 	return false;
 };
 
-cmg.controllers.ReviewController.prototype.spamRequestActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.spamRequestActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -232,7 +252,7 @@ cmg.controllers.ReviewController.prototype.spamRequestActionPost = function( suc
 	}
 };
 
-cmg.controllers.ReviewController.prototype.deleteRequestActionPre = function( requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.deleteRequestActionPre = function( requestElement, response ) {
 
 	var result = confirm( 'Are you sure you want to submit admin request to delete it ?' );
 
@@ -244,7 +264,7 @@ cmg.controllers.ReviewController.prototype.deleteRequestActionPre = function( re
 	return false;
 };
 
-cmg.controllers.ReviewController.prototype.deleteRequestActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.deleteRequestActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 

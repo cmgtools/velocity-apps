@@ -3,10 +3,12 @@
 jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'location', 'cmt.api.Application', { basePath: ajaxUrl } );
-
+	
+	// Map Controllers
 	app.mapController( 'province', 'cmg.controllers.location.ProvinceController' );
 	app.mapController( 'city', 'cmg.controllers.location.CityController' );
-
+	
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=location]' ) );
 
 	// Listeners
@@ -26,6 +28,12 @@ var cmg = cmg || {};
 cmg.controllers = cmg.controllers || {};
 
 cmg.controllers.location = cmg.controllers.location || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.location = cmg.services.location || {};
 
 // == Province Controller =================
 
