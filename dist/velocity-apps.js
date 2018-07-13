@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2018-07-04
+ * Velocity Apps - v1.0.0-alpha1 - 2018-07-13
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -10,61 +10,94 @@
 jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'address', 'cmt.api.Application', { basePath: ajaxUrl } );
+	
+	// Map Controllers
+	app.mapController( 'address', 'cmg.controllers.address.AddressController' );
 
-	app.mapController( 'address', 'cmg.controllers.AddressController' );
+	// Map Services
+	app.mapService( 'address', 'cmg.services.address.AddressService' );
 
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=address]' ) );
 
-	initAddress();
+	// Listeners
+	app.getService( 'address' ).initAddress();
 });
 
 // == Controller Namespace ================
 
+var cmg = cmg || {};
+
+cmg.controllers = cmg.controllers || {};
+
+cmg.controllers.address = cmg.controllers.address || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.address = cmg.services.address || {};
+
 // == Address Controller ==================
 
-cmg.controllers.AddressController = function() {};
+cmg.controllers.address.AddressController = function() {};
 
-cmg.controllers.AddressController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.address.AddressController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.AddressController.prototype.getActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.AddressController.prototype.getActionSuccess = function( requestElement, response ) {
+	
+	var addressService = cmt.api.root.getApplication( 'address' ).getService( 'address' );
 
-	var cid = requestElement.closest( '.mapper-item' ).attr( 'cid' );
+	var container	= requestElement.closest( '.data-crud-address' );
+	var cid			= requestElement.closest( '.card-address' ).attr( 'cid' );
 
-	updateAddress( cid, response.data );
+	addressService.updateAddress( container, cid, response.data );
 }
 
-cmg.controllers.AddressController.prototype.addActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.AddressController.prototype.addActionSuccess = function( requestElement, response ) {
+	
+	var addressService = cmt.api.root.getApplication( 'address' ).getService( 'address' );
+
+	var container = requestElement.closest( '.data-crud-address' );
 
 	requestElement.fadeOut( 'fast' );
 
 	requestElement.remove();
 
-	addAddressCard( response.data );
+	addressService.addAddressCard( container, response.data );
 }
 
-cmg.controllers.AddressController.prototype.updateActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.AddressController.prototype.updateActionSuccess = function( requestElement, response ) {
 
-	refreshAddressCard( response.data );
+	var addressService = cmt.api.root.getApplication( 'address' ).getService( 'address' );
+
+	var container = requestElement.closest( '.data-crud-address' );
+
+	addressService.refreshAddressCard( container, response.data );
 }
 
-cmg.controllers.AddressController.prototype.deleteActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.AddressController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
-	requestElement.closest( '.mapper-item' ).remove();
+	requestElement.closest( '.card-address' ).remove();
 }
 
-// == Direct Calls ========================
+// == Address Service =============
 
-// == Additional Methods ==================
+cmg.services.address.AddressService = function() {};
 
-function initAddress() {
+cmg.services.address.AddressService.inherits( cmt.api.services.BaseService );
+
+cmg.services.address.AddressService.prototype.initAddress = function() {
+
+	var self = this;
 
 	jQuery( '#btn-add-address' ).click( function() {
 
-		addAddress( '#' + jQuery( this ).attr( 'data-target' ) );
+		self.addAddress( '#' + jQuery( this ).attr( 'data-target' ) );
 	});
 }
 
-function addAddress( target ) {
+cmg.services.address.AddressService.prototype.addAddress = function( target ) {
 
 	var source 		= document.getElementById( 'addAddressTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -91,17 +124,17 @@ function addAddress( target ) {
 		target.hide();
 	});
 
-	// Init Map
-	initGoogleMap( target );
+	// Refresh Map
+	this.refreshGoogleMap( target );
 }
 
-function updateAddress( cid, address ) {
+cmg.services.address.AddressService.prototype.updateAddress = function( container, cid, address ) {
 
 	var source 		= document.getElementById( 'updateAddressTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
-	var output 		= template( { cid: cid, address: address } );
+	var output 		= template( { cid: cid, address: address.address } );
 
-	var target		= jQuery( '#box-crud-address' ).find( '.frm-address' );
+	var target = container.find( '.address-form-wrap' );
 
 	target.hide();
 
@@ -109,24 +142,49 @@ function updateAddress( cid, address ) {
 
 	target.fadeIn( 'slow' );
 
+	// Custom Select
+	var country		= target.find( '.address-country' );
+	var province	= target.find( '.address-province' );
+	var region		= target.find( '.address-region' );
+
+	//country.find( "option[value='" + country.attr( 'cid' ) + "']" ).prop( 'selected', true );
+
+	country.val( country.attr( 'cid' ) );
+	province.val( province.attr( 'pid' ) );
+
+	if( region.length === 1 ) {
+
+		region.val( region.attr( 'rid' ) );
+	}
+
+	target.find( '.address-select' ).val( address.type );
+
 	// Init Request
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), target.find( '[cmt-app=address]' ) );
+	cmt.api.utils.request.registerTargetApp( 'address', target );
+	cmt.api.utils.request.registerTargetApp( 'location', target );
 
 	// Custom Select
-	target.find( '.address-province' ).val( target.find( '.address-province' ).attr( 'pid' ) );
 	target.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
 
-	// Init Map
-	initListingRegMap();
+	// Close Address
+	target.find( '.address-form-close' ).click( function() {
+		
+		target.hide();
+	});
+
+	// Refresh Map
+	this.refreshGoogleMap( target );
+	
+	this.refreshRegions( target, region.attr( 'rid' ) );
 }
 
-function addAddressCard( address ) {
+cmg.services.address.AddressService.prototype.addAddressCard = function( container, address ) {
 
 	var source 		= document.getElementById( 'addressCardTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( { address: address } );
 
-	var target		= jQuery( '#box-crud-address' ).find( '.mapper-items' );
+	var target = container.find( '.address-cards' );
 
 	target.append( output );
 
@@ -134,24 +192,51 @@ function addAddressCard( address ) {
 	cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), target.find( '[cmt-app=address]' ) );
 }
 
-function refreshAddressCard( address ) {
+cmg.services.address.AddressService.prototype.refreshAddressCard = function( container, address ) {
 
 	var source 		= document.getElementById( 'refreshAddressCardTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( { address: address } );
 
-	var target		= jQuery( '#box-crud-address' ).find( '.mapper-items' );
-	var card		= target.find( '#mapper-item-' + address.cid );
+	var target	= container.find( '.address-cards' );
+	var card	= target.find( '#card-address-' + address.cid );
 
 	card.html( output );
 
-	var form		= jQuery( '#box-crud-address' ).find( '.frm-address' );
-
-	form.fadeOut();
+	container.find( '.address-form-wrap' ).fadeOut();
 
 	// Init Request
 	cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), card.find( '[cmt-app=address]' ) );
 }
+
+cmg.services.address.AddressService.prototype.refreshRegions = function( target, regionId ) {
+
+}
+
+cmg.services.address.AddressService.prototype.refreshGoogleMap = function( target ) {
+
+	// CMT JS - Google Map
+	jQuery( target ).find( '.lat-long-picker' ).latLongPicker();
+
+	// Address Map
+	jQuery( target ).find( '.frm-ll-picker .line1, .frm-ll-picker .line2, .frm-ll-picker .line3, .frm-ll-picker .city, .frm-ll-picker .zip' ).keyup( function() {
+
+		var line1 	= jQuery( '.frm-ll-picker .line1' ).val();
+		var line2 	= jQuery( '.frm-ll-picker .line2' ).val();
+		var city 	= jQuery( '.frm-ll-picker .city' ).val();
+		var zip 	= jQuery( '.frm-ll-picker .zip' ).val();
+		var address	= line1 + ',' + line2 + ',' + city + ',' + zip;
+
+		if( address.length > 10 ) {
+
+			jQuery( '.frm-ll-picker .search-box' ).val( address ).trigger( 'change' );
+		}
+	});
+}
+
+// == Direct Calls ========================
+
+// == Additional Methods ==================
 
 
 // == Application =========================
@@ -159,11 +244,13 @@ function refreshAddressCard( address ) {
 jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'comment', 'cmt.api.Application', { basePath: ajaxUrl } );
-
-	app.mapController( 'comment', 'cmg.controllers.CommentController' );
-	app.mapController( 'review', 'cmg.controllers.ReviewController' );
-	app.mapController( 'feedback', 'cmg.controllers.FeedbackController' );
-
+	
+	// Map Controllers
+	app.mapController( 'comment', 'cmg.controllers.comment.CommentController' );
+	app.mapController( 'review', 'cmg.controllers.comment.ReviewController' );
+	app.mapController( 'feedback', 'cmg.controllers.comment.FeedbackController' );
+	
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=comment]' ) );
 
 	//initCommentListeners();
@@ -171,22 +258,40 @@ jQuery( document ).ready( function() {
 
 // == Controller Namespace ================
 
+var cmg = cmg || {};
+
+cmg.controllers = cmg.controllers || {};
+
+cmg.controllers.comment = cmg.controllers.comment || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.comment = cmg.services.comment || {};
+
 // == Comment Controller ==================
 
-cmg.controllers.CommentController = function() {};
+cmg.controllers.comment.CommentController = function() {};
 
-cmg.controllers.CommentController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.comment.CommentController.inherits( cmt.api.controllers.RequestController );
+
+cmg.controllers.comment.CommentController.prototype.createActionSuccess = function( requestElement, response ) {
+
+	// Reset rating
+	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
+};
 
 // == Review Controller ===================
 
-cmg.controllers.ReviewController = function() {};
+cmg.controllers.comment.ReviewController = function() {};
 
-cmg.controllers.ReviewController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.comment.ReviewController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.ReviewController.prototype.createActionSuccess = function( requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.createActionSuccess = function( requestElement, response ) {
 
 	// Empty Images
-	requestElement.find( '.review-items-wrap' ).html( '' );
+	requestElement.find( '.gallery-review' ).html( '' );
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
@@ -194,14 +299,14 @@ cmg.controllers.ReviewController.prototype.createActionSuccess = function( reque
 
 // == Feedback Controller =================
 
-cmg.controllers.FeedbackController = function() {};
+cmg.controllers.comment.FeedbackController = function() {};
 
-cmg.controllers.FeedbackController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.comment.FeedbackController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.FeedbackController.prototype.createActionSuccess = function( requestElement, response ) {
+cmg.controllers.comment.FeedbackController.prototype.createActionSuccess = function( requestElement, response ) {
 
 	// Empty Images
-	requestElement.find( '.feedback-items-wrap' ).html( '' );
+	requestElement.find( '.gallery-feedback' ).html( '' );
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
@@ -212,6 +317,8 @@ cmg.controllers.FeedbackController.prototype.createActionSuccess = function( req
 // == Additional Methods ==================
 
 // == Additional Methods ==================
+
+/*
 
 function initCommentListeners() {
 
@@ -274,15 +381,13 @@ function resetReviewItemCounter() {
 	});
 }
 
-/*
+// cmg.controllers.comment.CommentController ------------------------------------------
 
-// cmg.controllers.CommentController ------------------------------------------
+cmg.controllers.comment.CommentController	= function() {};
 
-cmg.controllers.CommentController	= function() {};
+cmg.controllers.comment.CommentController.inherits( cmt.api.controllers.BaseController );
 
-cmg.controllers.CommentController.inherits( cmt.api.controllers.BaseController );
-
-cmg.controllers.CommentController.prototype.likeActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.CommentController.prototype.likeActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -297,7 +402,7 @@ cmg.controllers.CommentController.prototype.likeActionPost = function( success, 
 	}
 };
 
-cmg.controllers.CommentController.prototype.dislikeActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.CommentController.prototype.dislikeActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -312,7 +417,7 @@ cmg.controllers.CommentController.prototype.dislikeActionPost = function( succes
 	}
 };
 
-cmg.controllers.CommentController.prototype.followerActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.CommentController.prototype.followerActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -321,7 +426,7 @@ cmg.controllers.CommentController.prototype.followerActionPost = function( succe
 };
 
 
-cmg.controllers.ReviewController.prototype.approveActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.approveActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -344,7 +449,7 @@ cmg.controllers.ReviewController.prototype.approveActionPost = function( success
 	}
 };
 
-cmg.controllers.ReviewController.prototype.deleteActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.deleteActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -368,7 +473,7 @@ cmg.controllers.ReviewController.prototype.deleteActionPost = function( success,
 	}
 };
 
-cmg.controllers.ReviewController.prototype.spamRequestActionPre = function( requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.spamRequestActionPre = function( requestElement, response ) {
 
 	var result = confirm( 'Are you sure you want to submit admin request to mark it as spam ?' );
 
@@ -380,7 +485,7 @@ cmg.controllers.ReviewController.prototype.spamRequestActionPre = function( requ
 	return false;
 };
 
-cmg.controllers.ReviewController.prototype.spamRequestActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.spamRequestActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -388,7 +493,7 @@ cmg.controllers.ReviewController.prototype.spamRequestActionPost = function( suc
 	}
 };
 
-cmg.controllers.ReviewController.prototype.deleteRequestActionPre = function( requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.deleteRequestActionPre = function( requestElement, response ) {
 
 	var result = confirm( 'Are you sure you want to submit admin request to delete it ?' );
 
@@ -400,7 +505,7 @@ cmg.controllers.ReviewController.prototype.deleteRequestActionPre = function( re
 	return false;
 };
 
-cmg.controllers.ReviewController.prototype.deleteRequestActionPost = function( success, requestElement, response ) {
+cmg.controllers.comment.ReviewController.prototype.deleteRequestActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
@@ -416,8 +521,10 @@ jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'grid', 'cmt.api.Application', { basePath: ajaxUrl } );
 
+	// Map Controllers
 	app.mapController( 'crud', 'cmg.controllers.grid.CrudController' );
-
+	
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=grid]' ) );
 });
 
@@ -428,6 +535,12 @@ var cmg = cmg || {};
 cmg.controllers = cmg.controllers || {};
 
 cmg.controllers.grid = cmg.controllers.grid || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.grid = cmg.services.grid || {};
 
 // == CRUD Controller =====================
 
@@ -475,10 +588,12 @@ cmg.controllers.grid.CrudController.prototype.deleteActionFailure = function( re
 jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'location', 'cmt.api.Application', { basePath: ajaxUrl } );
-
+	
+	// Map Controllers
 	app.mapController( 'province', 'cmg.controllers.location.ProvinceController' );
 	app.mapController( 'city', 'cmg.controllers.location.CityController' );
-
+	
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=location]' ) );
 
 	// Listeners
@@ -498,6 +613,12 @@ var cmg = cmg || {};
 cmg.controllers = cmg.controllers || {};
 
 cmg.controllers.location = cmg.controllers.location || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.location = cmg.services.location || {};
 
 // == Province Controller =================
 
@@ -617,11 +738,16 @@ cmg.controllers.location.CityController.prototype.autoSearchActionSuccess = func
 jQuery( document ).ready( function() {
 
 	var app	= cmt.api.root.registerApplication( 'mapper', 'cmt.api.Application', { basePath: ajaxUrl } );
+	
+	// Map Controllers
+	app.mapController( 'auto', 'cmg.controllers.mapper.AutoController' );
+	app.mapController( 'model', 'cmg.controllers.mapper.ModelController' );
+	app.mapController( 'csv', 'cmg.controllers.mapper.CsvController' );
 
-	app.mapController( 'auto', 'cmg.controllers.mappers.AutoController' );
-	app.mapController( 'model', 'cmg.controllers.mappers.ModelController' );
-	app.mapController( 'csv', 'cmg.controllers.mappers.CsvController' );
+	// Map Services
+	app.mapService( 'auto', 'cmg.services.mapper.AutoService' );
 
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=mapper]' ) );
 });
 
@@ -631,19 +757,25 @@ var cmg = cmg || {};
 
 cmg.controllers = cmg.controllers || {};
 
-cmg.controllers.mappers = cmg.controllers.mappers || {};
+cmg.controllers.mapper = cmg.controllers.mapper || {};
+
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.mapper = cmg.services.mapper || {};
 
 // == Auto Controller =====================
 
-cmg.controllers.mappers.AutoController = function() {
+cmg.controllers.mapper.AutoController = function() {
 
 	this.singleRequest		= true;
 	this.previousLocation	= null;
 };
 
-cmg.controllers.mappers.AutoController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.mapper.AutoController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.mappers.AutoController.prototype.autoSearchActionPre = function( requestElement ) {
+cmg.controllers.mapper.AutoController.prototype.autoSearchActionPre = function( requestElement ) {
 
 	var autoFill = requestElement.closest( '.auto-fill' );
 
@@ -670,7 +802,7 @@ cmg.controllers.mappers.AutoController.prototype.autoSearchActionPre = function(
 	return true;
 };
 
-cmg.controllers.mappers.AutoController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+cmg.controllers.mapper.AutoController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
 
 	var data			= response.data;
 	var listHtml		= '';
@@ -713,11 +845,11 @@ cmg.controllers.mappers.AutoController.prototype.autoSearchActionSuccess = funct
 
 // == Mapper Controller ===================
 
-cmg.controllers.mappers.ModelController = function() {};
+cmg.controllers.mapper.ModelController = function() {};
 
-cmg.controllers.mappers.ModelController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.mapper.ModelController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.mappers.ModelController.prototype.autoSearchActionPre = function( requestElement ) {
+cmg.controllers.mapper.ModelController.prototype.autoSearchActionPre = function( requestElement ) {
 
 	var autoFill	= requestElement.closest( '.auto-fill' );
 	var type 		= autoFill.find( 'input[name=type]' );
@@ -751,7 +883,7 @@ cmg.controllers.mappers.ModelController.prototype.autoSearchActionPre = function
 	return true;
 };
 
-cmg.controllers.mappers.ModelController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+cmg.controllers.mapper.ModelController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
 
 	var data		= response.data;
 	var listHtml	= '';
@@ -791,7 +923,7 @@ cmg.controllers.mappers.ModelController.prototype.autoSearchActionSuccess = func
 			}
 			else {
 
-				processAutoSearch( id, name, template );
+				cmt.api.root.getApplication( 'mapper' ).getService( 'auto' ).processAutoSearch( id, name, template );
 			}
 		});
 	}
@@ -799,7 +931,7 @@ cmg.controllers.mappers.ModelController.prototype.autoSearchActionSuccess = func
 	itemList.slideDown();
 };
 
-cmg.controllers.mappers.ModelController.prototype.mapItemActionPre = function( requestElement ) {
+cmg.controllers.mapper.ModelController.prototype.mapItemActionPre = function( requestElement ) {
 
 	var itemId	= requestElement.find( 'input[name=itemId]' ).val();
 	itemId		= parseInt( itemId );
@@ -812,7 +944,7 @@ cmg.controllers.mappers.ModelController.prototype.mapItemActionPre = function( r
 	return false;
 };
 
-cmg.controllers.mappers.ModelController.prototype.mapItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.mapper.ModelController.prototype.mapItemActionSuccess = function( requestElement, response ) {
 
 	var autoItems	= requestElement.closest( '.mapper-auto-items' );
 
@@ -860,18 +992,18 @@ cmg.controllers.mappers.ModelController.prototype.mapItemActionSuccess = functio
 	}
 };
 
-cmg.controllers.mappers.ModelController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.mapper.ModelController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
 
 	requestElement.remove();
 };
 
 // == Csv Controller ======================
 
-cmg.controllers.mappers.CsvController = function() {};
+cmg.controllers.mapper.CsvController = function() {};
 
-cmg.controllers.mappers.CsvController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.mapper.CsvController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.mappers.CsvController.prototype.mapItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.mapper.CsvController.prototype.mapItemActionSuccess = function( requestElement, response ) {
 
 	var submitItems	= jQuery( '.mapper-submit-items' );
 	var mapperItems	= submitItems.find( '.mapper-items' );
@@ -886,16 +1018,18 @@ cmg.controllers.mappers.CsvController.prototype.mapItemActionSuccess = function(
 	cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), mapperItems.find( '[cmt-app=mapper]' ) );
 };
 
-cmg.controllers.mappers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.mapper.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
 
 	requestElement.remove();
 };
 
-// == Direct Calls ========================
+// == Auto Service ========================
 
-// == Additional Methods ==================
+cmg.services.mapper.AutoService = function() {};
 
-function processAutoSearch( id, name, template ) {
+cmg.services.mapper.AutoService.inherits( cmt.api.services.BaseService );
+
+cmg.services.mapper.AutoService.prototype.processAutoSearch = function( id, name, template ) {
 
 	// Template
 	var source 		= document.getElementById( template ).innerHTML;
@@ -919,7 +1053,7 @@ function processAutoSearch( id, name, template ) {
 
 	for( var i = 0; i < itemsLength; i++ ) {
 
-		var test	= jQuery( itemsArr[ i ] ).find( '.id' ).val();
+		var test = jQuery( itemsArr[ i ] ).find( '.id' ).val();
 
 		if( id == test ) {
 
@@ -932,8 +1066,8 @@ function processAutoSearch( id, name, template ) {
 	if( create ) {
 
 		// Generate View
-		var data		= { id: id, name: name };
-		var output 		= template( data );
+		var data	= { id: id, name: name };
+		var output 	= template( data );
 
 		mapperItems.append( output );
 
@@ -946,6 +1080,10 @@ function processAutoSearch( id, name, template ) {
 		});
 	}
 }
+
+// == Direct Calls ========================
+
+// == Additional Methods ==================
 
 
 // == Application =========================
@@ -963,6 +1101,12 @@ cmg.controllers = cmg.controllers || {};
 
 cmg.controllers.notify = cmg.controllers.notify || {};
 
+// == Service Namespace ===================
+
+cmg.services = cmg.services || {};
+
+cmg.services.notify = cmg.services.notify || {};
+
 // == Direct Calls ========================
 
 // == Additional Methods ==================
@@ -974,8 +1118,10 @@ jQuery( document ).ready( function() {
 
 	var app = cmt.api.root.getApplication( 'notify' );
 
+	// Map Controllers
 	app.mapController( 'notification', 'cmg.controllers.notify.NotificationController' );
 
+	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=notify]' ) );
 });
 
@@ -997,7 +1143,7 @@ cmg.controllers.notify.NotificationController.prototype.hreadActionSuccess = fun
 	var clickBtn	= requestElement.find( '.cmt-click' );
 	var type		= clickBtn.attr( 'type' );
 	var count		= response.data.unread;
-	
+
 	if( response.data.consumed ) {
 
 		jQuery( ".count-header.count-" + type ).html( count );
@@ -1005,7 +1151,7 @@ cmg.controllers.notify.NotificationController.prototype.hreadActionSuccess = fun
 		jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).html( count );
 
 		if( count == 0 ) {
-			
+
 			jQuery( ".count-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).fadeOut( 'fast' );
