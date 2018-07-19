@@ -15,6 +15,8 @@ jQuery( document ).ready( function() {
 
 	// Listeners
 	app.getService( 'address' ).initAddress();
+	
+	app.getService( 'address' ).refreshGoogleMap( jQuery( '.frm-address' ) );
 });
 
 // == Controller Namespace ================
