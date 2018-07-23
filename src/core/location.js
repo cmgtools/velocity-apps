@@ -6,13 +6,14 @@ jQuery( document ).ready( function() {
 	
 	// Map Controllers
 	app.mapController( 'province', 'cmg.controllers.location.ProvinceController' );
+	app.mapController( 'region', 'cmg.controllers.location.RegionController' );
 	app.mapController( 'city', 'cmg.controllers.location.CityController' );
 	
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=location]' ) );
 
 	// Listeners
-	jQuery( '.address-province' ).change( function() {
+	jQuery( '.address-province, .address-region' ).change( function() {
 
 		var cityFill = jQuery( this ).closest( '.frm-address' ).find( '.city-fill' );
 
@@ -41,21 +42,50 @@ cmg.controllers.location.ProvinceController	= function() {};
 
 cmg.controllers.location.ProvinceController.inherits( cmt.api.controllers.BaseController );
 
-cmg.controllers.location.ProvinceController.prototype.provinceActionPre = function( requestElement ) {
+cmg.controllers.location.ProvinceController.prototype.optionsListActionPre = function( requestElement ) {
 
-	this.requestData = { countryId: requestElement.find( 'select' ).val() };
+	var country = requestElement.find( 'select' );
+
+	this.requestData = "country-id=" + country.val();
+
+	if( cmt.utils.data.hasAttribute( country, 'province' ) ) {
+
+		this.requestData += "&province-id=" + country.attr( 'province' );
+	}
 
 	return true;
 };
 
-cmg.controllers.location.ProvinceController.prototype.provinceActionSuccess = function( requestElement, response ) {
+cmg.controllers.location.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.parent().find( '.wrap-province .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.frm-address' ).find( '.wrap-province .cmt-select-wrap' );
 
-	if( response.data.length <= 0 ) {
+	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
+};
 
-		response.data = '<option value="0">Choose Province</option>';
+// == Region Controller ===================
+
+cmg.controllers.location.RegionController = function() {};
+
+cmg.controllers.location.RegionController.inherits( cmt.api.controllers.BaseController );
+
+cmg.controllers.location.RegionController.prototype.optionsListActionPre = function( requestElement ) {
+
+	var province = requestElement.find( 'select' );
+
+	this.requestData = "province-id=" + province.val();
+
+	if( cmt.utils.data.hasAttribute( province, 'region' ) ) {
+
+		this.requestData += "&region-id=" + province.attr( 'region' );
 	}
+
+	return true;
+};
+
+cmg.controllers.location.RegionController.prototype.optionsListActionSuccess = function( requestElement, response ) {
+
+	var selectWrap = requestElement.closest( '.frm-address' ).find( '.wrap-region .cmt-select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
@@ -72,6 +102,7 @@ cmg.controllers.location.CityController.prototype.autoSearchActionPre = function
 	var autoFill	= requestElement.closest( '.auto-fill' );
 
 	var provinceId 	= form.find( '.address-province' ).val();
+	var regionId	= form.find( '.address-region' ).val();
 	var cityName 	= form.find( '.auto-fill-text' ).val();
 
 	if( cityName.length <= 0 ) {
@@ -82,7 +113,7 @@ cmg.controllers.location.CityController.prototype.autoSearchActionPre = function
 		return false;
 	}
 
-	this.requestData = "province-id=" + provinceId + "&name=" + cityName;
+	this.requestData = "province-id=" + provinceId + "&region-id=" + regionId + "&name=" + cityName;
 
 	return true;
 };

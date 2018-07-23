@@ -170,6 +170,7 @@ cmg.services.address.AddressService.prototype.updateAddress = function( containe
 	// Refresh Map
 	this.refreshGoogleMap( target );
 	
+	this.refreshProvinces( target, province.attr( 'pid' ) );
 	this.refreshRegions( target, region.attr( 'rid' ) );
 }
 
@@ -204,8 +205,18 @@ cmg.services.address.AddressService.prototype.refreshAddressCard = function( con
 	cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), card.find( '[cmt-app=address]' ) );
 }
 
+cmg.services.address.AddressService.prototype.refreshProvinces = function( target, provinceId ) {
+
+	target.find( '.address-country' ).attr( 'province', provinceId );
+
+	target.find( '.address-country' ).closest( '.wrap-country' ).find( '.cmt-click' ).trigger( 'click' );
+}
+
 cmg.services.address.AddressService.prototype.refreshRegions = function( target, regionId ) {
 
+	target.find( '.address-province' ).attr( 'region', regionId );
+
+	target.find( '.address-province' ).closest( '.wrap-province' ).find( '.cmt-click' ).trigger( 'click' );
 }
 
 cmg.services.address.AddressService.prototype.refreshGoogleMap = function( target ) {
