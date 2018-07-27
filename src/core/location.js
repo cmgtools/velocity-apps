@@ -8,7 +8,7 @@ jQuery( document ).ready( function() {
 	app.mapController( 'province', 'cmg.controllers.location.ProvinceController' );
 	app.mapController( 'region', 'cmg.controllers.location.RegionController' );
 	app.mapController( 'city', 'cmg.controllers.location.CityController' );
-	
+
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=location]' ) );
 

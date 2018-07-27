@@ -13,9 +13,9 @@ jQuery( document ).ready( function() {
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=address]' ) );
 
-	// Listeners
-	app.getService( 'address' ).initAddress();
-	
+	// Event Listeners
+	app.getService( 'address' ).initListeners();
+
 	app.getService( 'address' ).refreshGoogleMap( jQuery( '.frm-address' ) );
 });
 
@@ -76,13 +76,13 @@ cmg.controllers.address.AddressController.prototype.deleteActionSuccess = functi
 	requestElement.closest( '.card-address' ).remove();
 }
 
-// == Address Service =============
+// == Address Service =====================
 
 cmg.services.address.AddressService = function() {};
 
 cmg.services.address.AddressService.inherits( cmt.api.services.BaseService );
 
-cmg.services.address.AddressService.prototype.initAddress = function() {
+cmg.services.address.AddressService.prototype.initListeners = function() {
 
 	var self = this;
 
