@@ -1,7 +1,8 @@
 // == Application =========================
 
 jQuery( document ).ready( function() {
-
+	
+	// Register App
 	var app	= cmt.api.root.registerApplication( 'grid', 'cmt.api.Application', { basePath: ajaxUrl } );
 
 	// Map Controllers

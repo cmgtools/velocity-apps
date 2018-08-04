@@ -2,6 +2,7 @@
 
 jQuery( document ).ready( function() {
 
+	// Register App
 	var app	= cmt.api.root.registerApplication( 'comment', 'cmt.api.Application', { basePath: ajaxUrl } );
 	
 	// Map Controllers

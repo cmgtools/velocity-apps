@@ -1,7 +1,8 @@
 // == Application =========================
 
 jQuery( document ).ready( function() {
-
+	
+	// Access App
 	var app = cmt.api.root.getApplication( 'bank' );
 
 	// Map Controllers

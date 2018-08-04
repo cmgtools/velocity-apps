@@ -1,8 +1,9 @@
 // == Application =========================
 
 jQuery( document ).ready( function() {
-
-	cmt.api.root.registerApplication( 'bank', 'cmt.api.Application', { basePath: ajaxUrl } );
+	
+	// Register App
+	cmt.api.root.registerApplication( 'notify', 'cmt.api.Application', { basePath: ajaxUrl } );
 });
 
 // == Controller Namespace ================
@@ -11,13 +12,13 @@ var cmg = cmg || {};
 
 cmg.controllers = cmg.controllers || {};
 
-cmg.controllers.bank = cmg.controllers.bank || {};
+cmg.controllers.notify = cmg.controllers.notify || {};
 
 // == Service Namespace ===================
 
 cmg.services = cmg.services || {};
 
-cmg.services.bank = cmg.services.bank || {};
+cmg.services.notify = cmg.services.notify || {};
 
 // == Direct Calls ========================
 
