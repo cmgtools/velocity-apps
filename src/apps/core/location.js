@@ -18,7 +18,7 @@ jQuery( document ).ready( function() {
 
 		var cityFill = jQuery( this ).closest( '.frm-address' ).find( '.city-fill' );
 
-		cityFill.find( '.id' ).val( '' );
+		cityFill.find( '.target' ).val( '' );
 		cityFill.find( '.auto-fill-text' ).val( '' );
 	});
 });
@@ -109,7 +109,7 @@ cmg.controllers.location.CityController.prototype.autoSearchActionPre = function
 	if( cityName.length <= 0 ) {
 
 		autoFill.find( '.auto-fill-items' ).slideUp();
-		autoFill.find( '.auto-fill-target .target' ).val( '' );
+		autoFill.find( '.target' ).val( '' );
 
 		return false;
 	}
@@ -146,7 +146,7 @@ cmg.controllers.location.CityController.prototype.autoSearchActionSuccess = func
 
 		requestElement.find( '.auto-fill-item' ).click( function() {
 
-			var target	= autoFill.find( '.auto-fill-target .target' );
+			var target	= autoFill.find( '.target' );
 			var id		= jQuery( this ).attr( 'data-id' );
 			var name	= jQuery( this ).html();
 

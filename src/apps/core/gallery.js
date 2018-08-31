@@ -6,16 +6,16 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.registerApplication( 'gallery', 'cmt.api.Application', { basePath: ajaxUrl } );
 
 	// Map Controllers
-	app.mapController( 'gallery', 'cmg.controllers.gallery.GalleryController' );
+	app.mapController( 'card', 'cmg.controllers.gallery.CardController' );
 
 	// Map Services
-	app.mapService( 'gallery', 'cmg.services.gallery.GalleryService' );
+	app.mapService( 'card', 'cmg.services.gallery.CardService' );
 
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=gallery]' ) );
-	
+
 	// Event Listeners
-	app.getService( 'gallery' ).initListeners();
+	app.getService( 'card' ).initListeners();
 });
 
 // == Controller Namespace ================
@@ -32,63 +32,76 @@ cmg.services = cmg.services || {};
 
 cmg.services.gallery = cmg.services.gallery || {};
 
-// == Gallery Controller ==================
+// == Card Controller =====================
 
-cmg.controllers.gallery.GalleryController = function() {};
+cmg.controllers.gallery.CardController = function() {};
 
-cmg.controllers.gallery.GalleryController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.gallery.CardController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.gallery.GalleryController.prototype.getItemActionSuccess = function( requestElement, response ) {
-	
-	var card = requestElement.closest( '.card-gallery' );
+cmg.controllers.gallery.CardController.prototype.getItemActionSuccess = function( requestElement, response ) {
 
-	cmt.api.root.getApplication( 'gallery' ).getService( 'gallery' ).refresh( '#data-crud-gallery', card, response.data );
+	var collection	= requestElement.closest( '.data-crud-gallery-card' );
+	var card		= requestElement.closest( '.card-gallery-item' );
+
+	// Show Update Item Form
+	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).initUpdateItemForm( collection, card, response.data );
 };
 
-cmg.controllers.gallery.GalleryController.prototype.createItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.gallery.CardController.prototype.createItemActionSuccess = function( requestElement, response ) {
 
-	requestElement.closest( '.gallery-uploader' ).find( '.file-data' ).html();
-	
-	cmt.api.root.getApplication( 'gallery' ).getService( 'gallery' ).append( response.data );
+	var collection	= requestElement.closest( '.data-crud-gallery-card' );
+
+	// Add Card Item to List
+	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).appendItem( collection, response.data );
 };
 
-cmg.controllers.gallery.GalleryController.prototype.updateItemActionSuccess = function( requestElement, response ) {
-	
-	var card = jQuery( '#card-gallery-' + response.data.id );
+cmg.controllers.gallery.CardController.prototype.updateItemActionSuccess = function( requestElement, response ) {
 
-	card.find( '.title' ).html( response.data.title );
-	card.find( '.card-data img' ).attr( 'src', response.data.thumbUrl );
+	var collection	= requestElement.closest( '.data-crud-gallery-card' );
+	var card		= collection.find( '.card-gallery-item[data-id=' + response.data.id + ']' );
 
-	cmt.api.root.getApplication( 'gallery' ).getService( 'gallery' ).add( '#data-crud-gallery' );
+	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).refreshItem( collection, card, response.data );
 };
 
-cmg.controllers.gallery.GalleryController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.gallery.CardController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
 
-	jQuery( '#card-gallery-' + response.data ).remove();
+	var collection	= requestElement.closest( '.data-crud-gallery-card' );
+	var card		= requestElement.closest( '.card-gallery-item' );
+
+	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).removeItem( collection, card );
 };
 
-// == Gallery Service =====================
+// == Card Service ========================
 
-cmg.services.gallery.GalleryService = function() {};
+cmg.services.gallery.CardService = function() {};
 
-cmg.services.gallery.GalleryService.inherits( cmt.api.services.BaseService );
+cmg.services.gallery.CardService.inherits( cmt.api.services.BaseService );
 
-cmg.services.gallery.GalleryService.prototype.initListeners = function() {
+cmg.services.gallery.CardService.prototype.initListeners = function() {
 
-	if( jQuery( '#data-crud-gallery' ).length > 0 ) {
-		
-		this.add( '#data-crud-gallery' );
+	var self = this;
+
+	if( jQuery( '.btn-add-gallery-card' ).length == 0 ) {
+
+		return;
 	}
+
+	jQuery( '.btn-add-gallery-card' ).click( function() {
+
+		var collection = jQuery( this ).closest( '.data-crud-gallery-card' );
+
+		self.initAddItemForm( collection );
+	});
 }
 
-cmg.services.gallery.GalleryService.prototype.add = function( target ) {
+cmg.services.gallery.CardService.prototype.initAddItemForm = function( collection ) {
 
-	var source 		= document.getElementById( 'addGalleryItemTemplate' ).innerHTML;
+	var source 		= document.getElementById( 'addGalleryCardItemTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var data		= { };
 	var output 		= template( data );
 
-	var target = jQuery( target ).find( '.gallery-form-wrap' );
+	var target = collection.find( '.gallery-form-wrap' );
 
 	target.hide();
 
@@ -101,16 +114,22 @@ cmg.services.gallery.GalleryService.prototype.add = function( target ) {
 
 	// Init Uploader
 	target.find( '.gallery-uploader' ).cmtFileUploader();
+	
+	// Init Listeners
+	collection.find( '.btn-close-form' ).click( function() {
+
+		target.fadeOut( 'fast' );
+	});
 }
 
-cmg.services.gallery.GalleryService.prototype.refresh = function( target, card, data ) {
-	
+cmg.services.gallery.CardService.prototype.initUpdateItemForm = function( collection, card, data ) {
+
 	var self		= this;
-	var source 		= document.getElementById( 'updateGalleryItemTemplate' ).innerHTML;
+	var source 		= document.getElementById( 'updateGalleryCardItemTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 
-	var target = jQuery( target ).find( '.gallery-form-wrap' );
+	var target = collection.find( '.gallery-form-wrap' );
 
 	target.hide();
 
@@ -128,23 +147,44 @@ cmg.services.gallery.GalleryService.prototype.refresh = function( target, card, 
 	target.find( '.gallery-uploader' ).cmtFileUploader();
 
 	// Init Listeners
-	jQuery( '.gallery-form-clear' ).click( function() {
+	collection.find( '.btn-close-form' ).click( function() {
 
-		self.add( '#data-crud-gallery' );
+		target.fadeOut( 'fast' );
 	});
 }
 
-cmg.services.gallery.GalleryService.prototype.append = function( data ) {
+cmg.services.gallery.CardService.prototype.appendItem = function( collection, data ) {
 
-	var source 		= document.getElementById( 'galleryItemTemplate' ).innerHTML;
+	var source 		= document.getElementById( 'galleryCardItemTemplate' ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
-	var itemsWrap	= jQuery( '.gallery-cards' );
+	var cardsWrap	= collection.find( '.gallery-cards' );
 
-	itemsWrap.append( output );
+	cardsWrap.append( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', itemsWrap.find( '.card-gallery' ).last() );
+	cmt.api.utils.request.registerTargetApp( 'gallery', cardsWrap.find( '.card-gallery-item' ).last() );
+
+	// Clear Form and Image
+	collection.find( '.gallery-uploader .file-data' ).html( '' );
+	collection.find( '.gallery-form-wrap' ).slideUp( 'slow' );
+}
+
+cmg.services.gallery.CardService.prototype.refreshItem = function( collection, card, data ) {
+
+	// Update Card Item
+	card.find( '.title' ).html( data.title );
+	card.find( '.card-data img' ).attr( 'src', data.thumbUrl );
+
+	// Clear Form and Image
+	collection.find( '.gallery-uploader .file-data' ).html( '' );
+	collection.find( '.gallery-form-wrap' ).slideUp( 'slow' );
+}
+
+cmg.services.gallery.CardService.prototype.removeItem = function( collection, card ) {
+
+	// Remove Card Item
+	card.remove();
 }
 
 // == Direct Calls ========================
