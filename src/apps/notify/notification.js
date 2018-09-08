@@ -63,6 +63,11 @@ cmg.controllers.notify.NotificationController.prototype.readActionSuccess = func
 	}
 };
 
+cmg.controllers.notify.NotificationController.prototype.toggleTrashActionSuccess = function( requestElement, response ) {
+
+	location.reload( true );
+};
+
 cmg.controllers.notify.NotificationController.prototype.trashActionSuccess = function( requestElement, response ) {
 
 	location.reload( true );

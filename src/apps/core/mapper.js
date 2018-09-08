@@ -263,6 +263,11 @@ cmg.controllers.mapper.ModelController.prototype.deleteItemActionSuccess = funct
 	requestElement.remove();
 };
 
+cmg.controllers.mapper.ModelController.prototype.toggleItemActionSuccess = function( requestElement, response ) {
+
+	// Handle response
+};
+
 // == Csv Controller ======================
 
 cmg.controllers.mapper.CsvController = function() {};
