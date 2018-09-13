@@ -6,18 +6,18 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.registerApplication( 'address', 'cmt.api.Application', { basePath: ajaxUrl } );
 
 	// Map Controllers
-	app.mapController( 'card', 'cmg.controllers.address.CardController' );
+	app.mapController( 'crud', 'cmg.controllers.address.CrudController' );
 
 	// Map Services
-	app.mapService( 'card', 'cmg.services.address.CardService' );
+	app.mapService( 'crud', 'cmg.services.address.CrudService' );
 
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=address]' ) );
 
 	// Event Listeners
-	app.getService( 'card' ).initListeners();
+	app.getService( 'crud' ).initListeners();
 
-	app.getService( 'card' ).refreshGoogleMap( jQuery( '.frm-address' ) );
+	app.getService( 'crud' ).refreshGoogleMap( jQuery( '.frm-address' ) );
 });
 
 // == Controller Namespace ================
@@ -34,122 +34,132 @@ cmg.services = cmg.services || {};
 
 cmg.services.address = cmg.services.address || {};
 
-// == Card Controller =====================
+// == CRUD Controller =====================
 
-cmg.controllers.address.CardController = function() {};
+cmg.controllers.address.CrudController = function() {};
 
-cmg.controllers.address.CardController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.address.CrudController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.address.CardController.prototype.getActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.CrudController.prototype.getActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-address-card' );
-	var card		= requestElement.closest( '.card-address' );
+	var service		= cmt.api.root.getApplication( 'address' ).getService( 'crud' );
+	var container	= service.findContainer( requestElement );	
+	var address		= requestElement.closest( '.cmt-address' );
 
 	// Show Update Form
-	cmt.api.root.getApplication( 'address' ).getService( 'card' ).initUpdateForm( collection, card, response.data );
+	cmt.api.root.getApplication( 'address' ).getService( 'crud' ).initUpdateForm( container, address, response.data );
 };
 
-cmg.controllers.address.CardController.prototype.addActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.CrudController.prototype.addActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-address-card' );
+	var service		= cmt.api.root.getApplication( 'address' ).getService( 'crud' );
+	var container	= service.findContainer( requestElement );
 
-	// Add Card Item to List
-	cmt.api.root.getApplication( 'address' ).getService( 'card' ).append( collection, response.data );
+	// Add Item to List
+	cmt.api.root.getApplication( 'address' ).getService( 'crud' ).add( container, response.data );
 };
 
-cmg.controllers.address.CardController.prototype.updateActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.CrudController.prototype.updateActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-address-card' );
-	var card		= collection.find( '.card-address[data-id=' + response.data.cid + ']' );
+	var service		= cmt.api.root.getApplication( 'address' ).getService( 'crud' );
+	var container	= service.findContainer( requestElement );
+	var address		= container.find( '.cmt-address[data-id=' + response.data.cid + ']' );
 
-	cmt.api.root.getApplication( 'address' ).getService( 'card' ).refresh( collection, card, response.data );
+	cmt.api.root.getApplication( 'address' ).getService( 'crud' ).refresh( container, address, response.data );
 };
 
-cmg.controllers.address.CardController.prototype.deleteActionSuccess = function( requestElement, response ) {
+cmg.controllers.address.CrudController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-address-card' );
-	var card		= requestElement.closest( '.card-address' );
+	var service		= cmt.api.root.getApplication( 'address' ).getService( 'crud' );
+	var container	= service.findContainer( requestElement );
+	var address		= container.find( '.cmt-address[data-id=' + response.data.cid + ']' );
 
-	cmt.api.root.getApplication( 'address' ).getService( 'card' ).remove( collection, card );
+	cmt.api.root.getApplication( 'address' ).getService( 'crud' ).remove( container, address );
 };
 
-// == Card Service ========================
+// == CRUD Service ========================
 
-cmg.services.address.CardService = function() {};
+cmg.services.address.CrudService = function() {
 
-cmg.services.address.CardService.inherits( cmt.api.services.BaseService );
+	this.addTemplate		= 'addAddressTemplate';
+	this.updateTemplate		= 'updateAddressTemplate';
+	this.viewTemplate		= 'addressViewTemplate';
+	this.refreshTemplate	= 'addressRefreshTemplate';
+};
 
-cmg.services.address.CardService.prototype.initListeners = function() {
+cmg.services.address.CrudService.inherits( cmt.api.services.BaseService );
+
+cmg.services.address.CrudService.prototype.initListeners = function() {
 
 	var self = this;
 
-	if( jQuery( '.btn-add-address-card' ).length == 0 ) {
+	if( jQuery( '.cmt-address-add' ).length == 0 ) {
 
 		return;
 	}
 
-	jQuery( '.btn-add-address-card' ).click( function() {
+	jQuery( '.cmt-address-add' ).click( function() {
 
-		var collection = jQuery( this ).closest( '.data-crud-address-card' );
+		var container = jQuery( this ).closest( '.cmt-address-crud' );
 
-		self.initAddForm( collection );
+		self.initAddForm( container );
 	});
 }
 
-cmg.services.address.CardService.prototype.initAddForm = function( collection ) {
+cmg.services.address.CrudService.prototype.initAddForm = function( container ) {
 
-	var source 		= document.getElementById( 'addAddressCardTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var data		= { };
 	var output 		= template( data );
 
-	var target = collection.find( '.address-form-wrap' );
+	var form = container.find( '.cmt-address-form' );
 
-	target.hide();
+	form.hide();
 
-	target.html( output );
+	form.html( output );
 
-	target.fadeIn( 'slow' );
+	form.fadeIn( 'slow' );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'address', target );
-	cmt.api.utils.request.registerTargetApp( 'location', target );
+	cmt.api.utils.request.registerTargetApp( 'address', form );
+	cmt.api.utils.request.registerTargetApp( 'location', form );
 
 	// Custom Select
-	target.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
+	form.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
 
 	// Init Listeners
-	collection.find( '.btn-close-form' ).click( function() {
+	form.find( '.cmt-address-close' ).click( function() {
 
-		target.fadeOut( 'fast' );
+		form.fadeOut( 'fast' );
 	});
 
 	// Refresh Map
-	this.refreshGoogleMap( target );
+	this.refreshGoogleMap( form );
 	
 	// City Listener
-	this.clearCity( target );
+	this.clearCity( form );
 }
 
-cmg.services.address.CardService.prototype.initUpdateForm = function( collection, card, data ) {
+cmg.services.address.CrudService.prototype.initUpdateForm = function( container, address, data ) {
 	
 	var self		= this;
-	var source 		= document.getElementById( 'updateAddressCardTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 
-	var target = collection.find( '.address-form-wrap' );
+	var form = container.find( '.cmt-address-form' );
 
-	target.hide();
+	form.hide();
 
-	target.html( output );
+	form.html( output );
 
-	target.fadeIn( 'slow' );
+	form.fadeIn( 'slow' );
 
 	// Custom Select
-	var country		= target.find( '.address-country' );
-	var province	= target.find( '.address-province' );
-	var region		= target.find( '.address-region' );
+	var country		= form.find( '.cmt-location-country' );
+	var province	= form.find( '.cmt-location-province' );
+	var region		= form.find( '.cmt-location-region' );
 
 	//country.find( "option[value='" + country.attr( 'cid' ) + "']" ).prop( 'selected', true );
 
@@ -160,112 +170,154 @@ cmg.services.address.CardService.prototype.initUpdateForm = function( collection
 
 		region.val( region.attr( 'rid' ) );
 	}
-
-	target.find( '.address-select' ).val( data.type );
+alert( data.type );
+	form.find( '.cmt-address-type' ).val( data.type );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'address', target );
-	cmt.api.utils.request.registerTargetApp( 'location', target );
+	cmt.api.utils.request.registerTargetApp( 'address', form );
+	cmt.api.utils.request.registerTargetApp( 'location', form );
 
 	// Custom Select
-	target.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
+	form.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
 
 	// Init Listeners
-	collection.find( '.btn-close-form' ).click( function() {
+	form.find( '.cmt-address-close' ).click( function() {
 
-		target.fadeOut( 'fast' );
+		form.fadeOut( 'fast' );
 	});
 
 	// Refresh Map
-	this.refreshGoogleMap( target );
+	this.refreshGoogleMap( form );
 	
 	// City Listener
-	this.clearCity( target );
+	this.clearCity( form );
 
-	this.refreshProvinces( target, province.attr( 'pid' ) );
-	this.refreshRegions( target, region.attr( 'rid' ) );
+	// TODO: Check the timings and overlapping of response
+	this.refreshProvinces( form, province.attr( 'pid' ) );
+
+	this.refreshRegions( form, region.attr( 'rid' ) );
 }
 
-cmg.services.address.CardService.prototype.append = function( collection, data ) {
+cmg.services.address.CrudService.prototype.add = function( container, data ) {
 
-	var source 		= document.getElementById( 'addressCardTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
-	var cardsWrap	= collection.find( '.address-cards' );
+	var collection	= container.find( '.cmt-address-collection' );
 
-	cardsWrap.append( output );
+	// Add at first
+	collection.prepend( output );
+
+	var address = collection.find( '.cmt-address' ).first();
+	var actions	= address.find( '.cmt-actions' );
 
 	// Init Request
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), cardsWrap.find( '[cmt-app=address]' ) );
+	cmt.api.utils.request.registerTargetApp( 'address', address );
+
+	// Actions
+	actions.cmtActions();
+	actions.find( '.cmt-auto-hide' ).cmtAutoHide();
 
 	// Clear Form
-	collection.find( '.address-form-wrap' ).slideUp( 'slow' );
+	container.find( '.cmt-address-form' ).slideUp( 'slow' );
 }
 
-cmg.services.address.CardService.prototype.refresh = function( collection, card, data ) {
+cmg.services.address.CrudService.prototype.refresh = function( container, address, data ) {
 
-	var source 		= document.getElementById( 'refreshAddressCardTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
-	//var cardsWrap	= collection.find( '.address-cards' );
 
-	card.html( output );
+	address.find( '.cmt-address-header .title' ).html( data.title );
+	address.find( '.cmt-address-data' ).replaceWith( output );
 
 	// Init Request
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), card.find( '[cmt-app=address]' ) );
+	// cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), address.find( '[cmt-app=address]' ) );
 
-	// Clear Form and Image
-	collection.find( '.address-form-wrap' ).slideUp( 'slow' );
+	// Clear Form
+	container.find( '.cmt-address-form' ).slideUp( 'slow' );
 }
 
-cmg.services.address.CardService.prototype.remove = function( collection, card ) {
+cmg.services.address.CrudService.prototype.remove = function( container, address ) {
 
-	// Remove Card
-	card.remove();
+	// Remove Actions
+	var actions = address.find( '.cmt-actions' );
+
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-id' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Item
+	address.remove();
 }
 
-cmg.services.address.CardService.prototype.refreshProvinces = function( target, provinceId ) {
+cmg.services.address.CrudService.prototype.findContainer = function( requestElement ) {
 
-	target.find( '.address-country' ).attr( 'province', provinceId );
+	var container = requestElement.closest( '.cmt-address-crud' );
 
-	target.find( '.address-country' ).closest( '.wrap-country' ).find( '.cmt-click' ).trigger( 'click' );
+	// Find in Actions
+	if( container.length == 0 ) {
+
+		var listData = requestElement.closest( '.actions-list-data' );
+
+		if( listData.length == 1 ) {
+
+			var identifier	= listData.attr( 'data-id' );
+			var list		= jQuery( '#actions-list-' + identifier );
+			
+			container = list.closest( '.cmt-address-crud' );
+		}
+	}
+	
+	return container;
 }
 
-cmg.services.address.CardService.prototype.refreshRegions = function( target, regionId ) {
+cmg.services.address.CrudService.prototype.refreshProvinces = function( target, provinceId ) {
 
-	target.find( '.address-province' ).attr( 'region', regionId );
+	target.find( '.cmt-location-country' ).attr( 'data-province', provinceId );
 
-	target.find( '.address-province' ).closest( '.wrap-province' ).find( '.cmt-click' ).trigger( 'click' );
+	target.find( '.cmt-location-country' ).closest( '.cmt-location-countries' ).find( '.cmt-click' ).trigger( 'click' );
 }
 
-cmg.services.address.CardService.prototype.clearCity = function( target ) {
+cmg.services.address.CrudService.prototype.refreshRegions = function( target, regionId ) {
 
-	target.find( '.address-province, .address-region' ).change( function() {
+	target.find( '.cmt-location-province' ).attr( 'data-region', regionId );
 
-		var cityFill = jQuery( this ).closest( '.frm-address' ).find( '.city-fill' );
+	target.find( '.cmt-location-province' ).closest( '.cmt-location-provinces' ).find( '.cmt-click' ).trigger( 'click' );
+}
+
+cmg.services.address.CrudService.prototype.clearCity = function( target ) {
+
+	target.find( '.cmt-location-province, .cmt-location-region' ).change( function() {
+
+		var cityFill = jQuery( this ).closest( '.cmt-location' ).find( '.cmt-location-city-fill' );
 
 		cityFill.find( '.target' ).val( '' );
 		cityFill.find( '.auto-fill-text' ).val( '' );
 	});
 }
-	
-cmg.services.address.CardService.prototype.refreshGoogleMap = function( target ) {
+
+cmg.services.address.CrudService.prototype.refreshGoogleMap = function( target ) {
 
 	// CMT JS - Google Map
 	jQuery( target ).find( '.lat-long-picker' ).latLongPicker();
 
 	// Address Map
-	jQuery( target ).find( '.frm-ll-picker .line1, .frm-ll-picker .line2, .frm-ll-picker .line3, .frm-ll-picker .city, .frm-ll-picker .zip' ).keyup( function() {
+	jQuery( target ).find( '.cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
 
-		var line1 	= jQuery( '.frm-ll-picker .line1' ).val();
-		var line2 	= jQuery( '.frm-ll-picker .line2' ).val();
-		var city 	= jQuery( '.frm-ll-picker .city' ).val();
-		var zip 	= jQuery( '.frm-ll-picker .zip' ).val();
+		var line1 	= jQuery( '.cmt-location-ll-picker .line1' ).val();
+		var line2 	= jQuery( '.cmt-location-ll-picker .line2' ).val();
+		var city 	= jQuery( '.cmt-location-ll-picker .city' ).val();
+		var zip 	= jQuery( '.cmt-location-ll-picker .zip' ).val();
 		var address	= line1 + ',' + line2 + ',' + city + ',' + zip;
 
 		if( address.length > 10 ) {
 
-			jQuery( '.frm-ll-picker .search-box' ).val( address ).trigger( 'change' );
+			jQuery( '.cmt-location-ll-picker .search-box' ).val( address ).trigger( 'change' );
 		}
 	});
 }

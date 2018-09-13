@@ -1,10 +1,10 @@
 // == Application =========================
 
 jQuery( document ).ready( function() {
-	
+
 	// Register App
 	var app	= cmt.api.root.registerApplication( 'location', 'cmt.api.Application', { basePath: ajaxUrl } );
-	
+
 	// Map Controllers
 	app.mapController( 'province', 'cmg.controllers.location.ProvinceController' );
 	app.mapController( 'region', 'cmg.controllers.location.RegionController' );
@@ -14,9 +14,9 @@ jQuery( document ).ready( function() {
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=location]' ) );
 
 	// Listeners
-	jQuery( '.address-province, .address-region' ).change( function() {
+	jQuery( '.cmt-location-province, .cmt-location-region' ).change( function() {
 
-		var cityFill = jQuery( this ).closest( '.frm-address' ).find( '.city-fill' );
+		var cityFill = jQuery( this ).closest( '.cmt-location' ).find( '.cmt-location-city-fill' );
 
 		cityFill.find( '.target' ).val( '' );
 		cityFill.find( '.auto-fill-text' ).val( '' );
@@ -49,9 +49,9 @@ cmg.controllers.location.ProvinceController.prototype.optionsListActionPre = fun
 
 	this.requestData = "country-id=" + country.val();
 
-	if( cmt.utils.data.hasAttribute( country, 'province' ) ) {
+	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
 
-		this.requestData += "&province-id=" + country.attr( 'province' );
+		this.requestData += "&province-id=" + country.attr( 'data-province' );
 	}
 
 	return true;
@@ -59,7 +59,7 @@ cmg.controllers.location.ProvinceController.prototype.optionsListActionPre = fun
 
 cmg.controllers.location.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.frm-address' ).find( '.wrap-province .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .cmt-select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
@@ -76,9 +76,9 @@ cmg.controllers.location.RegionController.prototype.optionsListActionPre = funct
 
 	this.requestData = "province-id=" + province.val();
 
-	if( cmt.utils.data.hasAttribute( province, 'region' ) ) {
+	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 
-		this.requestData += "&region-id=" + province.attr( 'region' );
+		this.requestData += "&region-id=" + province.attr( 'data-region' );
 	}
 
 	return true;
@@ -86,7 +86,7 @@ cmg.controllers.location.RegionController.prototype.optionsListActionPre = funct
 
 cmg.controllers.location.RegionController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.frm-address' ).find( '.wrap-region .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .cmt-select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
@@ -99,11 +99,11 @@ cmg.controllers.location.CityController.inherits( cmt.api.controllers.BaseContro
 
 cmg.controllers.location.CityController.prototype.autoSearchActionPre = function( requestElement ) {
 
-	var form		= requestElement.closest( '.frm-address' );
+	var form		= requestElement.closest( '.cmt-location' );
 	var autoFill	= requestElement.closest( '.auto-fill' );
 
-	var provinceId 	= form.find( '.address-province' ).val();
-	var regionId	= form.find( '.address-region' ).val();
+	var provinceId 	= form.find( '.cmt-location-province' ).val();
+	var regionId	= form.find( '.cmt-location-region' ).val();
 	var cityName 	= form.find( '.auto-fill-text' ).val();
 
 	if( cityName.length <= 0 ) {
@@ -131,12 +131,12 @@ cmg.controllers.location.CityController.prototype.autoSearchActionSuccess = func
 
 		var obj = data[ i ];
 
-		listHtml += "<li class='auto-fill-item' data-id='" + obj.id + "' data-lat='" + obj.latitude + "' data-lon='" + obj.longitude + "' data-zip='" + obj.postal + "'>" + obj.name + "</li>";
+		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\" data-lat=\"" + obj.latitude + "\" data-lon=\"" + obj.longitude + "\" data-zip=\"" + obj.postal + "\">" + obj.name + "</li>";
 	}
 
 	if( listHtml.length == 0 ) {
 
-		listHtml = "<li class='auto-fill-message'>No matching results found.</li>";
+		listHtml = "<li class=\"auto-fill-message\">No matching results found.</li>";
 
 		itemList.html( listHtml );
 	}
@@ -162,7 +162,7 @@ cmg.controllers.location.CityController.prototype.autoSearchActionSuccess = func
 			requestElement.find( '.auto-fill-text' ).val( name );
 
 			// Update Map
-			var parent		= jQuery( this ).closest( '.frm-address' );
+			var parent		= jQuery( this ).closest( '.cmt-location' );
 			var address		= lat + ',' + lon;
 
 			parent.find( '.search-ll' ).val( address ).trigger( 'change' );
