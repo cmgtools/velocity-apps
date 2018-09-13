@@ -142,7 +142,7 @@ cmg.services.address.CrudService.prototype.initAddForm = function( container ) {
 }
 
 cmg.services.address.CrudService.prototype.initUpdateForm = function( container, address, data ) {
-	
+
 	var self		= this;
 	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -170,7 +170,7 @@ cmg.services.address.CrudService.prototype.initUpdateForm = function( container,
 
 		region.val( region.attr( 'rid' ) );
 	}
-alert( data.type );
+
 	form.find( '.cmt-address-type' ).val( data.type );
 
 	// Init Request
