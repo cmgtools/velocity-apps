@@ -121,10 +121,6 @@ cmg.services.address.CrudService.prototype.initAddForm = function( container ) {
 
 	form.fadeIn( 'slow' );
 
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'address', form );
-	cmt.api.utils.request.registerTargetApp( 'location', form );
-
 	// Custom Select
 	form.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
 
@@ -139,6 +135,10 @@ cmg.services.address.CrudService.prototype.initAddForm = function( container ) {
 	
 	// City Listener
 	this.clearCity( form );
+	
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'address', form );
+	cmt.api.utils.request.registerTargetApp( 'location', form );
 }
 
 cmg.services.address.CrudService.prototype.initUpdateForm = function( container, address, data ) {
@@ -173,10 +173,6 @@ cmg.services.address.CrudService.prototype.initUpdateForm = function( container,
 
 	form.find( '.cmt-address-type' ).val( data.type );
 
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'address', form );
-	cmt.api.utils.request.registerTargetApp( 'location', form );
-
 	// Custom Select
 	form.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
 
@@ -192,10 +188,15 @@ cmg.services.address.CrudService.prototype.initUpdateForm = function( container,
 	// City Listener
 	this.clearCity( form );
 
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'address', form );
+	cmt.api.utils.request.registerTargetApp( 'location', form );
+
 	// TODO: Check the timings and overlapping of response
 	this.refreshProvinces( form, province.attr( 'pid' ) );
 
 	this.refreshRegions( form, region.attr( 'rid' ) );
+
 }
 
 cmg.services.address.CrudService.prototype.add = function( container, data ) {
@@ -211,15 +212,15 @@ cmg.services.address.CrudService.prototype.add = function( container, data ) {
 	var address = collection.find( '.cmt-address' ).first();
 	var actions	= address.find( '.cmt-actions' );
 
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'address', address );
-
 	// Actions
 	actions.cmtActions();
 	actions.find( '.cmt-auto-hide' ).cmtAutoHide();
 
 	// Clear Form
 	container.find( '.cmt-address-form' ).slideUp( 'slow' );
+	
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'address', address );
 }
 
 cmg.services.address.CrudService.prototype.refresh = function( container, address, data ) {
@@ -230,9 +231,6 @@ cmg.services.address.CrudService.prototype.refresh = function( container, addres
 
 	address.find( '.cmt-address-header .title' ).html( data.title );
 	address.find( '.cmt-address-data' ).replaceWith( output );
-
-	// Init Request
-	// cmt.api.utils.request.register( cmt.api.root.getApplication( 'address' ), address.find( '[cmt-app=address]' ) );
 
 	// Clear Form
 	container.find( '.cmt-address-form' ).slideUp( 'slow' );
@@ -266,9 +264,10 @@ cmg.services.address.CrudService.prototype.findContainer = function( requestElem
 
 		if( listData.length == 1 ) {
 
-			var identifier	= listData.attr( 'data-id' );
-			var list		= jQuery( '#actions-list-' + identifier );
-			
+			var identifier = listData.attr( 'data-id' );
+
+			var list = jQuery( '#actions-list-' + identifier );
+
 			container = list.closest( '.cmt-address-crud' );
 		}
 	}

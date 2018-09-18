@@ -6,16 +6,16 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.registerApplication( 'gallery', 'cmt.api.Application', { basePath: ajaxUrl } );
 
 	// Map Controllers
-	app.mapController( 'card', 'cmg.controllers.gallery.CardController' );
+	app.mapController( 'item', 'cmg.controllers.gallery.ItemController' );
 
 	// Map Services
-	app.mapService( 'card', 'cmg.services.gallery.CardService' );
+	app.mapService( 'item', 'cmg.services.gallery.ItemService' );
 
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=gallery]' ) );
 
 	// Event Listeners
-	app.getService( 'card' ).initListeners();
+	app.getService( 'item' ).initListeners();
 });
 
 // == Controller Namespace ================
@@ -32,159 +32,196 @@ cmg.services = cmg.services || {};
 
 cmg.services.gallery = cmg.services.gallery || {};
 
-// == Card Controller =====================
+// == Item Controller =====================
 
-cmg.controllers.gallery.CardController = function() {};
+cmg.controllers.gallery.ItemController = function() {};
 
-cmg.controllers.gallery.CardController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.gallery.ItemController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.gallery.CardController.prototype.getItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.gallery.ItemController.prototype.getActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-gallery-card' );
-	var card		= requestElement.closest( '.card-gallery-item' );
+	var container	= requestElement.closest( '.cmt-gallery-item-crud' );
+	var item		= requestElement.closest( '.cmt-gallery-item' );
 
 	// Show Update Item Form
-	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).initUpdateItemForm( collection, card, response.data );
+	cmt.api.root.getApplication( 'gallery' ).getService( 'item' ).initUpdateForm( container, item, response.data );
 };
 
-cmg.controllers.gallery.CardController.prototype.createItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.gallery.ItemController.prototype.addActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-gallery-card' );
+	var container = requestElement.closest( '.cmt-gallery-item-crud' );
 
 	// Add Card Item to List
-	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).appendItem( collection, response.data );
+	cmt.api.root.getApplication( 'gallery' ).getService( 'item' ).add( container, response.data );
 };
 
-cmg.controllers.gallery.CardController.prototype.updateItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.gallery.ItemController.prototype.updateActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-gallery-card' );
-	var card		= collection.find( '.card-gallery-item[data-id=' + response.data.id + ']' );
+	var container	= requestElement.closest( '.cmt-gallery-item-crud' );
+	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.id + ']' );
 
-	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).refreshItem( collection, card, response.data );
+	cmt.api.root.getApplication( 'gallery' ).getService( 'item' ).refresh( container, item, response.data );
 };
 
-cmg.controllers.gallery.CardController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+cmg.controllers.gallery.ItemController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
-	var collection	= requestElement.closest( '.data-crud-gallery-card' );
-	var card		= requestElement.closest( '.card-gallery-item' );
+	var container	= requestElement.closest( '.cmt-gallery-item-crud' );
+	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.id + ']' );
 
-	cmt.api.root.getApplication( 'gallery' ).getService( 'card' ).removeItem( collection, card );
+	cmt.api.root.getApplication( 'gallery' ).getService( 'item' ).remove( container, item );
 };
 
-// == Card Service ========================
+// == Item Service ========================
 
-cmg.services.gallery.CardService = function() {};
+cmg.services.gallery.ItemService = function() {
 
-cmg.services.gallery.CardService.inherits( cmt.api.services.BaseService );
+	this.addTemplate		= 'addItemTemplate';
+	this.updateTemplate		= 'updateItemTemplate';
+	this.viewTemplate		= 'itemViewTemplate';
+	this.refreshTemplate	= 'itemRefreshTemplate';
+};
 
-cmg.services.gallery.CardService.prototype.initListeners = function() {
+cmg.services.gallery.ItemService.inherits( cmt.api.services.BaseService );
+
+cmg.services.gallery.ItemService.prototype.initListeners = function() {
 
 	var self = this;
 
-	if( jQuery( '.btn-add-gallery-card' ).length == 0 ) {
+	if( jQuery( '.cmt-gallery-item-add' ).length == 0 ) {
 
 		return;
 	}
 
-	jQuery( '.btn-add-gallery-card' ).click( function() {
+	jQuery( '.cmt-gallery-item-add' ).click( function() {
 
-		var collection = jQuery( this ).closest( '.data-crud-gallery-card' );
+		var container = jQuery( this ).closest( '.cmt-gallery-item-crud' );
 
-		self.initAddItemForm( collection );
+		self.initAddForm( container );
 	});
 }
 
-cmg.services.gallery.CardService.prototype.initAddItemForm = function( collection ) {
+cmg.services.gallery.ItemService.prototype.initAddForm = function( container ) {
 
-	var source 		= document.getElementById( 'addGalleryCardItemTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var data		= { };
 	var output 		= template( data );
 
-	var target = collection.find( '.gallery-form-wrap' );
+	var form = container.find( '.cmt-gallery-item-form' );
 
-	target.hide();
+	form.hide();
 
-	target.html( output );
+	form.html( output );
 
-	target.fadeIn( 'slow' );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', target );
+	form.fadeIn( 'slow' );
 
 	// Init Uploader
-	target.find( '.gallery-uploader' ).cmtFileUploader();
-	
-	// Init Listeners
-	collection.find( '.btn-close-form' ).click( function() {
+	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
 
-		target.fadeOut( 'fast' );
+	// Init Listeners
+	form.find( '.cmt-gallery-item-close' ).click( function() {
+
+		form.fadeOut( 'fast' );
 	});
+	
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'gallery', form );
 }
 
-cmg.services.gallery.CardService.prototype.initUpdateItemForm = function( collection, card, data ) {
+cmg.services.gallery.ItemService.prototype.initUpdateForm = function( container, item, data ) {
 
-	var self		= this;
-	var source 		= document.getElementById( 'updateGalleryCardItemTemplate' ).innerHTML;
-	var template 	= Handlebars.compile( source );
+	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
+	var template	= Handlebars.compile( source );
 	var output 		= template( data );
 
-	var target = collection.find( '.gallery-form-wrap' );
+	var form = container.find( '.cmt-gallery-item-form' );
 
-	target.hide();
+	form.hide();
 
-	target.html( output );
+	form.html( output );
 
-	target.fadeIn( 'slow' );
+	form.fadeIn( 'slow' );
 
 	// Copy image data
-	target.find( '.file-data' ).html( card.find( '.card-data' ).html() );
+	form.find( '.file-data' ).html( item.find( '.cmt-gallery-item-data' ).html() );
 
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', target );
-	
 	// Init Uploader
-	target.find( '.gallery-uploader' ).cmtFileUploader();
+	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
 
 	// Init Listeners
-	collection.find( '.btn-close-form' ).click( function() {
+	form.find( '.cmt-gallery-item-close' ).click( function() {
 
-		target.fadeOut( 'fast' );
+		form.fadeOut( 'fast' );
 	});
+	
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'gallery', form );
 }
 
-cmg.services.gallery.CardService.prototype.appendItem = function( collection, data ) {
+cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 
-	var source 		= document.getElementById( 'galleryCardItemTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
-	var cardsWrap	= collection.find( '.gallery-cards' );
+	var collection	= container.find( '.cmt-gallery-item-collection' );
 
-	cardsWrap.append( output );
+	// Add at first
+	switch( container.attr( 'ldata-layout' ) ) {
+
+		case 'cmt-gallery': {
+
+			collection.cmtSlider( 'addSlide', output );
+
+			break;
+		}
+		default: {
+
+			collection.prepend( output );
+		}
+	}
+
+	var item = collection.find( '.cmt-gallery-item' ).first();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', cardsWrap.find( '.card-gallery-item' ).last() );
+	cmt.api.utils.request.registerTargetApp( 'gallery', item );
 
 	// Clear Form and Image
-	collection.find( '.gallery-uploader .file-data' ).html( '' );
-	collection.find( '.gallery-form-wrap' ).slideUp( 'slow' );
+	container.find( '.cmt-gallery-item-uploader .file-data' ).html( '' );
+	container.find( '.cmt-gallery-item-form' ).slideUp( 'slow' );
 }
 
-cmg.services.gallery.CardService.prototype.refreshItem = function( collection, card, data ) {
+cmg.services.gallery.ItemService.prototype.refresh = function( container, item, data ) {
 
-	// Update Card Item
-	card.find( '.title' ).html( data.title );
-	card.find( '.card-data img' ).attr( 'src', data.thumbUrl );
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	item.find( '.cmt-gallery-item-header .title' ).html( data.title );
+	item.find( '.cmt-gallery-item-data' ).replaceWith( output );
 
 	// Clear Form and Image
-	collection.find( '.gallery-uploader .file-data' ).html( '' );
-	collection.find( '.gallery-form-wrap' ).slideUp( 'slow' );
+	container.find( '.cmt-gallery-item-uploader .file-data' ).html( '' );
+	container.find( '.cmt-gallery-item-form' ).slideUp( 'slow' );
 }
 
-cmg.services.gallery.CardService.prototype.removeItem = function( collection, card ) {
+cmg.services.gallery.ItemService.prototype.remove = function( container, item ) {
 
-	// Remove Card Item
-	card.remove();
+	var collection = container.find( '.cmt-gallery-item-collection' );
+
+	// Add at first
+	switch( container.attr( 'ldata-layout' ) ) {
+
+		case 'cmt-gallery': {
+
+			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'ldata-id' ) ) );
+
+			break;
+		}
+		default: {
+
+			item.remove();
+		}
+	}
 }
 
 // == Direct Calls ========================
