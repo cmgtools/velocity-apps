@@ -12,6 +12,37 @@ jQuery( document ).ready( function() {
 	app.getService( 'model' ).initListeners();
 });
 
+// == UI Guide ============================
+
+/*
+// An independent component to perform CRUD operations of models.
+
+.cmt-model-crud {
+
+	.cmt-model-add {
+		// Trigger to show the address form
+	}
+
+	.cmt-model-form {
+		// The form container to add/update model
+
+		.cmt-model-close {
+			// Hides the add/update form
+		}
+	}
+
+	.cmt-model-collection {
+		// Collection of existing models
+
+		.cmt-model {
+			// Renders all the models either using PHP or viewTemplate by making call to get models and iterating the result set
+			// Renders the model using viewTemplate after adding an model
+			// Refresh and partial render the model using refreshTemplate after updating an model
+		}
+	}
+}
+*/
+
 // == Model Service =======================
 
 cmg.core.services.ModelService = function() {
@@ -28,12 +59,14 @@ cmg.core.services.ModelService.prototype.initListeners = function() {
 
 	var self = this;
 
-	if( jQuery( '.cmt-model-add' ).length == 0 ) {
+	var triggers = jQuery( '.cmt-model-add' );
+
+	if( triggers.length == 0 ) {
 
 		return;
 	}
 
-	jQuery( '.cmt-model-add' ).click( function() {
+	triggers.click( function() {
 
 		var container = jQuery( this ).closest( '.cmt-model-crud' );
 
@@ -50,23 +83,26 @@ cmg.core.services.ModelService.prototype.initAddForm = function( container ) {
 
 	var form = container.find( '.cmt-model-form' );
 
+	// Hide View
 	form.hide();
 
+	// Append View
 	form.html( output );
 
-	form.fadeIn( 'slow' );
-
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'base', form );
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
-	// Init Form Elements
-	form.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
+	// Init Select
+	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
 
 	// Init Listeners
 	form.find( '.cmt-model-close' ).click( function() {
 
 		form.fadeOut( 'fast' );
 	});
+
+	// Show View
+	form.fadeIn( 'slow' );
 }
 
 cmg.core.services.ModelService.prototype.initUpdateForm = function( container, model, data ) {
@@ -78,23 +114,26 @@ cmg.core.services.ModelService.prototype.initUpdateForm = function( container, m
 
 	var form = container.find( '.cmt-model-form' );
 
+	// Hide View
 	form.hide();
 
+	// Append View
 	form.html( output );
 
-	form.fadeIn( 'slow' );
-
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'base', form );
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
-	// Init Form Elements
-	form.find( '.cmt-select' ).cmtSelect( { iconHtml: '<span class="cmti cmti-chevron-down"></span>' } );
+	// Init Select
+	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
 
 	// Init Listeners
 	form.find( '.cmt-model-close' ).click( function() {
 
 		form.fadeOut( 'fast' );
 	});
+
+	// Show View
+	form.fadeIn( 'slow' );
 }
 
 cmg.core.services.ModelService.prototype.add = function( container, data ) {
@@ -107,17 +146,15 @@ cmg.core.services.ModelService.prototype.add = function( container, data ) {
 	// Add at first
 	collection.prepend( output );
 
-	var model	= collection.find( '.cmt-model' ).first();
-	var actions	= model.find( '.cmt-actions' );
+	var model = collection.find( '.cmt-model' ).first();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'base', model );
+	cmt.api.utils.request.registerTargetApp( 'core', model );
 
-	// Actions
-	actions.cmtActions();
-	actions.find( '.cmt-auto-hide' ).cmtAutoHide();
+	// Init Actions
+	cmt.utils.ui.initActionsElement( model.find( '.cmt-actions' ) );
 
-	// Clear Form
+	// Hide Form
 	container.find( '.cmt-model-form' ).slideUp( 'slow' );
 }
 
@@ -130,18 +167,18 @@ cmg.core.services.ModelService.prototype.refresh = function( container, model, d
 	model.find( '.cmt-model-header .title' ).html( data.title );
 	model.find( '.cmt-model-data' ).replaceWith( output );
 
-	// Clear Form
+	// Hide Form
 	container.find( '.cmt-model-form' ).slideUp( 'slow' );
 }
 
 cmg.core.services.ModelService.prototype.remove = function( container, model ) {
 
-	// Remove Actions
 	var actions = model.find( '.cmt-actions' );
 
+	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'data-id' );
+		var index = actions.attr( 'ldata-id' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -162,9 +199,9 @@ cmg.core.services.ModelService.prototype.findContainer = function( requestElemen
 
 		if( listData.length == 1 ) {
 
-			var identifier	= listData.attr( 'data-id' );
+			var identifier	= listData.attr( 'ldata-id' );
 			var list		= jQuery( '#actions-list-' + identifier );
-			
+
 			container = list.closest( '.cmt-model-crud' );
 		}
 	}

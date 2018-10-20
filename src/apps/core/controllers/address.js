@@ -22,8 +22,11 @@ cmg.core.controllers.AddressController.inherits( cmt.api.controllers.RequestCont
 
 cmg.core.controllers.AddressController.prototype.getActionSuccess = function( requestElement, response ) {
 
-	var container	= this.modelService.findContainer( requestElement );	
+	var container	= this.modelService.findContainer( requestElement );
 	var address		= requestElement.closest( '.cmt-address' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
 
 	// Show Update Form
 	this.modelService.initUpdateForm( container, address, response.data );
@@ -49,6 +52,9 @@ cmg.core.controllers.AddressController.prototype.deleteActionSuccess = function(
 
 	var container	= this.modelService.findContainer( requestElement );
 	var address		= container.find( '.cmt-address[data-id=' + response.data.cid + ']' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
 
 	this.modelService.remove( container, address );
 };

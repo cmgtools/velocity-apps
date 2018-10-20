@@ -11,7 +11,12 @@ jQuery( document ).ready( function() {
 
 // == File Controller =====================
 
-cmg.core.controllers.FileController = function() {};
+cmg.core.controllers.FileController = function() {
+
+	this.app = cmt.api.root.getApplication( 'core' );
+
+	this.modelService = this.app.getService( 'file' );
+};
 
 cmg.core.controllers.FileController.inherits( cmt.api.controllers.RequestController );
 
@@ -25,40 +30,18 @@ cmg.core.controllers.FileController.prototype.assignActionSuccess = function( re
 
 cmg.core.controllers.FileController.prototype.clearActionSuccess = function( requestElement, response ) {
 
-	var uploader	= requestElement.closest( '.file-uploader' );
-	var type		= uploader.attr( 'type' );
+	var uploader = requestElement.closest( '.file-uploader' );
 
-	// Update Uploader
-	switch( type ) {
-		
-		case 'image': {
-			
-			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-image"></i>' );
-			
-			break;
-		}
-		case 'video': {
-			
-			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-video"></i>' );
-			
-			break;
-		}
-		case 'compressed': {
+	// Show Update Form
+	this.modelService.clear( uploader );
+};
 
-			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-archive"></i>' );
-			
-			break;
-		}
-		default: {
-			
-			uploader.find( '.file-wrap .file-data' ).html( '<i class="icon cmti cmti-5x cmti-file"></i>' );
-			
-			break;
-		}
-	}
+cmg.core.controllers.FileController.prototype.clearActionFailure = function( requestElement, response ) {
 
-	uploader.find( '.file-clear' ).hide();
-	uploader.find( '.post-action' ).hide();
+	var uploader = requestElement.closest( '.file-uploader' );
+
+	// Show Update Form
+	this.modelService.clear( uploader );
 };
 
 // == Direct Calls ========================

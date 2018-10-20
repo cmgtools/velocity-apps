@@ -69,7 +69,7 @@ jQuery( document ).ready( function() {
 		.cmt-address {
 			// Renders all the addresses either using PHP or viewTemplate by making call to get addresses and iterating the result set
 			// Renders the address using viewTemplate after adding an address
-			// Refresh and partial render the address using refreshTemplate after adding an address
+			// Refresh and partial render the address using refreshTemplate after updating an address
 		}
 	}
 }
@@ -91,13 +91,15 @@ cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
 cmg.core.services.AddressService.prototype.initListeners = function() {
 
 	var self = this;
+	
+	var triggers = jQuery( '.cmt-address-add' );
 
-	if( jQuery( '.cmt-address-add' ).length == 0 ) {
+	if( triggers.length == 0 ) {
 
 		return;
 	}
 
-	jQuery( '.cmt-address-add' ).click( function() {
+	triggers.click( function() {
 
 		var container = jQuery( this ).closest( '.cmt-address-crud' );
 
@@ -120,6 +122,9 @@ cmg.core.services.AddressService.prototype.initAddForm = function( container ) {
 	// Append View
 	form.html( output );
 
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', form );
+
 	// Init Select
 	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
 
@@ -134,9 +139,6 @@ cmg.core.services.AddressService.prototype.initAddForm = function( container ) {
 
 	// City Listener
 	this.clearCity( form );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'core', form );
 
 	// Show View
 	form.fadeIn( 'slow' );
@@ -156,6 +158,9 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 
 	// Append View
 	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
 	// Custom Select
 	var country		= form.find( '.cmt-location-country' );
@@ -189,9 +194,6 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 	// City Listener
 	this.clearCity( form );
 
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'core', form );
-
 	// Show View
 	form.fadeIn( 'slow' );
 
@@ -213,14 +215,14 @@ cmg.core.services.AddressService.prototype.add = function( container, data ) {
 
 	var address = collection.find( '.cmt-address' ).first();
 
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', address );
+
 	// Init Actions
 	cmt.utils.ui.initActionsElement( address.find( '.cmt-actions' ) );
 
 	// Hide Form
 	container.find( '.cmt-address-form' ).slideUp( 'slow' );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'core', address );
 }
 
 cmg.core.services.AddressService.prototype.refresh = function( container, address, data ) {
@@ -238,12 +240,12 @@ cmg.core.services.AddressService.prototype.refresh = function( container, addres
 
 cmg.core.services.AddressService.prototype.remove = function( container, address ) {
 
-	// Remove Actions
 	var actions = address.find( '.cmt-actions' );
-
+	
+	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'data-id' );
+		var index = actions.attr( 'ldata-id' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -264,14 +266,14 @@ cmg.core.services.AddressService.prototype.findContainer = function( requestElem
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'data-id' );
+			var identifier = listData.attr( 'ldata-id' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
 			container = list.closest( '.cmt-address-crud' );
 		}
 	}
-	
+
 	return container;
 }
 
