@@ -6,10 +6,10 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.registerApplication( 'data', 'cmt.api.Application', { basePath: ajaxUrl } );
 
 	// Map Controllers
-	app.mapController( 'custom', 'cmg.controllers.data.CustomController' );
+	app.mapController( 'custom', 'cmg.data.controllers.CustomController' );
 
 	// Map Services
-	app.mapService( 'custom', 'cmg.services.data.CustomService' );
+	app.mapService( 'custom', 'cmg.data.services.CustomService' );
 
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=data]' ) );
@@ -18,26 +18,26 @@ jQuery( document ).ready( function() {
 	app.getService( 'custom' ).initListeners();
 });
 
-// == Controller Namespace ================
+// == App Namespace =======================
 
 var cmg = cmg || {};
 
-cmg.controllers = cmg.controllers || {};
+cmg.data = cmg.data || {};
 
-cmg.controllers.data = cmg.controllers.data || {};
+// == Controller Namespace ================
+
+cmg.data.controllers = cmg.data.controllers || {};
 
 // == Service Namespace ===================
 
-cmg.services = cmg.services || {};
-
-cmg.services.data = cmg.services.data || {};
+cmg.data.services = cmg.data.services || {};
 
 // == UI Guide ============================
 
 /*
 // An independent component to perform CRUD operations of Data JSON.
 
-.cmt-data-crud {
+.cmt-data-custom-crud {
 
 	.cmt-data-custom-add {
 		// Trigger to show the address form
@@ -54,23 +54,23 @@ cmg.services.data = cmg.services.data || {};
 
 // == Custom Controller ===================
 
-cmg.controllers.data.CustomController = function() {
+cmg.data.controllers.CustomController = function() {
 
 	this.app = cmt.api.root.getApplication( 'data' );
 
 	this.modelService = this.app.getService( 'custom' );
 };
 
-cmg.controllers.data.CustomController.inherits( cmt.api.controllers.RequestController );
+cmg.data.controllers.CustomController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.data.CustomController.prototype.addActionPre = function( requestElement ) {
+cmg.data.controllers.CustomController.prototype.addActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-custom' );
 
 	return true;
 }
 
-cmg.controllers.data.CustomController.prototype.addActionSuccess = function( requestElement, response ) {
+cmg.data.controllers.CustomController.prototype.addActionSuccess = function( requestElement, response ) {
 	
 	var container	= this.modelService.findContainer( requestElement );
 	var custom		= requestElement.closest( '.cmt-data-custom' );
@@ -82,14 +82,14 @@ cmg.controllers.data.CustomController.prototype.addActionSuccess = function( req
 	this.modelService.refresh( container, custom, response.data );
 }
 
-cmg.controllers.data.CustomController.prototype.updateActionPre = function( requestElement ) {
+cmg.data.controllers.CustomController.prototype.updateActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-custom' );
 
 	return true;
 }
 
-cmg.controllers.data.CustomController.prototype.updateActionSuccess = function( requestElement, response ) {
+cmg.data.controllers.CustomController.prototype.updateActionSuccess = function( requestElement, response ) {
 	
 	var container	= this.modelService.findContainer( requestElement );
 	var custom		= requestElement.closest( '.cmt-data-custom' );
@@ -101,14 +101,14 @@ cmg.controllers.data.CustomController.prototype.updateActionSuccess = function( 
 	this.modelService.refresh( container, custom, response.data );
 }
 
-cmg.controllers.data.CustomController.prototype.deleteActionPre = function( requestElement ) {
+cmg.data.controllers.CustomController.prototype.deleteActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-custom' );
 
 	return true;
 }
 
-cmg.controllers.data.CustomController.prototype.deleteActionSuccess = function( requestElement, response ) {
+cmg.data.controllers.CustomController.prototype.deleteActionSuccess = function( requestElement, response ) {
 	
 	var container	= this.modelService.findContainer( requestElement );
 	var custom		= requestElement.closest( '.cmt-data-custom' );
@@ -122,16 +122,16 @@ cmg.controllers.data.CustomController.prototype.deleteActionSuccess = function( 
 
 // == Custom Service ======================
 
-cmg.services.data.CustomService = function() {
+cmg.data.services.CustomService = function() {
 
 	// Default Handlebar Templates
 	this.addTemplate		= 'addCustomDataTemplate';
 	this.refreshTemplate	= 'refreshCustomDataTemplate';
 };
 
-cmg.services.data.CustomService.inherits( cmt.api.services.BaseService );
+cmg.data.services.CustomService.inherits( cmt.api.services.BaseService );
 
-cmg.services.data.CustomService.prototype.initListeners = function() {
+cmg.data.services.CustomService.prototype.initListeners = function() {
 
 	var self = this;
 	
@@ -144,13 +144,13 @@ cmg.services.data.CustomService.prototype.initListeners = function() {
 
 	triggers.click( function() {
 
-		var container = jQuery( this ).closest( '.cmt-data-crud' );
+		var container = jQuery( this ).closest( '.cmt-data-custom-crud' );
 
 		self.initAddForm( container );
 	});
 }
 
-cmg.services.data.CustomService.prototype.initAddForm = function( container ) {
+cmg.data.services.CustomService.prototype.initAddForm = function( container ) {
 
 	var key = Math.random().toString( 36 ).substring( 2, 15 ) + Math.random().toString( 36 ).substring( 2, 15 );
 
@@ -173,7 +173,7 @@ cmg.services.data.CustomService.prototype.initAddForm = function( container ) {
 	});
 }
 
-cmg.services.data.CustomService.prototype.refresh = function( container, custom, data ) {
+cmg.data.services.CustomService.prototype.refresh = function( container, custom, data ) {
 
 	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -185,7 +185,7 @@ cmg.services.data.CustomService.prototype.refresh = function( container, custom,
 	cmt.api.utils.request.registerTargetApp( 'data', custom );
 }
 
-cmg.services.data.CustomService.prototype.remove = function( container, custom ) {
+cmg.data.services.CustomService.prototype.remove = function( container, custom ) {
 
 	var actions = custom.find( '.cmt-actions' );
 	
@@ -202,9 +202,9 @@ cmg.services.data.CustomService.prototype.remove = function( container, custom )
 	custom.remove();
 }
 
-cmg.services.data.CustomService.prototype.findContainer = function( requestElement ) {
+cmg.data.services.CustomService.prototype.findContainer = function( requestElement ) {
 
-	var container = requestElement.closest( '.cmt-data-crud' );
+	var container = requestElement.closest( '.cmt-data-custom-crud' );
 
 	// Find in Actions
 	if( container.length == 0 ) {
@@ -217,7 +217,7 @@ cmg.services.data.CustomService.prototype.findContainer = function( requestEleme
 
 			var list = jQuery( '#actions-list-' + identifier );
 
-			container = list.closest( '.cmt-data-crud' );
+			container = list.closest( '.cmt-data-custom-crud' );
 		}
 	}
 

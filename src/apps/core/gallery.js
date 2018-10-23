@@ -58,6 +58,14 @@ cmg.services.gallery = cmg.services.gallery || {};
 			// Renders all the models either using PHP or viewTemplate by making call to get models and iterating the result set
 			// Renders the model using viewTemplate after adding an model
 			// Refresh and partial render the model using refreshTemplate after updating an model
+
+			.cmt-gallery-item-header {
+				// Header
+			}
+
+			.cmt-gallery-item-data {
+				// Data
+			}
 		}
 	}
 }

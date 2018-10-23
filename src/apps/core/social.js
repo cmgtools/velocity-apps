@@ -3,141 +3,214 @@
 jQuery( document ).ready( function() {
 
 	// Register App
-	var app	= cmt.api.root.registerApplication( 'social', 'cmt.api.Application', { basePath: ajaxUrl } );
+	var app	= cmt.api.root.getApplication( 'data' );
 
 	// Map Controllers
-	app.mapController( 'link', 'cmg.controllers.social.LinkController' );
+	app.mapController( 'social', 'cmg.data.controllers.SocialController' );
 
 	// Map Services
-	app.mapService( 'link', 'cmg.services.social.LinkService' );
+	app.mapService( 'social', 'cmg.data.services.SocialService' );
 
-	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=social]' ) );
-	
 	// Event Listeners
-	app.getService( 'link' ).initListeners();
+	app.getService( 'social' ).initListeners();
 });
 
-// == Controller Namespace ================
+// == UI Guide ============================
 
-var cmg = cmg || {};
+/*
+// An independent component to perform CRUD operations of Data JSON.
 
-cmg.controllers = cmg.controllers || {};
+.cmt-data-social-crud {
+	
+	.cmt-data-social-options {
+		// Option Chooser
+	}
 
-cmg.controllers.social = cmg.controllers.social || {};
+	.cmt-data-social-add {
+		// Trigger to show the add/update form
+	}
 
-// == Service Namespace ===================
+	.cmt-data-social-collection {
 
-cmg.services = cmg.services || {};
+		.cmt-data-social {
 
-cmg.services.social = cmg.services.social || {};
+		}
+	}
+}
+ */
 
-// == Link Controller =====================
+// == Social Controller ===================
 
-cmg.controllers.social.LinkController = function() {};
+cmg.data.controllers.SocialController = function() {
 
-cmg.controllers.social.LinkController.inherits( cmt.api.controllers.RequestController );
+	this.app = cmt.api.root.getApplication( 'data' );
 
-cmg.controllers.social.LinkController.prototype.addActionPre = function( requestElement ) {
+	this.modelService = this.app.getService( 'social' );
+};
 
-	this.requestForm = requestElement.closest( '.social-link' );
+cmg.data.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
+
+cmg.data.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.controllers.social.LinkController.prototype.addActionSuccess = function( requestElement, response ) {
+cmg.data.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
 	
-	var linkService = cmt.api.root.getApplication( 'social' ).getService( 'link' );
+	var container	= this.modelService.findContainer( requestElement );
+	var social		= requestElement.closest( '.cmt-data-social' );
 
 	// Unset Form
 	this.requestForm = null;
 
-	// Refresh Link
-	linkService.refresh( requestElement.closest( '.social-link' ), response.data );
+	// Refresh Data
+	this.modelService.refresh( container, social, response.data );
 }
 
-cmg.controllers.social.LinkController.prototype.updateActionPre = function( requestElement ) {
+cmg.data.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
 
-	this.requestForm = requestElement.closest( '.social-link' );
+	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.controllers.social.LinkController.prototype.updateActionSuccess = function( requestElement, response ) {
+cmg.data.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
 	
-	var linkService = cmt.api.root.getApplication( 'social' ).getService( 'link' );
+	var container	= this.modelService.findContainer( requestElement );
+	var social		= requestElement.closest( '.cmt-data-social' );
 
 	// Unset Form
 	this.requestForm = null;
 
-	// Refresh Link
-	linkService.refresh( requestElement.closest( '.social-link' ), response.data );
+	// Refresh Data
+	this.modelService.refresh( container, social, response.data );
 }
 
-cmg.controllers.social.LinkController.prototype.deleteActionPre = function( requestElement ) {
+cmg.data.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
 
-	this.requestForm = requestElement.closest( '.social-link' );
+	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.controllers.social.LinkController.prototype.deleteActionSuccess = function( requestElement, response ) {
+cmg.data.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
+	
+	var container	= this.modelService.findContainer( requestElement );
+	var social		= requestElement.closest( '.cmt-data-social' );
 
-	requestElement.closest( '.social-link' ).remove();
+	// Unset Form
+	this.requestForm = null;
+
+	// Remove Data
+	this.modelService.remove( container, social );
 }
 
-// == Link Service ========================
+// == Social Service ======================
 
-cmg.services.social.LinkService = function() {};
+cmg.data.services.SocialService = function() {
 
-cmg.services.social.LinkService.inherits( cmt.api.services.BaseService );
+	// Default Handlebar Templates
+	this.addTemplate		= 'addSocialDataTemplate';
+	this.refreshTemplate	= 'refreshSocialDataTemplate';
+};
 
-cmg.services.social.LinkService.prototype.initListeners = function() {
-	
+cmg.data.services.SocialService.inherits( cmt.api.services.BaseService );
+
+cmg.data.services.SocialService.prototype.initListeners = function() {
+
 	var self = this;
+	
+	var triggers = jQuery( '.cmt-data-social-add' );
 
-	jQuery( '#btn-add-social' ).click( function() {
+	if( triggers.length == 0 ) {
 
-		var select	= jQuery( '#select-link' );
-		var icon	= select.val();
-		var sns		= jQuery( '#select-link>option:selected' ).text();
-		var target	= jQuery( this ).closest( '.data-crud-social' );
+		return;
+	}
 
-		self.add( target, sns, icon );
+	triggers.click( function() {
+
+		var container = jQuery( this ).closest( '.cmt-data-social-crud' );
+
+		self.initAddForm( container );
 	});
 }
 
-cmg.services.social.LinkService.prototype.add = function( target, sns, icon ) {
+cmg.data.services.SocialService.prototype.initAddForm = function( container ) {
 
-	var source 		= document.getElementById( 'addSocialTemplate' ).innerHTML;
+	var select	= container.find( '.cmt-data-social-options' );
+	var icon	= select.val();
+	var sns		= select.find( 'option:selected' ).text();
+
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( { sns: sns, icon: icon } );
 
-	target.find( '.social-links' ).append( output );
+	container.find( '.cmt-data-social-collection' ).append( output );
 
-	// Find Link
-	var link = target.find( '.social-link' ).last();
+	// Find data
+	var social = container.find( '.cmt-data-social' ).last();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'social', link );
+	cmt.api.utils.request.registerTargetApp( 'data', social );
 
 	// Init Listeners
-	link.find( '.btn-remove' ).click( function() {
+	social.find( '.btn-remove' ).click( function() {
 
-		link.remove();
+		social.remove();
 	});
 }
 
-cmg.services.social.LinkService.prototype.refresh = function( link, data ) {
+cmg.data.services.SocialService.prototype.refresh = function( container, social, data ) {
 
-	var source 		= document.getElementById( 'refreshSocialTemplate' ).innerHTML;
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
-	var output 		= template( { data: data } );
+	var output 		= template( data );
 
-	link.html( output );
+	social.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'social', link );
+	cmt.api.utils.request.registerTargetApp( 'data', social );
+}
+
+cmg.data.services.SocialService.prototype.remove = function( container, social ) {
+
+	var actions = social.find( '.cmt-actions' );
+
+	// Remove Actions
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-id' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Data
+	social.remove();
+}
+
+cmg.data.services.SocialService.prototype.findContainer = function( requestElement ) {
+
+	var container = requestElement.closest( '.cmt-data-social-crud' );
+
+	// Find in Actions
+	if( container.length == 0 ) {
+
+		var listData = requestElement.closest( '.actions-list-data' );
+
+		if( listData.length == 1 ) {
+
+			var identifier = listData.attr( 'ldata-id' );
+
+			var list = jQuery( '#actions-list-' + identifier );
+
+			container = list.closest( '.cmt-data-social-crud' );
+		}
+	}
+
+	return container;
 }
 
 // == Direct Calls ========================
