@@ -15,9 +15,11 @@ module.exports = function( grunt ) {
 			            '\n */\n\n'
       		},
       		dist: {
-        		src: [	'src/core/**/*.js',
-						'src/notify/**/*.js'
-					],
+        		src: [	
+					'src/apps/core/base.js', 'src/apps/core/controllers/**/*.js', 'src/apps/core/services/**/*.js', 'src/apps/core/**/*.js',
+					'src/apps/forms/base.js', 'src/apps/forms/controllers/**/*.js', 'src/apps/forms/**/*.js',
+					'src/apps/notify/base.js', 'src/apps/notify/controllers/**/*.js', 'src/apps/notify/**/*.js',
+				],
         		dest: 'dist/velocity-apps.js'
       		}
     	},
