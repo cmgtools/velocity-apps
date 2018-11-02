@@ -6,30 +6,30 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Services
-	app.mapService( 'address', 'cmg.core.services.AddressService' );
+	app.mapService( 'location', 'cmg.core.services.LocationService' );
 
 	// Event Listeners
-	app.getService( 'address' ).initListeners();
+	app.getService( 'location' ).initListeners();
 
-	app.getService( 'address' ).refreshGoogleMap( jQuery( '.frm-address' ) );
+	app.getService( 'location' ).refreshGoogleMap( jQuery( '.frm-location' ) );
 });
 
 // == UI Guide ============================
 
 /*
-// An independent component to perform CRUD operations using Address and ModelAddress models.
+// An independent component to perform CRUD operations using Location and ModelLocation models.
 
-.cmt-address-crud {
+.cmt-location-crud {
 
-	.cmt-address-add {
-		// Trigger to show the address form
+	.cmt-location-add {
+		// Trigger to show the location form
 	}
 
-	.cmt-address-form {
-		// The form container to add/update address
+	.cmt-location-form {
+		// The form container to add/update location
 		// Render the from available in addTemplate and updateTemplate
 
-		.cmt-address-close {
+		.cmt-location-close {
 			// Hides the add/update form
 		}
 
@@ -54,22 +54,20 @@ jQuery( document ).ready( function() {
 		}
 
 		.cmt-location-ll-picker {
-			.line1 { }
-			.line2 { }
-			.line3 { }
+			.title { }
 			.city { }
 			.zip { }
 			.search-box { }
 		}
 	}
 
-	.cmt-address-collection {
-		// Collection of existing addresses
+	.cmt-location-collection {
+		// Collection of existing locations
 
-		.cmt-address {
-			// Renders all the addresses either using PHP or viewTemplate by making call to get addresses and iterating the result set
-			// Renders the address using viewTemplate after adding an address
-			// Refresh and partial render the address using refreshTemplate after updating an address
+		.cmt-location {
+			// Renders all the locations either using PHP or viewTemplate by making call to get locations and iterating the result set
+			// Renders the location using viewTemplate after adding an location
+			// Refresh and partial render the location using refreshTemplate after updating an location
 		}
 	}
 }
@@ -77,22 +75,22 @@ jQuery( document ).ready( function() {
 
 // == Address Service =====================
 
-cmg.core.services.AddressService = function() {
+cmg.core.services.LocationService = function() {
 
 	// Default Handlebar Templates
-	this.addTemplate		= 'addAddressTemplate';
-	this.updateTemplate		= 'updateAddressTemplate';
-	this.viewTemplate		= 'addressViewTemplate';
-	this.refreshTemplate	= 'addressRefreshTemplate';
+	this.addTemplate		= 'addLocationTemplate';
+	this.updateTemplate		= 'updateLocationTemplate';
+	this.viewTemplate		= 'locationViewTemplate';
+	this.refreshTemplate	= 'locationRefreshTemplate';
 };
 
-cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
+cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
 
-cmg.core.services.AddressService.prototype.initListeners = function() {
+cmg.core.services.LocationService.prototype.initListeners = function() {
 
 	var self = this;
 	
-	var triggers = jQuery( '.cmt-address-add' );
+	var triggers = jQuery( '.cmt-location-add' );
 
 	if( triggers.length == 0 ) {
 
@@ -101,20 +99,20 @@ cmg.core.services.AddressService.prototype.initListeners = function() {
 
 	triggers.click( function() {
 
-		var container = jQuery( this ).closest( '.cmt-address-crud' );
+		var container = jQuery( this ).closest( '.cmt-location-crud' );
 
 		self.initAddForm( container );
 	});
 }
 
-cmg.core.services.AddressService.prototype.initAddForm = function( container ) {
+cmg.core.services.LocationService.prototype.initAddForm = function( container ) {
 
 	var source 		= document.getElementById( this.addTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var data		= { };
 	var output 		= template( data );
 
-	var form = container.find( '.cmt-address-form' );
+	var form = container.find( '.cmt-location-form' );
 
 	// Hide View
 	form.hide();
@@ -129,7 +127,7 @@ cmg.core.services.AddressService.prototype.initAddForm = function( container ) {
 	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
 
 	// Init Listeners
-	form.find( '.cmt-address-close' ).click( function() {
+	form.find( '.cmt-location-close' ).click( function() {
 
 		form.fadeOut( 'fast' );
 	});
@@ -144,14 +142,14 @@ cmg.core.services.AddressService.prototype.initAddForm = function( container ) {
 	form.fadeIn( 'slow' );
 }
 
-cmg.core.services.AddressService.prototype.initUpdateForm = function( container, address, data ) {
+cmg.core.services.LocationService.prototype.initUpdateForm = function( container, location, data ) {
 
 	var self		= this;
 	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 
-	var form = container.find( '.cmt-address-form' );
+	var form = container.find( '.cmt-location-form' );
 
 	// Hide View
 	form.hide();
@@ -177,13 +175,13 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 		region.val( region.attr( 'rid' ) );
 	}
 
-	form.find( '.cmt-address-type' ).val( data.type );
+	form.find( '.cmt-location-type' ).val( data.type );
 
 	// Init Select
 	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
 
 	// Init Listeners
-	form.find( '.cmt-address-close' ).click( function() {
+	form.find( '.cmt-location-close' ).click( function() {
 
 		form.fadeOut( 'fast' );
 	});
@@ -203,44 +201,44 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 	this.refreshRegions( form, region.attr( 'rid' ) );
 }
 
-cmg.core.services.AddressService.prototype.add = function( container, data ) {
+cmg.core.services.LocationService.prototype.add = function( container, data ) {
 
 	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
-	var collection	= container.find( '.cmt-address-collection' );
+	var collection	= container.find( '.cmt-location-collection' );
 
 	// Add at first
 	collection.prepend( output );
 
-	var address = collection.find( '.cmt-address' ).first();
+	var location = collection.find( '.cmt-location' ).first();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'core', address );
+	cmt.api.utils.request.registerTargetApp( 'core', location );
 
 	// Init Actions
-	cmt.utils.ui.initActionsElement( address.find( '.cmt-actions' ) );
+	cmt.utils.ui.initActionsElement( location.find( '.cmt-actions' ) );
 
 	// Hide Form
-	container.find( '.cmt-address-form' ).slideUp( 'slow' );
+	container.find( '.cmt-location-form' ).slideUp( 'slow' );
 }
 
-cmg.core.services.AddressService.prototype.refresh = function( container, address, data ) {
+cmg.core.services.LocationService.prototype.refresh = function( container, location, data ) {
 
 	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 
-	address.find( '.cmt-address-header .title' ).html( data.title );
-	address.find( '.cmt-address-data' ).replaceWith( output );
+	location.find( '.cmt-location-header .title' ).html( data.title );
+	location.find( '.cmt-location-data' ).replaceWith( output );
 
 	// Hide Form
-	container.find( '.cmt-address-form' ).slideUp( 'slow' );
+	container.find( '.cmt-location-form' ).slideUp( 'slow' );
 }
 
-cmg.core.services.AddressService.prototype.remove = function( container, address ) {
+cmg.core.services.LocationService.prototype.remove = function( container, location ) {
 
-	var actions = address.find( '.cmt-actions' );
+	var actions = location.find( '.cmt-actions' );
 	
 	// Remove Actions
 	if( actions.length > 0 ) {
@@ -252,12 +250,12 @@ cmg.core.services.AddressService.prototype.remove = function( container, address
 	}
 
 	// Remove Item
-	address.remove();
+	location.remove();
 }
 
-cmg.core.services.AddressService.prototype.findContainer = function( requestElement ) {
+cmg.core.services.LocationService.prototype.findContainer = function( requestElement ) {
 
-	var container = requestElement.closest( '.cmt-address-crud' );
+	var container = requestElement.closest( '.cmt-location-crud' );
 
 	// Find in Actions
 	if( container.length == 0 ) {
@@ -270,28 +268,28 @@ cmg.core.services.AddressService.prototype.findContainer = function( requestElem
 
 			var list = jQuery( '#actions-list-' + identifier );
 
-			container = list.closest( '.cmt-address-crud' );
+			container = list.closest( '.cmt-location-crud' );
 		}
 	}
 
 	return container;
 }
 
-cmg.core.services.AddressService.prototype.refreshProvinces = function( target, provinceId ) {
+cmg.core.services.LocationService.prototype.refreshProvinces = function( target, provinceId ) {
 
 	target.find( '.cmt-location-country' ).attr( 'data-province', provinceId );
 
 	target.find( '.cmt-location-country' ).closest( '.cmt-location-countries' ).find( '.cmt-click' ).trigger( 'click' );
 }
 
-cmg.core.services.AddressService.prototype.refreshRegions = function( target, regionId ) {
+cmg.core.services.LocationService.prototype.refreshRegions = function( target, regionId ) {
 
 	target.find( '.cmt-location-province' ).attr( 'data-region', regionId );
 
 	target.find( '.cmt-location-province' ).closest( '.cmt-location-provinces' ).find( '.cmt-click' ).trigger( 'click' );
 }
 
-cmg.core.services.AddressService.prototype.clearCity = function( target ) {
+cmg.core.services.LocationService.prototype.clearCity = function( target ) {
 
 	target.find( '.cmt-location-province, .cmt-location-region' ).change( function() {
 
@@ -302,31 +300,30 @@ cmg.core.services.AddressService.prototype.clearCity = function( target ) {
 	});
 }
 
-cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target ) {
+cmg.core.services.LocationService.prototype.refreshGoogleMap = function( target ) {
 
 	// CMT JS - Google Map
 	jQuery( target ).find( '.lat-long-picker' ).latLongPicker();
 
 	// Address Map
 	jQuery( target ).find( '.cmt-location-ll-picker .title, .cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
+		
+		var title		= jQuery( '.cmt-location-ll-picker .title' );
+		var location	= '';
 
-		var line1 	= jQuery( '.cmt-location-ll-picker .line1' );
-		var line2 	= jQuery( '.cmt-location-ll-picker .line2' );
-		var address	= '';
+		if( title.length > 0 ) {
 
-		if( line1.length > 0 ) {
-
-			address	= line1.val() + ',' + line2.val();
+			location = title.val();
 		}
 
 		var city	= jQuery( '.cmt-location-ll-picker .city' ).val();
 		var zip		= jQuery( '.cmt-location-ll-picker .zip' ).val();
 
-		address += address + ',' + city + ',' + zip;
+		location += location + ',' + city + ',' + zip;
 
-		if( address.length > 10 ) {
+		if( location.length > 10 ) {
 
-			jQuery( '.cmt-location-ll-picker .search-box' ).val( address ).trigger( 'change' );
+			jQuery( '.cmt-location-ll-picker .search-box' ).val( location ).trigger( 'change' );
 		}
 	});
 }
