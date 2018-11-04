@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2018-11-02
+ * Velocity Apps - v1.0.0-alpha1 - 2018-11-04
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1151,7 +1151,7 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 		region.val( region.attr( 'rid' ) );
 	}
 
-	form.find( '.cmt-address-type' ).val( data.type );
+	form.find( '.cmt-address-type' ).val( data.ctype );
 
 	// Init Select
 	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
@@ -1282,21 +1282,13 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 	jQuery( target ).find( '.lat-long-picker' ).latLongPicker();
 
 	// Address Map
-	jQuery( target ).find( '.cmt-location-ll-picker .title, .cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
+	jQuery( target ).find( '.cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
 
-		var line1 	= jQuery( '.cmt-location-ll-picker .line1' );
-		var line2 	= jQuery( '.cmt-location-ll-picker .line2' );
-		var address	= '';
-
-		if( line1.length > 0 ) {
-
-			address	= line1.val() + ',' + line2.val();
-		}
-
-		var city	= jQuery( '.cmt-location-ll-picker .city' ).val();
-		var zip		= jQuery( '.cmt-location-ll-picker .zip' ).val();
-
-		address += address + ',' + city + ',' + zip;
+		var line1 	= jQuery( '.cmt-location-ll-picker .line1' ).val();
+		var line2 	= jQuery( '.cmt-location-ll-picker .line2' ).val();
+		var city 	= jQuery( '.cmt-location-ll-picker .city' ).val();
+		var zip 	= jQuery( '.cmt-location-ll-picker .zip' ).val();
+		var address	= line1 + ',' + line2 + ',' + city + ',' + zip;
 
 		if( address.length > 10 ) {
 
@@ -3623,6 +3615,11 @@ jQuery( document ).ready( function() {
 
 	// Map Controllers
 	app.mapController( 'notification', 'cmg.notify.controllers.NotificationController' );
+
+	if( jQuery('[cmt-app=notify]').length > 0 ) {
+
+		cmt.api.utils.request.triggerDirect( cmt.api.root.getApplication('notify'), 'notification', 'stats', "notify/stats/stats", 'get' );
+	}
 });
 
 // == Notification Controller =============
@@ -3674,6 +3671,128 @@ cmg.notify.controllers.NotificationController.prototype.readActionSuccess = func
 	}
 };
 
+cmg.notify.controllers.NotificationController.prototype.statsActionSuccess = function( response ) {
+
+	var data  = response.data;
+
+	if( data.hasOwnProperty( 'notificationCount' )) {
+
+		jQuery('.count-notification').html( data[ 'notificationCount' ] );
+	}
+
+	if( data.hasOwnProperty( 'remonderCount' )) {
+	
+		jQuery('.count-reminder').html( data[ 'remonderCount' ] );
+	}
+	
+	if( data.hasOwnProperty( 'activityCount' )) {
+
+		jQuery('.count-activity').html( data[ 'activityCount' ] );
+	}
+}
+
+cmg.notify.controllers.NotificationController.prototype.notificationDataActionSuccess = function( requestElement, response ) {
+
+	var data	= response.data;
+	var source 	= document.getElementById( 'notificationData' ).innerHTML;
+	
+	if( data.hasOwnProperty( 'notifications' )) {
+
+		var output = '';
+
+		var template 	= Handlebars.compile( source );
+
+		jQuery.each( data.notifications , function( index, value ) {
+			
+			output +=	template( { data : value, siteUrl: siteUrl } );
+		});
+		
+		
+		if( data.notifications.length > 0 ) {
+		
+			output += "<li class='align align-center'><a href='"+siteUrl+"notify/notification/all'>View All</a></li>";
+			
+		}else {
+			output = "No Data Found";
+		}
+
+		output = "<ul>" + output +"</ul>";
+		
+		jQuery("#popout-notification" ).find( ".popout-content").html( output );
+		
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-notification').find( '[cmt-app=notify]' ) );
+	}
+
+}
+
+cmg.notify.controllers.NotificationController.prototype.reminderDataActionSuccess = function( requestElement, response ) {
+
+	var data	= response.data;
+	var source 	= document.getElementById( 'reminderData' ).innerHTML;
+	
+	if( data.hasOwnProperty( 'reminders' )) {
+
+		var output = '';
+
+		var template 	= Handlebars.compile( source );
+
+		jQuery.each( data.reminders , function( index, value ) {
+			
+			output +=	template( { data : value, siteUrl: siteUrl } );
+		});
+		
+		
+		if( data.reminders.length > 0 ) {
+		
+			output += "<li class='align align-center'><a href='"+siteUrl+"notify/reminder/all'>View All</a></li>";
+			
+		}
+		else {
+			output = "No Data Found";
+		}
+		
+		output = "<ul>" + output +"</ul>";
+		
+		jQuery("#popout-reminder" ).find( ".popout-content").html( output );
+		
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-reminder').find( '[cmt-app=notify]' ) );	
+	}
+
+}
+
+cmg.notify.controllers.NotificationController.prototype.activityDataActionSuccess = function( requestElement, response ) {
+
+	var data = response.data;
+	var source 	= document.getElementById( 'activityData' ).innerHTML;
+
+	if( data.hasOwnProperty( 'activities' )) {
+
+		var output = '';
+
+		var template 	= Handlebars.compile( source );
+
+		jQuery.each( data.activities , function( index, value ) {
+			
+			output +=	template( { data : value, siteUrl: siteUrl } );
+		});
+		
+		
+		if( data.activities.length > 0 ) {
+		
+			output += "<li class='align align-center'><a href='"+siteUrl+"notify/activity/all'>View All</a></li>";
+
+		}else {
+			output = "No Data Found";
+		}
+		
+		output = "<ul>" + output +"</ul>";
+		
+		jQuery("#popout-activity" ).find( ".popout-content").html( output );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-activity').find( '[cmt-app=notify]' ) );	
+	}
+
+}
+
 cmg.notify.controllers.NotificationController.prototype.toggleTrashActionSuccess = function( requestElement, response ) {
 
 	location.reload( true );
@@ -3692,3 +3811,4 @@ cmg.notify.controllers.NotificationController.prototype.deleteActionSuccess = fu
 // == Direct Calls ========================
 
 // == Additional Methods ==================
+
