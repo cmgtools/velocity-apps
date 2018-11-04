@@ -177,7 +177,7 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 		region.val( region.attr( 'rid' ) );
 	}
 
-	form.find( '.cmt-address-type' ).val( data.type );
+	form.find( '.cmt-address-type' ).val( data.ctype );
 
 	// Init Select
 	cmt.utils.ui.initSelectElement( form.find( '.cmt-select' ) );
@@ -308,21 +308,13 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 	jQuery( target ).find( '.lat-long-picker' ).latLongPicker();
 
 	// Address Map
-	jQuery( target ).find( '.cmt-location-ll-picker .title, .cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
+	jQuery( target ).find( '.cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
 
-		var line1 	= jQuery( '.cmt-location-ll-picker .line1' );
-		var line2 	= jQuery( '.cmt-location-ll-picker .line2' );
-		var address	= '';
-
-		if( line1.length > 0 ) {
-
-			address	= line1.val() + ',' + line2.val();
-		}
-
-		var city	= jQuery( '.cmt-location-ll-picker .city' ).val();
-		var zip		= jQuery( '.cmt-location-ll-picker .zip' ).val();
-
-		address += address + ',' + city + ',' + zip;
+		var line1 	= jQuery( '.cmt-location-ll-picker .line1' ).val();
+		var line2 	= jQuery( '.cmt-location-ll-picker .line2' ).val();
+		var city 	= jQuery( '.cmt-location-ll-picker .city' ).val();
+		var zip 	= jQuery( '.cmt-location-ll-picker .zip' ).val();
+		var address	= line1 + ',' + line2 + ',' + city + ',' + zip;
 
 		if( address.length > 10 ) {
 
