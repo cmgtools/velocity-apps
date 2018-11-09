@@ -105,7 +105,7 @@ cmg.controllers.gallery.ItemController.prototype.addActionSuccess = function( re
 cmg.controllers.gallery.ItemController.prototype.updateActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
-	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.id + ']' );
+	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
 
 	this.modelService.refresh( container, item, response.data );
 };
@@ -113,7 +113,7 @@ cmg.controllers.gallery.ItemController.prototype.updateActionSuccess = function(
 cmg.controllers.gallery.ItemController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
-	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.id + ']' );
+	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
 
 	// Hide Actions
 	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
@@ -129,6 +129,8 @@ cmg.services.gallery.ItemService = function() {
 	this.updateTemplate		= 'updateItemTemplate';
 	this.viewTemplate		= 'itemViewTemplate';
 	this.refreshTemplate	= 'itemRefreshTemplate';
+
+	this.hiddenForm = true; // Keep form hidden when not in use
 };
 
 cmg.services.gallery.ItemService.inherits( cmt.api.services.BaseService );
@@ -184,6 +186,8 @@ cmg.services.gallery.ItemService.prototype.initAddForm = function( container ) {
 }
 
 cmg.services.gallery.ItemService.prototype.initUpdateForm = function( container, item, data ) {
+	
+	var self = this;
 
 	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
 	var template	= Handlebars.compile( source );
@@ -209,9 +213,16 @@ cmg.services.gallery.ItemService.prototype.initUpdateForm = function( container,
 	// Init Listeners
 	form.find( '.cmt-gallery-item-close' ).click( function() {
 
-		form.fadeOut( 'fast' );
+		if( self.hiddenForm ) {
+
+			form.fadeOut( 'fast' );
+		}
+		else {
+
+			self.initAddForm( container );
+		}
 	});
-	
+
 	// Show View
 	form.fadeIn( 'slow' );
 }
@@ -223,9 +234,10 @@ cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 	var output 		= template( data );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
 	var item		= null;
+	var layout		= cmt.utils.data.hasAttribute( container, 'ldata-layout' ) ? container.attr( 'ldata-layout' ) : null;
 
 	// Add at first
-	switch( container.attr( 'ldata-layout' ) ) {
+	switch( layout ) {
 
 		case 'cmt-gallery': {
 
@@ -249,9 +261,14 @@ cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 	// Init Actions
 	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );
 
-	// Clear Image and Hide Form
-	container.find( '.cmt-gallery-item-uploader .file-data' ).html( '' );
-	container.find( '.cmt-gallery-item-form' ).slideUp( 'slow' );
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-gallery-item-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
 }
 
 cmg.services.gallery.ItemService.prototype.refresh = function( container, item, data ) {
@@ -263,15 +280,21 @@ cmg.services.gallery.ItemService.prototype.refresh = function( container, item, 
 	item.find( '.cmt-gallery-item-header .title' ).html( data.title );
 	item.find( '.cmt-gallery-item-data' ).replaceWith( output );
 
-	// Clear Image and Hide Form
-	container.find( '.cmt-gallery-item-uploader .file-data' ).html( '' );
-	container.find( '.cmt-gallery-item-form' ).slideUp( 'slow' );
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-gallery-item-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
 }
 
 cmg.services.gallery.ItemService.prototype.remove = function( container, item ) {
 
 	var actions		= item.find( '.cmt-actions' );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
+	var layout		= cmt.utils.data.hasAttribute( container, 'ldata-layout' ) ? container.attr( 'ldata-layout' ) : null;
 
 	// Remove Actions
 	if( actions.length > 0 ) {
@@ -283,7 +306,7 @@ cmg.services.gallery.ItemService.prototype.remove = function( container, item ) 
 	}
 
 	// Remove Item
-	switch( container.attr( 'ldata-layout' ) ) {
+	switch( layout ) {
 
 		case 'cmt-gallery': {
 
