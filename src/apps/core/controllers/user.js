@@ -65,6 +65,75 @@ cmg.core.controllers.UserController.prototype.settingsActionSuccess = function( 
 	// Settings success
 };
 
+cmg.core.controllers.UserController.prototype.autoSearchActionPre = function( requestElement ) {
+
+	var autoFill = requestElement.closest( '.auto-fill' );
+
+	var name = autoFill.find( '.search-name' ).val();
+	var type = autoFill.find( '.search-type' );
+
+	if( name.length <= 0 ) {
+
+		autoFill.find( '.auto-fill-items' ).slideUp();
+		autoFill.find( '.auto-fill-target .target' ).val( '' );
+
+		return false;
+	}
+
+	if( type.length == 1 ) {
+
+		this.requestData = "name=" + name + "&type=" + type.val();
+	}
+	else {
+
+		this.requestData = "name=" + name;
+	}
+
+	return true;
+};
+
+cmg.core.controllers.UserController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+
+	var data			= response.data;
+	var listHtml		= '';
+	var itemList		= requestElement.find( '.auto-fill-items' );
+
+	for( i = 0; i < data.length; i++ ) {
+
+		var obj = data[ i ];
+
+		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + ", " + obj.email + "</li>";
+	}
+
+	if( listHtml.length == 0 ) {
+
+		listHtml = "<li class='auto-fill-message'>No matching results found.</li>";
+
+		itemList.html( listHtml );
+	}
+	else {
+
+		itemList.html( listHtml );
+
+		requestElement.find( '.auto-fill-item' ).click( function() {
+
+			var target	= requestElement.closest( '.auto-fill' ).find( '.auto-fill-target' );
+			var id		= jQuery( this ).attr( 'data-id' );
+			var name	= jQuery( this ).attr( 'data-name' );
+			var email	= jQuery( this ).attr( 'data-email' );
+			var value	= jQuery( this ).html();
+
+			itemList.slideUp();
+
+			// Update Id and Name
+			target.find( '.target' ).val( id );
+			requestElement.find( '.auto-fill-text' ).val( value );
+		});
+	}
+
+	itemList.slideDown();
+};
+
 // == Direct Calls ========================
 
 function setUserData( key, value ) {
