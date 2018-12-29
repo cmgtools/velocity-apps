@@ -22,25 +22,41 @@ cmg.core.controllers.FileController.inherits( cmt.api.controllers.RequestControl
 
 cmg.core.controllers.FileController.prototype.assignActionSuccess = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader = requestElement.closest( '.cmt-file-uploader' );
 
 	// Update Uploader
 	uploader.find( '.post-action' ).hide();
 };
 
+cmg.core.controllers.FileController.prototype.clearActionPre = function( requestElement ) {
+
+	var uploader	= requestElement.closest( '.cmt-file-uploader' );
+	var idElement	= uploader.find( '.id' );
+
+	if( idElement.length > 0 && idElement.val().length > 0 && parseInt( idElement.val() ) > 0 ) {
+	
+		return true;
+	}
+
+	// Clear Form
+	this.modelService.clear( uploader );
+
+	return false;
+};
+
 cmg.core.controllers.FileController.prototype.clearActionSuccess = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader = requestElement.closest( '.cmt-file-uploader' );
 
-	// Show Update Form
+	// Clear Form
 	this.modelService.clear( uploader );
 };
 
 cmg.core.controllers.FileController.prototype.clearActionFailure = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader = requestElement.closest( '.cmt-file-uploader' );
 
-	// Show Update Form
+	// Clear Form
 	this.modelService.clear( uploader );
 };
 

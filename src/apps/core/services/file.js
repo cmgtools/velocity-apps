@@ -48,10 +48,18 @@ cmg.core.services.FileService.prototype.findContainer = function( requestElement
 cmg.core.services.FileService.prototype.clear = function( uploader ) {
 
 	var type = uploader.attr( 'type' );
+	
+	type = uploader.attr( 'directory' ) == 'avatar' ? 'avatar' : type;
 
 	// Update Uploader
 	switch( type ) {
-		
+
+		case 'avatar': {
+
+			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-user"></i>' );
+
+			break;
+		}
 		case 'image': {
 			
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-image"></i>' );
@@ -60,7 +68,7 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 		}
 		case 'video': {
 			
-			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-video"></i>' );
+			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-file-video"></i>' );
 			
 			break;
 		}
@@ -78,6 +86,9 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 		}
 	}
 
+	uploader.find( '.id' ).val( '' );
+	uploader.find( '.change' ).val( '' );
+	uploader.find( '.name' ).val( '' );
 	uploader.find( '.file-clear' ).hide();
 	uploader.find( '.post-action' ).hide();
 }

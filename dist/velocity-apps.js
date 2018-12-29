@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2018-11-28
+ * Velocity Apps - v1.0.0-alpha1 - 2018-12-29
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -482,25 +482,41 @@ cmg.core.controllers.FileController.inherits( cmt.api.controllers.RequestControl
 
 cmg.core.controllers.FileController.prototype.assignActionSuccess = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader = requestElement.closest( '.cmt-file-uploader' );
 
 	// Update Uploader
 	uploader.find( '.post-action' ).hide();
 };
 
+cmg.core.controllers.FileController.prototype.clearActionPre = function( requestElement ) {
+
+	var uploader	= requestElement.closest( '.cmt-file-uploader' );
+	var idElement	= uploader.find( '.id' );
+
+	if( idElement.length > 0 && idElement.val().length > 0 && parseInt( idElement.val() ) > 0 ) {
+	
+		return true;
+	}
+
+	// Clear Form
+	this.modelService.clear( uploader );
+
+	return false;
+};
+
 cmg.core.controllers.FileController.prototype.clearActionSuccess = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader = requestElement.closest( '.cmt-file-uploader' );
 
-	// Show Update Form
+	// Clear Form
 	this.modelService.clear( uploader );
 };
 
 cmg.core.controllers.FileController.prototype.clearActionFailure = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader = requestElement.closest( '.cmt-file-uploader' );
 
-	// Show Update Form
+	// Clear Form
 	this.modelService.clear( uploader );
 };
 
@@ -1419,10 +1435,18 @@ cmg.core.services.FileService.prototype.findContainer = function( requestElement
 cmg.core.services.FileService.prototype.clear = function( uploader ) {
 
 	var type = uploader.attr( 'type' );
+	
+	type = uploader.attr( 'directory' ) == 'avatar' ? 'avatar' : type;
 
 	// Update Uploader
 	switch( type ) {
-		
+
+		case 'avatar': {
+
+			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-user"></i>' );
+
+			break;
+		}
 		case 'image': {
 			
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-image"></i>' );
@@ -1431,7 +1455,7 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 		}
 		case 'video': {
 			
-			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-video"></i>' );
+			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-file-video"></i>' );
 			
 			break;
 		}
@@ -1449,6 +1473,9 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 		}
 	}
 
+	uploader.find( '.id' ).val( '' );
+	uploader.find( '.change' ).val( '' );
+	uploader.find( '.name' ).val( '' );
 	uploader.find( '.file-clear' ).hide();
 	uploader.find( '.post-action' ).hide();
 }
