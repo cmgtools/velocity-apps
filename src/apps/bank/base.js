@@ -3,7 +3,7 @@
 jQuery( document ).ready( function() {
 	
 	// Register App
-	cmt.api.root.registerApplication( 'bank', 'cmt.api.Application', { basePath: ajaxUrl } );
+	var app = cmt.api.root.registerApplication( 'bank', 'cmt.api.Application', { basePath: ajaxUrl } );
 	
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=bank]' ) );
