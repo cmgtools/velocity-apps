@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-03-01
+ * Velocity Apps - v1.0.0-alpha1 - 2019-04-04
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -2406,6 +2406,43 @@ cmg.core.services.UserService.prototype.initListeners = function() {
 
 	// Init User Service
 }
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Register App
+	var app	= cmt.api.root.registerApplication( 'autoload', 'cmt.api.Application', { basePath: ajaxUrl } );
+
+	// Map Controllers
+	app.mapController( 'autoload', 'cmg.core.controllers.AutoloadController' );
+
+	// Register Listeners
+	cmt.api.utils.request.register( app, jQuery( '[cmt-app=autoload]' ) );
+});
+
+// == Controller Namespace ================
+
+// == Autoload Controller =================
+
+cmg.core.controllers.AutoloadController	= function() {};
+
+cmg.core.controllers.AutoloadController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.controllers.AutoloadController.prototype.autoloadActionSuccess = function( requestElement, response ) {
+
+	if( cmt.utils.object.hasProperty( response.data, 'widgetId' ) && cmt.utils.object.hasProperty( response.data, 'widgetHtml' ) ) {
+
+		var widget = jQuery( '#' + response.data.widgetId );
+
+		widget.html( response.data.widgetHtml );
+	}
+};
+
+// == Direct Calls ========================
 
 // == Additional Methods ==================
 
