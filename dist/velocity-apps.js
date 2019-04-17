@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-04-05
+ * Velocity Apps - v1.0.0-alpha1 - 2019-04-17
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1369,15 +1369,30 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 	// Address Map
 	jQuery( target ).find( '.cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
 
+		var location = jQuery( this ).closest( '.frm-address' );
+
+		var country		= location.find( '.cmt-location-country' ).find( ':selected' ).text();
+		var province	= location.find( '.cmt-location-province' ).find( ':selected' ).text();
+
 		var line1 	= jQuery( '.cmt-location-ll-picker .line1' ).val();
 		var line2 	= jQuery( '.cmt-location-ll-picker .line2' ).val();
 		var city 	= jQuery( '.cmt-location-ll-picker .city' ).val();
 		var zip 	= jQuery( '.cmt-location-ll-picker .zip' ).val();
-		var address	= line1 + ',' + line2 + ',' + city + ',' + zip;
 
-		if( address.length > 10 ) {
+		var address	= [];
 
-			jQuery( '.cmt-location-ll-picker .search-box' ).val( address ).trigger( 'change' );
+		line1.length > 0 ? address.push( line1 ) : null;
+		line2.length > 0 ? address.push( line2 ) : null;
+		city.length > 0 ? address.push( city ) : null;
+		country.length > 0 ? address.push( country ) : null;
+		province.length > 0 ? address.push( province ) : null;
+		zip.length > 0 ? address.push( zip ) : null;
+		
+		var addressStr = address.join();
+
+		if( addressStr.length > 10 ) {
+
+			jQuery( '.cmt-location-ll-picker .search-box' ).val( addressStr ).trigger( 'change' );
 		}
 	});
 }
@@ -3857,7 +3872,7 @@ cmg.notify.services = cmg.notify.services || {};
 // == Application =========================
 
 jQuery( document ).ready( function() {
-	
+
 	// Access App
 	var app = cmt.api.root.getApplication( 'notify' );
 
@@ -3886,6 +3901,7 @@ cmg.notify.controllers.NotificationController.prototype.toggleReadActionSuccess 
 	location.reload( true );
 };
 
+// Single read
 cmg.notify.controllers.NotificationController.prototype.readActionSuccess = function( requestElement, response ) {
 
 	if( requestElement.is( '[redirect]' ) ) {
@@ -3898,6 +3914,7 @@ cmg.notify.controllers.NotificationController.prototype.readActionSuccess = func
 	}
 };
 
+// Header read
 cmg.notify.controllers.NotificationController.prototype.hreadActionSuccess = function( requestElement, response ) {
 
 	var clickBtn = requestElement.find( '.cmt-click' );
@@ -3951,9 +3968,9 @@ cmg.notify.controllers.NotificationController.prototype.statsActionSuccess = fun
 		jQuery( '.count-notification' ).html( data[ 'notificationCount' ] );
 	}
 
-	if( data.hasOwnProperty( 'remonderCount' ) ) {
+	if( data.hasOwnProperty( 'reminderCount' ) ) {
 	
-		jQuery( '.count-reminder' ).html( data[ 'remonderCount' ] );
+		jQuery( '.count-reminder' ).html( data[ 'reminderCount' ] );
 	}
 	
 	if( data.hasOwnProperty( 'activityCount' ) ) {
@@ -3971,7 +3988,7 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'notificationData' ).innerHTML;
-	
+
 	if( data.hasOwnProperty( 'notifications' ) ) {
 
 		var output = '';
@@ -3979,24 +3996,23 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 		var template = Handlebars.compile( source );
 
 		jQuery.each( data.notifications , function( index, value ) {
-			
+
 			output += template( { data : value, siteUrl: siteUrl } );
 		});
-		
-		
+
 		if( data.notifications.length > 0 ) {
-		
+
 			output += "<li class='align align-center'><a href='" + siteUrl + "notify/notification/all'>View All</a></li>";
-			
-		} else {
+		} 
+		else {
 
 			output = "Notifications not found.";
 		}
 
 		output = "<ul>" + output +"</ul>";
-		
+
 		jQuery( "#popout-notification" ).find( ".popout-content" ).html( output );
-		
+
 		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-notification').find( '[cmt-app=notify]' ) );
 	}
 }
@@ -4013,24 +4029,23 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 		var template = Handlebars.compile( source );
 
 		jQuery.each( data.reminders , function( index, value ) {
-			
+
 			output += template( { data : value, siteUrl: siteUrl } );
 		});
 
 		if( data.reminders.length > 0 ) {
-		
+
 			output += "<li class='align align-center'><a href='"+siteUrl+"notify/reminder/all'>View All</a></li>";
-			
 		}
 		else {
 
 			output = "Reminders not found.";
 		}
-		
+
 		output = "<ul>" + output +"</ul>";
-		
+
 		jQuery( "#popout-reminder" ).find( ".popout-content" ).html( output );
-		
+
 		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-reminder').find( '[cmt-app=notify]' ) );	
 	}
 }
@@ -4047,12 +4062,12 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 		var template = Handlebars.compile( source );
 
 		jQuery.each( data.activities , function( index, value ) {
-			
+
 			output += template( { data : value, siteUrl: siteUrl } );
 		});
 
 		if( data.activities.length > 0 ) {
-		
+
 			output += "<li class='align align-center'><a href='"+siteUrl+"notify/activity/all'>View All</a></li>";
 
 		}
@@ -4060,9 +4075,9 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 
 			output = "Activites not found.";
 		}
-		
+
 		output = "<ul>" + output +"</ul>";
-		
+
 		jQuery( "#popout-activity" ).find( ".popout-content" ).html( output );
 
 		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-activity' ).find( '[cmt-app=notify]' ) );	
@@ -4081,12 +4096,12 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 		var template = Handlebars.compile( source );
 
 		jQuery.each( data.announcements, function( index, value ) {
-			
+
 			output += template( { data : value, siteUrl: siteUrl } );
 		});
 
-		if( data.activities.length > 0 ) {
-		
+		if( data.announcements.length > 0 ) {
+
 			output += "<li class='align align-center'><a href='" + siteUrl + "notify/announcement/all'>View All</a></li>";
 
 		}
@@ -4094,9 +4109,9 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 
 			output = "Announcements not found.";
 		}
-		
+
 		output = "<ul>" + output +"</ul>";
-		
+
 		jQuery( "#popout-announcement" ).find( ".popout-content" ).html( output );
 
 		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-announcement' ).find( '[cmt-app=notify]' ) );	

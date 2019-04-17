@@ -82,11 +82,11 @@ function getFullCalendarEvent( event ) {
 			var source 		= document.getElementById( 'viewCalendarEventTemplate' ).innerHTML;
 			var template 	= Handlebars.compile( source );
 			var output 		= template( response.data );
-			
+
 			var popup = jQuery( '#popup-data-event' );
 
 			popup.find( '.popup-content-wrap .popup-content' ).html( output );
-			
+
 			showPopup( '#popup-data-event' );
 		},
 		complete: function(  jqXHR, textStatus ) {

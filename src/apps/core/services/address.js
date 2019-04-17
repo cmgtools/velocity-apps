@@ -310,15 +310,30 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 	// Address Map
 	jQuery( target ).find( '.cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
 
+		var location = jQuery( this ).closest( '.frm-address' );
+
+		var country		= location.find( '.cmt-location-country' ).find( ':selected' ).text();
+		var province	= location.find( '.cmt-location-province' ).find( ':selected' ).text();
+
 		var line1 	= jQuery( '.cmt-location-ll-picker .line1' ).val();
 		var line2 	= jQuery( '.cmt-location-ll-picker .line2' ).val();
 		var city 	= jQuery( '.cmt-location-ll-picker .city' ).val();
 		var zip 	= jQuery( '.cmt-location-ll-picker .zip' ).val();
-		var address	= line1 + ',' + line2 + ',' + city + ',' + zip;
 
-		if( address.length > 10 ) {
+		var address	= [];
 
-			jQuery( '.cmt-location-ll-picker .search-box' ).val( address ).trigger( 'change' );
+		line1.length > 0 ? address.push( line1 ) : null;
+		line2.length > 0 ? address.push( line2 ) : null;
+		city.length > 0 ? address.push( city ) : null;
+		country.length > 0 ? address.push( country ) : null;
+		province.length > 0 ? address.push( province ) : null;
+		zip.length > 0 ? address.push( zip ) : null;
+		
+		var addressStr = address.join();
+
+		if( addressStr.length > 10 ) {
+
+			jQuery( '.cmt-location-ll-picker .search-box' ).val( addressStr ).trigger( 'change' );
 		}
 	});
 }
