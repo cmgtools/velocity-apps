@@ -243,7 +243,7 @@ cmg.core.services.LocationService.prototype.remove = function( container, locati
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -264,7 +264,7 @@ cmg.core.services.LocationService.prototype.findContainer = function( requestEle
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 

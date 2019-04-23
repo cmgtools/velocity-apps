@@ -34,7 +34,7 @@ cmg.core.services.FileService.prototype.findContainer = function( requestElement
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 

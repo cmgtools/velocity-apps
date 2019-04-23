@@ -234,16 +234,16 @@ cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 	var output 		= template( data );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
 	var item		= null;
-	var layout		= cmt.utils.data.hasAttribute( container, 'ldata-layout' ) ? container.attr( 'ldata-layout' ) : null;
+	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
 
 	// Add at first
 	switch( layout ) {
 
-		case 'cmt-gallery': {
+		case 'cmt-layout-slider': {
 
 			collection.cmtSlider( 'addSlide', output );
 			
-			item = collection.find( '.cmt-gallery-item[ldata-id=0]' );
+			item = collection.find( '.cmt-gallery-item[data-idx=0]' );
 
 			break;
 		}
@@ -294,12 +294,12 @@ cmg.services.gallery.ItemService.prototype.remove = function( container, item ) 
 
 	var actions		= item.find( '.cmt-actions' );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
-	var layout		= cmt.utils.data.hasAttribute( container, 'ldata-layout' ) ? container.attr( 'ldata-layout' ) : null;
+	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
 
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -308,9 +308,9 @@ cmg.services.gallery.ItemService.prototype.remove = function( container, item ) 
 	// Remove Item
 	switch( layout ) {
 
-		case 'cmt-gallery': {
+		case 'cmt-layout-slider': {
 
-			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'ldata-id' ) ) );
+			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'data-idx' ) ) );
 
 			break;
 		}
@@ -332,7 +332,7 @@ cmg.services.gallery.ItemService.prototype.findContainer = function( requestElem
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 

@@ -192,7 +192,7 @@ cmg.data.services.CustomService.prototype.remove = function( container, custom )
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'data-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -213,7 +213,7 @@ cmg.data.services.CustomService.prototype.findContainer = function( requestEleme
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 

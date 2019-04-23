@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-04-17
+ * Velocity Apps - v1.0.0-alpha1 - 2019-04-23
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1304,7 +1304,7 @@ cmg.core.services.AddressService.prototype.remove = function( container, address
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -1325,7 +1325,7 @@ cmg.core.services.AddressService.prototype.findContainer = function( requestElem
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
@@ -1436,7 +1436,7 @@ cmg.core.services.FileService.prototype.findContainer = function( requestElement
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
@@ -1743,7 +1743,7 @@ cmg.core.services.LocationService.prototype.remove = function( container, locati
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -1764,7 +1764,7 @@ cmg.core.services.LocationService.prototype.findContainer = function( requestEle
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
@@ -1918,7 +1918,7 @@ cmg.core.services.MetaService.prototype.initListeners = function() {
 	containers.each( function() {
 
 		var container	= jQuery( this );
-		var layout		= container.attr( 'ldata-layout' );
+		var layout		= container.attr( 'data-layout' );
 
 		switch( layout ) {
 
@@ -2035,7 +2035,7 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 	var collection	= container.find( '.cmt-meta-collection' );
-	var layout		= container.attr( 'ldata-layout' );
+	var layout		= container.attr( 'data-layout' );
 
 	// Add at first
 	collection.prepend( output );
@@ -2071,7 +2071,7 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 
 cmg.core.services.MetaService.prototype.refresh = function( container, meta, data ) {
 
-	var layout = container.attr( 'ldata-layout' );
+	var layout = container.attr( 'data-layout' );
 
 	switch( layout ) {
 
@@ -2106,14 +2106,14 @@ cmg.core.services.MetaService.prototype.remove = function( container, meta ) {
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
 	}
 
 	// Remove meta
-	switch( container.attr( 'ldata-layout' ) ) {
+	switch( container.attr( 'data-layout' ) ) {
 
 		case 'popup': {
 
@@ -2161,7 +2161,7 @@ cmg.core.services.MetaService.prototype.findContainer = function( requestElement
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
@@ -2363,7 +2363,7 @@ cmg.core.services.ModelService.prototype.remove = function( container, model ) {
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -2384,7 +2384,7 @@ cmg.core.services.ModelService.prototype.findContainer = function( requestElemen
 
 		if( listData.length == 1 ) {
 
-			var identifier	= listData.attr( 'ldata-id' );
+			var identifier	= listData.attr( 'data-idx' );
 			var list		= jQuery( '#actions-list-' + identifier );
 
 			container = list.closest( '.cmt-model-crud' );
@@ -2748,7 +2748,7 @@ cmg.data.services.CustomService.prototype.remove = function( container, custom )
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'data-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -2769,7 +2769,7 @@ cmg.data.services.CustomService.prototype.findContainer = function( requestEleme
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
@@ -3021,16 +3021,16 @@ cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 	var output 		= template( data );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
 	var item		= null;
-	var layout		= cmt.utils.data.hasAttribute( container, 'ldata-layout' ) ? container.attr( 'ldata-layout' ) : null;
+	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
 
 	// Add at first
 	switch( layout ) {
 
-		case 'cmt-gallery': {
+		case 'cmt-layout-slider': {
 
 			collection.cmtSlider( 'addSlide', output );
 			
-			item = collection.find( '.cmt-gallery-item[ldata-id=0]' );
+			item = collection.find( '.cmt-gallery-item[data-idx=0]' );
 
 			break;
 		}
@@ -3081,12 +3081,12 @@ cmg.services.gallery.ItemService.prototype.remove = function( container, item ) 
 
 	var actions		= item.find( '.cmt-actions' );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
-	var layout		= cmt.utils.data.hasAttribute( container, 'ldata-layout' ) ? container.attr( 'ldata-layout' ) : null;
+	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
 
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -3095,9 +3095,9 @@ cmg.services.gallery.ItemService.prototype.remove = function( container, item ) 
 	// Remove Item
 	switch( layout ) {
 
-		case 'cmt-gallery': {
+		case 'cmt-layout-slider': {
 
-			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'ldata-id' ) ) );
+			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'data-idx' ) ) );
 
 			break;
 		}
@@ -3119,7 +3119,7 @@ cmg.services.gallery.ItemService.prototype.findContainer = function( requestElem
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
@@ -3746,7 +3746,7 @@ cmg.data.services.SocialService.prototype.remove = function( container, social )
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'data-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
@@ -3767,7 +3767,7 @@ cmg.data.services.SocialService.prototype.findContainer = function( requestEleme
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 

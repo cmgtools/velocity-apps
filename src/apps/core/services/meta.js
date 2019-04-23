@@ -85,7 +85,7 @@ cmg.core.services.MetaService.prototype.initListeners = function() {
 	containers.each( function() {
 
 		var container	= jQuery( this );
-		var layout		= container.attr( 'ldata-layout' );
+		var layout		= container.attr( 'data-layout' );
 
 		switch( layout ) {
 
@@ -202,7 +202,7 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 	var collection	= container.find( '.cmt-meta-collection' );
-	var layout		= container.attr( 'ldata-layout' );
+	var layout		= container.attr( 'data-layout' );
 
 	// Add at first
 	collection.prepend( output );
@@ -238,7 +238,7 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 
 cmg.core.services.MetaService.prototype.refresh = function( container, meta, data ) {
 
-	var layout = container.attr( 'ldata-layout' );
+	var layout = container.attr( 'data-layout' );
 
 	switch( layout ) {
 
@@ -273,14 +273,14 @@ cmg.core.services.MetaService.prototype.remove = function( container, meta ) {
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
 	}
 
 	// Remove meta
-	switch( container.attr( 'ldata-layout' ) ) {
+	switch( container.attr( 'data-layout' ) ) {
 
 		case 'popup': {
 
@@ -328,7 +328,7 @@ cmg.core.services.MetaService.prototype.findContainer = function( requestElement
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 
