@@ -140,6 +140,12 @@ cmg.core.services.AddressService.prototype.initAddForm = function( container ) {
 	// City Listener
 	this.clearCity( form );
 
+	// Intl Tel
+	form.find( '.intl-tel-field' ).each( function() {
+
+		cmt.utils.intltel.initIntlTelField( jQuery( this ) );
+	});
+
 	// Show View
 	form.fadeIn( 'slow' );
 }
@@ -193,6 +199,12 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 
 	// City Listener
 	this.clearCity( form );
+
+	// Intl Tel
+	form.find( '.intl-tel-field' ).each( function() {
+
+		cmt.utils.intltel.initIntlTelField( jQuery( this ) );
+	});
 
 	// Show View
 	form.fadeIn( 'slow' );
