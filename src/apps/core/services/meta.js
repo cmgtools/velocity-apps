@@ -110,11 +110,14 @@ cmg.core.services.MetaService.prototype.initPopups = function( container ) {
 
 	container.find(  '.cmt-meta-add' ).click( function() {
 
+		jQuery( '#popup-attribute-add .message' ).hide();
+		jQuery( '#popup-attribute-add .error' ).html( '' );
+
 		showPopup( '#popup-attribute-add' );
 
 		cmt.utils.data.bindEditor( '#popup-attribute-add .late-editor' );
 	});
-	
+
 	this.initPopupTriggers( container.find( '.cmt-meta' ) );
 }
 
@@ -123,6 +126,9 @@ cmg.core.services.MetaService.prototype.initPopupTriggers = function( meta ) {
 	var self = this;
 
 	meta.find( '.btn-edit' ).click( function() {
+
+		jQuery( '#popup-attribute-update .message' ).hide();
+		jQuery( '#popup-attribute-update .error' ).html( '' );
 
 		showPopup( '#popup-attribute-update' );
 
@@ -191,7 +197,7 @@ cmg.core.services.MetaService.prototype.initUpdateForm = function( container, me
 
 		form.fadeOut( 'fast' );
 	});
-	
+
 	// Show View
 	form.fadeIn( 'slow' );
 }
@@ -214,12 +220,12 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 		case 'popup': {
 
 			closePopup( '#popup-attribute-add' );
-			
+
 			this.initPopupTriggers( meta );
 
 			// Init Scroller
 			meta.find( '.cscroller' ).mCustomScrollbar( { autoHideScrollbar: true } );
-	
+
 			break;
 		}
 		default: {
@@ -248,7 +254,7 @@ cmg.core.services.MetaService.prototype.refresh = function( container, meta, dat
 			meta.find( '.cmt-meta-data .mCSB_container' ).html( data.value );
 
 			closePopup( '#popup-attribute-update' );
-	
+
 			break;
 		}
 		default: {
@@ -322,7 +328,7 @@ cmg.core.services.MetaService.prototype.findContainer = function( requestElement
 
 	// Find in Actions
 	if( container.length == 0 ) {
-		
+
 		var listData	= requestElement.closest( '.actions-list-data' );
 		var popupData	= requestElement.closest( '.popup-content-wrap' );
 
