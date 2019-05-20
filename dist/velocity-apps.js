@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-05-14
+ * Velocity Apps - v1.0.0-alpha1 - 2019-05-20
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -635,7 +635,7 @@ cmg.core.controllers.MetaController = function() {
 
 cmg.core.controllers.MetaController.inherits( cmt.api.controllers.RequestController );
 
-cmg.core.controllers.AddressController.prototype.getActionSuccess = function( requestElement, response ) {
+cmg.core.controllers.MetaController.prototype.getActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var meta		= requestElement.closest( '.cmt-meta' );
@@ -674,7 +674,7 @@ cmg.core.controllers.MetaController.prototype.deleteActionSuccess = function( re
 	this.modelService.remove( container, meta );
 };
 
-cmg.core.controllers.AddressController.prototype.toggleActionSuccess = function( requestElement, response ) {
+cmg.core.controllers.MetaController.prototype.toggleActionSuccess = function( requestElement, response ) {
 
 	// Meta Tooggle Success
 };

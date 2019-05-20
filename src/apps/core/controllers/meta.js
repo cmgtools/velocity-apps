@@ -20,7 +20,7 @@ cmg.core.controllers.MetaController = function() {
 
 cmg.core.controllers.MetaController.inherits( cmt.api.controllers.RequestController );
 
-cmg.core.controllers.AddressController.prototype.getActionSuccess = function( requestElement, response ) {
+cmg.core.controllers.MetaController.prototype.getActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var meta		= requestElement.closest( '.cmt-meta' );
@@ -59,7 +59,7 @@ cmg.core.controllers.MetaController.prototype.deleteActionSuccess = function( re
 	this.modelService.remove( container, meta );
 };
 
-cmg.core.controllers.AddressController.prototype.toggleActionSuccess = function( requestElement, response ) {
+cmg.core.controllers.MetaController.prototype.toggleActionSuccess = function( requestElement, response ) {
 
 	// Meta Tooggle Success
 };
