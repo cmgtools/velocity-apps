@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-05-20
+ * Velocity Apps - v1.0.0-alpha1 - 2019-05-24
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -123,10 +123,7 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 
 	var form		= requestElement.closest( '.cmt-location' );
 	var autoFill	= requestElement.closest( '.auto-fill' );
-
-	var provinceId 	= form.find( '.cmt-location-province' ).val();
-	var regionId	= form.find( '.cmt-location-region' ).val();
-	var cityName 	= form.find( '.auto-fill-text' ).val();
+	var cityName 	= autoFill.find( '.auto-fill-text' ).val();
 
 	if( cityName.length <= 0 ) {
 
@@ -136,7 +133,31 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 		return false;
 	}
 
-	this.requestData = "province-id=" + provinceId + "&region-id=" + regionId + "&name=" + cityName;
+	if( form.length > 0 ) {
+
+		var province	= form.find( '.cmt-location-province' );
+		var region		= form.find( '.cmt-location-region' );
+
+		var params = [];
+
+		if( province.length > 0 ) {
+
+			params.push( "province-id=" + province.val() );
+		}
+
+		if( region.length > 0 ) {
+
+			params.push( "region-id=" + region.val() );
+		}
+
+		params.push( "name=" + cityName );
+
+		this.requestData = params.join( '&' );
+	}
+	else {
+
+		this.requestData = "name=" + cityName;
+	}
 
 	return true;
 };
