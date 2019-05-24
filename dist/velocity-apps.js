@@ -124,6 +124,7 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 	var form		= requestElement.closest( '.cmt-location' );
 	var autoFill	= requestElement.closest( '.auto-fill' );
 	var cityName 	= autoFill.find( '.auto-fill-text' ).val();
+	var limit		= autoFill.find( '.limit' );
 
 	if( cityName.length <= 0 ) {
 
@@ -157,6 +158,11 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 	else {
 
 		this.requestData = "name=" + cityName;
+	}
+
+	if( limit.length > 0 ) {
+
+		this.requestData += "&limit=" + limit.val();
 	}
 
 	return true;
