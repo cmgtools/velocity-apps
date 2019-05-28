@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-05-24
+ * Velocity Apps - v1.0.0-alpha1 - 2019-05-28
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -117,7 +117,7 @@ jQuery( document ).ready( function() {
 
 cmg.core.controllers.CityController	= function() {};
 
-cmg.core.controllers.CityController.inherits( cmt.api.controllers.BaseController );
+cmg.core.controllers.CityController.inherits( cmt.api.controllers.RequestController );
 
 cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( requestElement ) {
 
@@ -125,6 +125,7 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 	var autoFill	= requestElement.closest( '.auto-fill' );
 	var cityName 	= autoFill.find( '.auto-fill-text' ).val();
 	var limit		= autoFill.find( '.limit' );
+	var autoCache	= autoFill.find( '.auto-cache' );
 
 	if( cityName.length <= 0 ) {
 
@@ -133,6 +134,9 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 
 		return false;
 	}
+
+	// Only one request at a time
+	this.singleRequest = true;
 
 	if( form.length > 0 ) {
 
@@ -163,6 +167,11 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 	if( limit.length > 0 ) {
 
 		this.requestData += "&limit=" + limit.val();
+	}
+
+	if( autoCache.length > 0 ) {
+
+		this.requestData += "&auto-cache=" + autoCache.val();
 	}
 
 	return true;
