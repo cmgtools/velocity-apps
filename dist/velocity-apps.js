@@ -147,12 +147,12 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 
 		if( province.length > 0 ) {
 
-			params.push( "province-id=" + province.val() );
+			params.push( "provinceId=" + province.val() );
 		}
 
 		if( region.length > 0 ) {
 
-			params.push( "region-id=" + region.val() );
+			params.push( "regionId=" + region.val() );
 		}
 
 		params.push( "name=" + cityName );
@@ -171,7 +171,7 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 
 	if( autoCache.length > 0 ) {
 
-		this.requestData += "&auto-cache=" + autoCache.val();
+		this.requestData += "&autoCache=" + autoCache.val();
 	}
 
 	return true;
@@ -816,11 +816,11 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 	var country = requestElement.find( 'select' );
 
-	this.requestData = "country-id=" + country.val();
+	this.requestData = "countryId=" + country.val();
 
 	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
 
-		this.requestData += "&province-id=" + country.attr( 'data-province' );
+		this.requestData += "&provinceId=" + country.attr( 'data-province' );
 	}
 
 	return true;
@@ -868,11 +868,11 @@ cmg.core.controllers.RegionController.prototype.optionsListActionPre = function(
 
 	var province = requestElement.find( 'select' );
 
-	this.requestData = "province-id=" + province.val();
+	this.requestData = "provinceId=" + province.val();
 
 	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 
-		this.requestData += "&region-id=" + province.attr( 'data-region' );
+		this.requestData += "&regionId=" + province.attr( 'data-region' );
 	}
 
 	return true;

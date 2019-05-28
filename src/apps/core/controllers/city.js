@@ -43,12 +43,12 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 
 		if( province.length > 0 ) {
 
-			params.push( "province-id=" + province.val() );
+			params.push( "provinceId=" + province.val() );
 		}
 
 		if( region.length > 0 ) {
 
-			params.push( "region-id=" + region.val() );
+			params.push( "regionId=" + region.val() );
 		}
 
 		params.push( "name=" + cityName );
@@ -67,7 +67,7 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 
 	if( autoCache.length > 0 ) {
 
-		this.requestData += "&auto-cache=" + autoCache.val();
+		this.requestData += "&autoCache=" + autoCache.val();
 	}
 
 	return true;

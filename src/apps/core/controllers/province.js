@@ -28,11 +28,11 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 	var country = requestElement.find( 'select' );
 
-	this.requestData = "country-id=" + country.val();
+	this.requestData = "countryId=" + country.val();
 
 	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
 
-		this.requestData += "&province-id=" + country.attr( 'data-province' );
+		this.requestData += "&provinceId=" + country.attr( 'data-province' );
 	}
 
 	return true;
