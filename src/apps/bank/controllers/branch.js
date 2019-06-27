@@ -19,11 +19,11 @@ cmg.bank.controllers.BranchController.prototype.optionsListActionPre = function(
 
 	var bank = requestElement.find( 'select' );
 
-	this.requestData = "bank-id=" + bank.val();
+	this.requestData = "bankId=" + bank.val();
 
-	if( cmt.utils.data.hasAttribute( bank, 'branch' ) ) {
+	if( cmt.utils.data.hasAttribute( bank, 'data-branchId' ) ) {
 
-		this.requestData += "&branch-id=" + bank.attr( 'branch' );
+		this.requestData += "&branchId=" + bank.attr( 'data-branchId' );
 	}
 
 	return true;
@@ -31,7 +31,7 @@ cmg.bank.controllers.BranchController.prototype.optionsListActionPre = function(
 
 cmg.bank.controllers.BranchController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.frm-account' ).find( '.wrap-branch .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-bank' ).find( '.cmt-bank-branches .cmt-select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
