@@ -27,3 +27,5 @@ cmg.core.controllers = cmg.core.controllers || {};
 cmg.core.services = cmg.core.services || {};
 
 // == Additional Methods ==================
+
+// == Direct Calls ========================

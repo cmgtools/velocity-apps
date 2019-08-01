@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-06-27
+ * Velocity Apps - v1.0.0-alpha1 - 2019-08-01
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -34,6 +34,8 @@ cmg.core.controllers = cmg.core.controllers || {};
 cmg.core.services = cmg.core.services || {};
 
 // == Additional Methods ==================
+
+// == Direct Calls ========================
 
 
 // == Application =========================
@@ -2681,7 +2683,7 @@ cmg.data.controllers.CustomController.prototype.addActionPre = function( request
 }
 
 cmg.data.controllers.CustomController.prototype.addActionSuccess = function( requestElement, response ) {
-	
+
 	var container	= this.modelService.findContainer( requestElement );
 	var custom		= requestElement.closest( '.cmt-data-custom' );
 
@@ -2700,7 +2702,7 @@ cmg.data.controllers.CustomController.prototype.updateActionPre = function( requ
 }
 
 cmg.data.controllers.CustomController.prototype.updateActionSuccess = function( requestElement, response ) {
-	
+
 	var container	= this.modelService.findContainer( requestElement );
 	var custom		= requestElement.closest( '.cmt-data-custom' );
 
@@ -2719,7 +2721,7 @@ cmg.data.controllers.CustomController.prototype.deleteActionPre = function( requ
 }
 
 cmg.data.controllers.CustomController.prototype.deleteActionSuccess = function( requestElement, response ) {
-	
+
 	var container	= this.modelService.findContainer( requestElement );
 	var custom		= requestElement.closest( '.cmt-data-custom' );
 
@@ -2744,7 +2746,7 @@ cmg.data.services.CustomService.inherits( cmt.api.services.BaseService );
 cmg.data.services.CustomService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-data-custom-add' );
 
 	if( triggers.length == 0 ) {
@@ -2798,7 +2800,7 @@ cmg.data.services.CustomService.prototype.refresh = function( container, custom,
 cmg.data.services.CustomService.prototype.remove = function( container, custom ) {
 
 	var actions = custom.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -2836,7 +2838,87 @@ cmg.data.services.CustomService.prototype.findContainer = function( requestEleme
 
 // == Direct Calls ========================
 
+function setDataByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-data?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeDataByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-data?id=" + id, "Meta[key]=" + key );
+}
+
+function setAttributeByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-attribute?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeAttributeByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-attribute?id=" + id, "Meta[key]=" + key );
+}
+
+function setConfigByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-config?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeConfigByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-config?id=" + id, "Meta[key]=" + key );
+}
+
+function setSettingByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-setting?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeSettingByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-setting?id=" + id, "Meta[key]=" + key );
+}
+
 // == Additional Methods ==================
+
+function initDataCmtDirect() {
+
+	jQuery( '.cmt-data-direct' ).change( function() {
+
+		var element = jQuery( this );
+		var base	= element.attr( 'data-base' );
+		var id		= element.attr( 'data-id' );
+		var key		= element.attr( 'data-key' );
+		var type	= element.attr( 'data-type' );
+
+		switch( type ) {
+
+			case 'data': {
+
+				setDataByBase( base, id, key, element.val() );
+
+				break;
+			}
+			case 'attribute': {
+
+				setAttributeByBase( base, id, key, element.val() );
+
+				break;
+			}
+			case 'config': {
+
+				setConfigByBase( base, id, key, element.val() );
+
+				break;
+			}
+			case 'setting': {
+
+				setSettingByBase( base, id, key, element.val() );
+
+				break;
+			}
+		}
+	});
+}
 
 
 // == Application =========================
