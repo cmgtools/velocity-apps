@@ -8,11 +8,6 @@ jQuery( document ).ready( function() {
 	// Map Controllers
 	app.mapController( 'notification', 'cmg.notify.controllers.NotificationController' );
 
-	if( jQuery( '[cmt-app=notify]' ).length > 0 ) {
-
-		cmt.api.utils.request.triggerDirect( cmt.api.root.getApplication( 'notify' ), 'notification', 'stats', 'notify/stats/stats', 'get' );
-	}
-
 	jQuery( document.body ).append( jQuery( '#notificationData' ).detach() );
 	jQuery( document.body ).append( jQuery( '#reminderData' ).detach() );
 	jQuery( document.body ).append( jQuery( '#activityData' ).detach() );
@@ -98,15 +93,15 @@ cmg.notify.controllers.NotificationController.prototype.statsActionSuccess = fun
 	}
 
 	if( data.hasOwnProperty( 'reminderCount' ) ) {
-	
+
 		jQuery( '.count-reminder' ).html( data[ 'reminderCount' ] );
 	}
-	
+
 	if( data.hasOwnProperty( 'activityCount' ) ) {
 
 		jQuery( '.count-activity' ).html( data[ 'activityCount' ] );
 	}
-	
+
 	if( data.hasOwnProperty( 'announcementCount' ) ) {
 
 		jQuery( '.count-announcement' ).html( data[ 'announcementCount' ] );
@@ -131,8 +126,8 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 		if( data.notifications.length > 0 ) {
 
-			output += "<li class='align align-center'><a href='" + siteUrl + "notify/notification/all'>View All</a></li>";
-		} 
+			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+		}
 		else {
 
 			output = "Notifications not found.";
@@ -150,7 +145,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'reminderData' ).innerHTML;
-	
+
 	if( data.hasOwnProperty( 'reminders' ) ) {
 
 		var output = '';
@@ -164,7 +159,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 		if( data.reminders.length > 0 ) {
 
-			output += "<li class='align align-center'><a href='"+siteUrl+"notify/reminder/all'>View All</a></li>";
+			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
 		}
 		else {
 
@@ -175,7 +170,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 		jQuery( "#popout-reminder" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-reminder').find( '[cmt-app=notify]' ) );	
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-reminder').find( '[cmt-app=notify]' ) );
 	}
 }
 
@@ -197,7 +192,7 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 
 		if( data.activities.length > 0 ) {
 
-			output += "<li class='align align-center'><a href='"+siteUrl+"notify/activity/all'>View All</a></li>";
+			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/activity/all">View All</a></li>';
 
 		}
 		else {
@@ -209,7 +204,7 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 
 		jQuery( "#popout-activity" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-activity' ).find( '[cmt-app=notify]' ) );	
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-activity' ).find( '[cmt-app=notify]' ) );
 	}
 }
 
@@ -231,7 +226,7 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 
 		if( data.announcements.length > 0 ) {
 
-			output += "<li class='align align-center'><a href='" + siteUrl + "notify/announcement/all'>View All</a></li>";
+			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/announcement/all">View All</a></li>';
 
 		}
 		else {
@@ -243,7 +238,7 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 
 		jQuery( "#popout-announcement" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-announcement' ).find( '[cmt-app=notify]' ) );	
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-announcement' ).find( '[cmt-app=notify]' ) );
 	}
 }
 
