@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-11-08
+ * Velocity Apps - v1.0.0-alpha1 - 2019-11-18
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -251,6 +251,7 @@ jQuery( document ).ready( function() {
 	app.mapController( 'comment', 'cmg.core.controllers.CommentController' );
 	app.mapController( 'review', 'cmg.core.controllers.ReviewController' );
 	app.mapController( 'feedback', 'cmg.core.controllers.FeedbackController' );
+	app.mapController( 'testimonial', 'cmg.core.controllers.TestimonialController' );
 });
 
 // == Comment Controller ==================
@@ -290,6 +291,21 @@ cmg.core.controllers.FeedbackController.prototype.createActionSuccess = function
 
 	// Empty Images
 	requestElement.find( '.gallery-feedback' ).html( '' );
+
+	// Reset rating
+	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
+};
+
+// == Testimonial Controller ==============
+
+cmg.core.controllers.TestimonialController = function() {};
+
+cmg.core.controllers.TestimonialController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.controllers.TestimonialController.prototype.createActionSuccess = function( requestElement, response ) {
+
+	// Empty Images
+	requestElement.find( '.gallery-testimonial' ).html( '' );
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
