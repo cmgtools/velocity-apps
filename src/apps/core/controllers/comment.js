@@ -24,6 +24,57 @@ cmg.core.controllers.CommentController.prototype.createActionSuccess = function(
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
 };
 
+cmg.core.controllers.CommentController.prototype.spamActionPre = function( requestElement, response ) {
+
+	var result = confirm( 'Are you sure you want to submit admin request to mark it as spam?' );
+
+	if( result ) {
+
+	    return true;
+	}
+
+	return false;
+};
+
+cmg.core.controllers.CommentController.prototype.spamActionSuccess = function( requestElement, response ) {
+
+	// Process request spam
+};
+
+cmg.core.controllers.CommentController.prototype.approveActionPre = function( requestElement, response ) {
+
+	var result = confirm( 'Are you sure you want to submit admin request to approve it?' );
+
+	if( result ) {
+
+	    return true;
+	}
+
+	return false;
+};
+
+cmg.core.controllers.CommentController.prototype.approveActionSuccess = function( requestElement, response ) {
+
+	// Process request approve
+};
+
+cmg.core.controllers.CommentController.prototype.deleteActionPre = function( requestElement, response ) {
+
+	var result = confirm( 'Are you sure you want to submit admin request to delete it?' );
+
+	if( result ) {
+
+	    return true;
+	}
+
+	return false;
+};
+
+cmg.core.controllers.CommentController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	// Process request delete
+};
+
 // == Review Controller ===================
 
 cmg.core.controllers.ReviewController = function() {};
@@ -228,36 +279,12 @@ cmg.core.controllers.ReviewController.prototype.deleteActionPost = function( suc
 	}
 };
 
-cmg.core.controllers.ReviewController.prototype.spamRequestActionPre = function( requestElement, response ) {
-
-	var result = confirm( 'Are you sure you want to submit admin request to mark it as spam ?' );
-
-	if( result ) {
-
-	    return true;
-	}
-
-	return false;
-};
-
 cmg.core.controllers.ReviewController.prototype.spamRequestActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
 		jQuery( requestElement ).html( "<a class='btn disabled'><i class='fa fa-ban'></i><span class='width width-5 inline-block'></span>Requested For Spam </a>" );
 	}
-};
-
-cmg.core.controllers.ReviewController.prototype.deleteRequestActionPre = function( requestElement, response ) {
-
-	var result = confirm( 'Are you sure you want to submit admin request to delete it ?' );
-
-	if( result ) {
-
-	    return true;
-	}
-
-	return false;
 };
 
 cmg.core.controllers.ReviewController.prototype.deleteRequestActionPost = function( success, requestElement, response ) {
