@@ -38,7 +38,7 @@ cmg.core.controllers.CommentController.prototype.spamActionPre = function( reque
 
 cmg.core.controllers.CommentController.prototype.spamActionSuccess = function( requestElement, response ) {
 
-	// Process request spam
+	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
 cmg.core.controllers.CommentController.prototype.approveActionPre = function( requestElement, response ) {
@@ -55,7 +55,7 @@ cmg.core.controllers.CommentController.prototype.approveActionPre = function( re
 
 cmg.core.controllers.CommentController.prototype.approveActionSuccess = function( requestElement, response ) {
 
-	// Process request approve
+	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
 cmg.core.controllers.CommentController.prototype.deleteActionPre = function( requestElement, response ) {
@@ -72,7 +72,7 @@ cmg.core.controllers.CommentController.prototype.deleteActionPre = function( req
 
 cmg.core.controllers.CommentController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
-	// Process request delete
+	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
 // == Review Controller ===================
