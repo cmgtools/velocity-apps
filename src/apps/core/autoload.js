@@ -22,13 +22,46 @@ cmg.core.controllers.AutoloadController.inherits( cmt.api.controllers.RequestCon
 
 cmg.core.controllers.AutoloadController.prototype.autoloadActionSuccess = function( requestElement, response ) {
 
-	if( cmt.utils.object.hasProperty( response.data, 'widgetId' ) && cmt.utils.object.hasProperty( response.data, 'widgetHtml' ) ) {
+	var data = response.data;
 
-		var widget = jQuery( '#' + response.data.widgetId );
-		
+	// Deprecated - To be removed after confirmation
+
+	var autoloadOld	= cmt.utils.object.hasProperty( data, 'widgetId' ) && cmt.utils.object.hasProperty( data, 'widgetHtml' );
+
+	if( autoloadOld ) {
+
+		var widget = jQuery( '#' + data.widgetId );
+
 		if( widget.length > 0 ) {
 
-			widget.html( response.data.widgetHtml );
+			widget.html( data.widgetHtml );
+		}
+	}
+
+	// New Way
+
+	var html		= cmt.utils.object.hasProperty( data, 'html' );
+	var json		= cmt.utils.object.hasProperty( data, 'json' );
+	var autoload	= cmt.utils.object.hasProperty( data, 'id' ) && ( html || json );
+
+	if( autoload ) {
+
+		var autoloader = jQuery( '#' + data.id );
+
+		if( autoloader.length > 0 ) {
+
+			if( html ) {
+
+				autoloader.html( data.html );
+			}
+			else if( json ) {
+
+				var source 		= document.getElementById( data.id ).innerHTML;
+				var template	= Handlebars.compile( source );
+				var output 		= template( data.json );
+
+				autoloader.html( output );
+			}
 		}
 	}
 };
@@ -36,6 +69,8 @@ cmg.core.controllers.AutoloadController.prototype.autoloadActionSuccess = functi
 // == Direct Calls ========================
 
 // == Additional Methods ==================
+
+// == Widget Lazy Loading =======
 
 document.addEventListener( "DOMContentLoaded", initLazyWidgetObserver );
 
@@ -122,6 +157,6 @@ function initLazyWidgetListener( elements ) {
 }
 
 function processLazyWidget( element ) {
-	
+
 	cmt.api.utils.request.trigger( cmt.api.root.getApplication( 'autoload' ), element, false, element.find( '.cmt-click' ) );
 }

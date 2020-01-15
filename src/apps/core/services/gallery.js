@@ -2,35 +2,27 @@
 
 jQuery( document ).ready( function() {
 
-	// Register App
-	var app	= cmt.api.root.registerApplication( 'gallery', 'cmt.api.Application', { basePath: ajaxUrl } );
-
-	// Map Controllers
-	app.mapController( 'item', 'cmg.controllers.gallery.ItemController' );
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Services
-	app.mapService( 'item', 'cmg.services.gallery.ItemService' );
-
-	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=gallery]' ) );
+	app.mapService( 'galleryItem', 'cmg.core.gallery.services.ItemService' );
 
 	// Event Listeners
-	app.getService( 'item' ).initListeners();
+	app.getService( 'galleryItem' ).initListeners();
 });
 
-// == Controller Namespace ================
+// == App Namespace =======================
 
 var cmg = cmg || {};
 
-cmg.controllers = cmg.controllers || {};
+cmg.core = cmg.core || {};
 
-cmg.controllers.gallery = cmg.controllers.gallery || {};
+cmg.core.gallery = cmg.core.gallery || {};
 
 // == Service Namespace ===================
 
-cmg.services = cmg.services || {};
-
-cmg.services.gallery = cmg.services.gallery || {};
+cmg.core.gallery.services = cmg.core.gallery.services || {};
 
 // == UI Guide ============================
 
@@ -71,59 +63,9 @@ cmg.services.gallery = cmg.services.gallery || {};
 }
 */
 
-// == Item Controller =====================
-
-cmg.controllers.gallery.ItemController = function() {
-
-	this.app = cmt.api.root.getApplication( 'gallery' );
-
-	this.modelService = this.app.getService( 'item' );
-};
-
-cmg.controllers.gallery.ItemController.inherits( cmt.api.controllers.RequestController );
-
-cmg.controllers.gallery.ItemController.prototype.getActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var item		= requestElement.closest( '.cmt-gallery-item' );
-
-	// Hide Actions
-	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
-
-	// Show Update Form
-	this.modelService.initUpdateForm( container, item, response.data );
-};
-
-cmg.controllers.gallery.ItemController.prototype.addActionSuccess = function( requestElement, response ) {
-
-	var container = this.modelService.findContainer( requestElement );
-
-	// Add Item to List
-	this.modelService.add( container, response.data );
-};
-
-cmg.controllers.gallery.ItemController.prototype.updateActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
-
-	this.modelService.refresh( container, item, response.data );
-};
-
-cmg.controllers.gallery.ItemController.prototype.deleteActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
-
-	// Hide Actions
-	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
-
-	this.modelService.remove( container, item );
-};
-
 // == Item Service ========================
 
-cmg.services.gallery.ItemService = function() {
+cmg.core.gallery.services.ItemService = function() {
 
 	this.addTemplate		= 'addItemTemplate';
 	this.updateTemplate		= 'updateItemTemplate';
@@ -133,9 +75,9 @@ cmg.services.gallery.ItemService = function() {
 	this.hiddenForm = true; // Keep form hidden when not in use
 };
 
-cmg.services.gallery.ItemService.inherits( cmt.api.services.BaseService );
+cmg.core.gallery.services.ItemService.inherits( cmt.api.services.BaseService );
 
-cmg.services.gallery.ItemService.prototype.initListeners = function() {
+cmg.core.gallery.services.ItemService.prototype.initListeners = function() {
 
 	var self = this;
 
@@ -154,7 +96,7 @@ cmg.services.gallery.ItemService.prototype.initListeners = function() {
 	});
 }
 
-cmg.services.gallery.ItemService.prototype.initAddForm = function( container ) {
+cmg.core.gallery.services.ItemService.prototype.initAddForm = function( container ) {
 
 	var source 		= document.getElementById( this.addTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -185,8 +127,8 @@ cmg.services.gallery.ItemService.prototype.initAddForm = function( container ) {
 	form.fadeIn( 'slow' );
 }
 
-cmg.services.gallery.ItemService.prototype.initUpdateForm = function( container, item, data ) {
-	
+cmg.core.gallery.services.ItemService.prototype.initUpdateForm = function( container, item, data ) {
+
 	var self = this;
 
 	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
@@ -227,7 +169,7 @@ cmg.services.gallery.ItemService.prototype.initUpdateForm = function( container,
 	form.fadeIn( 'slow' );
 }
 
-cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
+cmg.core.gallery.services.ItemService.prototype.add = function( container, data ) {
 
 	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -242,7 +184,7 @@ cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 		case 'cmt-layout-slider': {
 
 			collection.cmtSlider( 'addSlide', output );
-			
+
 			item = collection.find( '.cmt-gallery-item[data-idx=0]' );
 
 			break;
@@ -271,7 +213,7 @@ cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
 	}
 }
 
-cmg.services.gallery.ItemService.prototype.refresh = function( container, item, data ) {
+cmg.core.gallery.services.ItemService.prototype.refresh = function( container, item, data ) {
 
 	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -290,7 +232,7 @@ cmg.services.gallery.ItemService.prototype.refresh = function( container, item, 
 	}
 }
 
-cmg.services.gallery.ItemService.prototype.remove = function( container, item ) {
+cmg.core.gallery.services.ItemService.prototype.remove = function( container, item ) {
 
 	var actions		= item.find( '.cmt-actions' );
 	var collection	= container.find( '.cmt-gallery-item-collection' );
@@ -321,7 +263,7 @@ cmg.services.gallery.ItemService.prototype.remove = function( container, item ) 
 	}
 }
 
-cmg.services.gallery.ItemService.prototype.findContainer = function( requestElement ) {
+cmg.core.gallery.services.ItemService.prototype.findContainer = function( requestElement ) {
 
 	var container = requestElement.closest( '.cmt-gallery-item-crud' );
 
@@ -342,7 +284,5 @@ cmg.services.gallery.ItemService.prototype.findContainer = function( requestElem
 
 	return container;
 }
-
-// == Direct Calls ========================
 
 // == Additional Methods ==================
