@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2019-12-03
+ * Velocity Apps - v1.0.0-alpha1 - 2020-01-15
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -25,6 +25,8 @@ var cmg = cmg || {};
 
 cmg.core = cmg.core || {};
 
+cmg.logger = cmg.logger || {};
+
 // == Controller Namespace ================
 
 cmg.core.controllers = cmg.core.controllers || {};
@@ -33,9 +35,21 @@ cmg.core.controllers = cmg.core.controllers || {};
 
 cmg.core.services = cmg.core.services || {};
 
-// == Additional Methods ==================
+// == Settings ============================
+
+cmg.log = true;
 
 // == Direct Calls ========================
+
+// == Additional Methods ==================
+
+cmg.logger.log = function( message ) {
+
+	if( cmg.log ) {
+
+		console.log( message );
+	}
+}
 
 
 // == Application =========================
@@ -280,7 +294,7 @@ cmg.core.controllers.CommentController.prototype.spamActionPre = function( reque
 
 cmg.core.controllers.CommentController.prototype.spamActionSuccess = function( requestElement, response ) {
 
-	// Process request spam
+	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
 cmg.core.controllers.CommentController.prototype.approveActionPre = function( requestElement, response ) {
@@ -297,7 +311,7 @@ cmg.core.controllers.CommentController.prototype.approveActionPre = function( re
 
 cmg.core.controllers.CommentController.prototype.approveActionSuccess = function( requestElement, response ) {
 
-	// Process request approve
+	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
 cmg.core.controllers.CommentController.prototype.deleteActionPre = function( requestElement, response ) {
@@ -314,7 +328,7 @@ cmg.core.controllers.CommentController.prototype.deleteActionPre = function( req
 
 cmg.core.controllers.CommentController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
-	// Process request delete
+	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
 // == Review Controller ===================
@@ -547,6 +561,174 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Controllers
+	app.mapController( 'customData', 'cmg.core.data.controllers.CustomController' );
+});
+
+// == Controller Namespace ================
+
+cmg.core.data.controllers = cmg.core.data.controllers || {};
+
+// == Custom Controller ===================
+
+cmg.core.data.controllers.CustomController = function() {
+
+	this.app = cmt.api.root.getApplication( 'core' );
+
+	this.modelService = this.app.getService( 'customData' );
+};
+
+cmg.core.data.controllers.CustomController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.data.controllers.CustomController.prototype.addActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-custom' );
+
+	return true;
+}
+
+cmg.core.data.controllers.CustomController.prototype.addActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var custom		= requestElement.closest( '.cmt-data-custom' );
+
+	// Unset Form
+	this.requestForm = null;
+
+	// Refresh Data
+	this.modelService.refresh( container, custom, response.data );
+}
+
+cmg.core.data.controllers.CustomController.prototype.updateActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-custom' );
+
+	return true;
+}
+
+cmg.core.data.controllers.CustomController.prototype.updateActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var custom		= requestElement.closest( '.cmt-data-custom' );
+
+	// Unset Form
+	this.requestForm = null;
+
+	// Refresh Data
+	this.modelService.refresh( container, custom, response.data );
+}
+
+cmg.core.data.controllers.CustomController.prototype.deleteActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-custom' );
+
+	return true;
+}
+
+cmg.core.data.controllers.CustomController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var custom		= requestElement.closest( '.cmt-data-custom' );
+
+	// Unset Form
+	this.requestForm = null;
+
+	// Remove Data
+	this.modelService.remove( container, custom );
+}
+
+// == Direct Calls ========================
+
+function setDataByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-data?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeDataByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-data?id=" + id, "Meta[key]=" + key );
+}
+
+function setAttributeByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-attribute?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeAttributeByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-attribute?id=" + id, "Meta[key]=" + key );
+}
+
+function setConfigByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-config?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeConfigByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-config?id=" + id, "Meta[key]=" + key );
+}
+
+function setSettingByBase( base, id, key, value ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-setting?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
+}
+
+function removeSettingByBase( base, id, key ) {
+
+	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-setting?id=" + id, "Meta[key]=" + key );
+}
+
+// == Additional Methods ==================
+
+function initDataCmtDirect() {
+
+	jQuery( '.cmt-data-direct' ).change( function() {
+
+		var element = jQuery( this );
+		var base	= element.attr( 'data-base' );
+		var id		= element.attr( 'data-id' );
+		var key		= element.attr( 'data-key' );
+		var type	= element.attr( 'data-type' );
+
+		switch( type ) {
+
+			case 'data': {
+
+				setDataByBase( base, id, key, element.val() );
+
+				break;
+			}
+			case 'attribute': {
+
+				setAttributeByBase( base, id, key, element.val() );
+
+				break;
+			}
+			case 'config': {
+
+				setConfigByBase( base, id, key, element.val() );
+
+				break;
+			}
+			case 'setting': {
+
+				setSettingByBase( base, id, key, element.val() );
+
+				break;
+			}
+		}
+	});
+}
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Controllers
 	app.mapController( 'file', 'cmg.core.controllers.FileController' );
 });
 
@@ -599,6 +781,76 @@ cmg.core.controllers.FileController.prototype.clearActionFailure = function( req
 
 	// Clear Form
 	this.modelService.clear( uploader );
+};
+
+// == Direct Calls ========================
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Controllers
+	app.mapController( 'galleryItem', 'cmg.core.gallery.controllers.ItemController' );
+});
+
+// == Controller Namespace ================
+
+cmg.core.gallery.controllers = cmg.core.gallery.controllers || {};
+
+// == Item Controller =====================
+
+cmg.core.gallery.controllers.ItemController = function() {
+
+	this.app = cmt.api.root.getApplication( 'core' );
+
+	this.modelService = this.app.getService( 'galleryItem' );
+};
+
+cmg.core.gallery.controllers.ItemController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.gallery.controllers.ItemController.prototype.getActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= requestElement.closest( '.cmt-gallery-item' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	// Show Update Form
+	this.modelService.initUpdateForm( container, item, response.data );
+};
+
+cmg.core.gallery.controllers.ItemController.prototype.addActionSuccess = function( requestElement, response ) {
+
+	var container = this.modelService.findContainer( requestElement );
+
+	// Add Item to List
+	this.modelService.add( container, response.data );
+};
+
+cmg.core.gallery.controllers.ItemController.prototype.updateActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
+
+	this.modelService.refresh( container, item, response.data );
+};
+
+cmg.core.gallery.controllers.ItemController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	this.modelService.remove( container, item );
 };
 
 // == Direct Calls ========================
@@ -688,6 +940,291 @@ jQuery( document ).ready( function() {
 cmg.core.controllers.MainController = function() {};
 
 cmg.core.controllers.MainController.inherits( cmt.api.controllers.RequestController );
+
+// == Direct Calls ========================
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Controllers
+	app.mapController( 'autoMapper', 'cmg.core.mapper.controllers.AutoController' );
+	app.mapController( 'modelMapper', 'cmg.core.mapper.controllers.ModelController' );
+	app.mapController( 'csvMapper', 'cmg.core.mapper.controllers.CsvController' );
+});
+
+// == Controller Namespace ================
+
+cmg.core.mapper.controllers = cmg.core.mapper.controllers || {};
+
+// == Auto Controller =====================
+
+cmg.core.mapper.controllers.AutoController = function() {
+
+	this.singleRequest		= true;
+	this.previousLocation	= null;
+};
+
+cmg.core.mapper.controllers.AutoController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.mapper.controllers.AutoController.prototype.autoSearchActionPre = function( requestElement ) {
+
+	var autoFill = requestElement.closest( '.auto-fill' );
+
+	var name = autoFill.find( '.search-name' ).val();
+	var type = autoFill.find( '.search-type' );
+
+	if( name.length <= 0 ) {
+
+		autoFill.find( '.auto-fill-items' ).slideUp();
+		autoFill.find( '.auto-fill-target .target' ).val( '' );
+
+		return false;
+	}
+
+	if( type.length == 1 ) {
+
+		this.requestData = "name=" + name + "&type=" + type.val();
+	}
+	else {
+
+		this.requestData = "name=" + name;
+	}
+
+	return true;
+};
+
+cmg.core.mapper.controllers.AutoController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+
+	var data			= response.data;
+	var listHtml		= '';
+	//var wrapItemList	= requestElement.find( '.auto-fill-items-wrap' );
+	var itemList		= requestElement.find( '.auto-fill-items' );
+
+	for( i = 0; i < data.length; i++ ) {
+
+		var obj = data[ i ];
+
+		listHtml += "<li class='auto-fill-item' data-id='" + obj.id + "'>" + obj.name + "</li>";
+	}
+
+	if( listHtml.length == 0 ) {
+
+		listHtml = "<li class='auto-fill-message'>No matching results found.</li>";
+
+		itemList.html( listHtml );
+	}
+	else {
+
+		itemList.html( listHtml );
+
+		requestElement.find( '.auto-fill-item' ).click( function() {
+
+			var target	= requestElement.closest( '.auto-fill' ).find( '.auto-fill-target' );
+			var id		= jQuery( this ).attr( 'data-id' );
+			var name	= jQuery( this ).html();
+
+			itemList.slideUp();
+
+			// Update Id and Name
+			target.find( '.target' ).val( id );
+			requestElement.find( '.auto-fill-text' ).val( name );
+		});
+	}
+
+	itemList.slideDown();
+};
+
+// == Mapper Controller ===================
+
+cmg.core.mapper.controllers.ModelController = function() {};
+
+cmg.core.mapper.controllers.ModelController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionPre = function( requestElement ) {
+
+	var autoFill	= requestElement.closest( '.auto-fill' );
+	var type 		= autoFill.find( 'input[name=type]' );
+	var keyword 	= autoFill.find( '.auto-fill-text' ).val();
+
+	var itemsLength	= requestElement.closest( '.mapper-auto-items' ).find( '.mapper-items' ).find( '.mapper-item' ).length;
+	var itemsLimit	= requestElement.closest( '.mapper-auto-items' ).attr( 'limit' );
+
+	if( keyword.length <= 0 ) {
+
+		autoFill.find( '.auto-fill-items' ).slideUp();
+		autoFill.find( '.trigger-map-item input[name=itemId]' ).val( '' );
+
+		return false;
+	}
+
+	if( null !== itemsLimit && parseInt( itemsLimit ) <= itemsLength ) {
+
+		alert( "No more mappings allowed." );
+	}
+
+	if( type.length == 1 ) {
+
+		this.requestData = "name=" + keyword + "&type=" + type.val();
+	}
+	else {
+
+		this.requestData = "name=" + keyword;
+	}
+
+	return true;
+};
+
+cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+
+	var data		= response.data;
+	var listHtml	= '';
+	var autoFill	= requestElement.closest( '.auto-fill' );
+	var itemList	= requestElement.find( '.auto-fill-items' );
+	var autoSubmit	= requestElement.attr( 'autoSubmit' ) || 'yes';
+	var template	= requestElement.attr( 'template' ) || '';
+
+	for( i = 0; i < data.length; i++ ) {
+
+		var obj = data[ i ];
+
+		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + "</li>";
+	}
+
+	if( listHtml.length == 0 ) {
+
+		listHtml	= "<li class=\"auto-fill-message\">No matching results found.</li>";
+
+		itemList.html( listHtml );
+	}
+	else {
+
+		itemList.html( listHtml );
+
+		requestElement.find( '.auto-fill-item' ).click( function() {
+
+			var id = jQuery( this ).attr( 'data-id' );
+			var name = jQuery( this ).html();
+
+			itemList.slideUp();
+
+			if( autoSubmit === 'yes' ) {
+
+				autoFill.find( '.trigger-map-item input[name=itemId]' ).val( id );
+				autoFill.find( '.trigger-map-item .cmt-click' )[ 0 ].click();
+			}
+			else {
+
+				cmt.api.root.getApplication( 'mapper' ).getService( 'autoMapper' ).processAutoSearch( id, name, template );
+			}
+		});
+	}
+
+	itemList.slideDown();
+};
+
+cmg.core.mapper.controllers.ModelController.prototype.mapItemActionPre = function( requestElement ) {
+
+	var itemId	= requestElement.find( 'input[name=itemId]' ).val();
+	itemId		= parseInt( itemId );
+
+	if( itemId > 0 ) {
+
+		return true;
+	}
+
+	return false;
+};
+
+cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = function( requestElement, response ) {
+
+	var autoItems = requestElement.closest( '.mapper-auto-items' );
+
+	// Template
+	var source 		= document.getElementById( autoItems.attr( 'template' ) ).innerHTML;
+	var template 	= Handlebars.compile( source );
+
+	// Map
+	var mapperItems	= autoItems.find( '.mapper-items' );
+	var itemsArr	= mapperItems.find( '.mapper-item' );
+	var itemsLength	= itemsArr.length;
+
+	var cid		= response.data.cid;
+	var name	= response.data.name;
+
+	// Reset search field
+	autoItems.find( '.search-name' ).val( '' );
+
+	var create	= true;
+
+	for( var i = 0; i < itemsLength; i++ ) {
+
+		var test = jQuery( itemsArr[ i ] ).find( '.cid' ).val();
+
+		if( cid == test ) {
+
+			create = false;
+
+			break;
+		}
+	}
+
+	if( create ) {
+
+		// Generate View
+		var data	= { cid: cid, name: name };
+		var output 	= template( data );
+
+		mapperItems.append( output );
+
+		itemsArr	= mapperItems.find( '.mapper-item' );
+		itemsLength	= itemsArr.length;
+
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), itemsArr.last() );
+	}
+};
+
+cmg.core.mapper.controllers.ModelController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+
+	requestElement.remove();
+};
+
+cmg.core.mapper.controllers.ModelController.prototype.toggleItemActionSuccess = function( requestElement, response ) {
+
+	// Handle response
+};
+
+// == Csv Controller ======================
+
+cmg.core.mapper.controllers.CsvController = function() {};
+
+cmg.core.mapper.controllers.CsvController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = function( requestElement, response ) {
+
+	var submitItems	= jQuery( '.mapper-submit-items' );
+	var mapperItems	= submitItems.find( '.mapper-items' );
+
+	var source 		= document.getElementById( submitItems.attr( 'template' ) ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var data		= { list: response.data };
+	var output 		= template( data );
+
+	mapperItems.html( output );
+
+	cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), mapperItems.find( '[cmt-app=mapper]' ) );
+};
+
+cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+
+	requestElement.remove();
+};
 
 // == Direct Calls ========================
 
@@ -951,6 +1488,90 @@ jQuery( document ).ready( function() {
 cmg.core.controllers.SiteController = function() {};
 
 cmg.core.controllers.SiteController.inherits( cmt.api.controllers.RequestController );
+
+// == Direct Calls ========================
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Controllers
+	app.mapController( 'social', 'cmg.core.controllers.SocialController' );
+});
+
+// == Social Controller ===================
+
+cmg.core.controllers.SocialController = function() {
+
+	this.app = cmt.api.root.getApplication( 'core' );
+
+	this.modelService = this.app.getService( 'social' );
+};
+
+cmg.core.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-social' );
+
+	return true;
+}
+
+cmg.core.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var social		= requestElement.closest( '.cmt-data-social' );
+
+	// Unset Form
+	this.requestForm = null;
+
+	// Refresh Data
+	this.modelService.refresh( container, social, response.data );
+}
+
+cmg.core.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-social' );
+
+	return true;
+}
+
+cmg.core.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var social		= requestElement.closest( '.cmt-data-social' );
+
+	// Unset Form
+	this.requestForm = null;
+
+	// Refresh Data
+	this.modelService.refresh( container, social, response.data );
+}
+
+cmg.core.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
+
+	this.requestForm = requestElement.closest( '.cmt-data-social' );
+
+	return true;
+}
+
+cmg.core.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var social		= requestElement.closest( '.cmt-data-social' );
+
+	// Unset Form
+	this.requestForm = null;
+
+	// Remove Data
+	this.modelService.remove( container, social );
+}
 
 // == Direct Calls ========================
 
@@ -1501,6 +2122,159 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Services
+	app.mapService( 'customData', 'cmg.core.data.services.CustomService' );
+
+	// Event Listeners
+	app.getService( 'customData' ).initListeners();
+});
+
+// == App Namespace =======================
+
+var cmg = cmg || {};
+
+cmg.core = cmg.core || {};
+
+cmg.core.data = cmg.core.data || {};
+
+// == Service Namespace ===================
+
+cmg.core.data.services = cmg.core.data.services || {};
+
+// == UI Guide ============================
+
+/*
+// An independent component to perform CRUD operations of Data JSON.
+
+.cmt-data-custom-crud {
+
+	.cmt-data-custom-add {
+		// Trigger to show the address form
+	}
+
+	.cmt-data-custom-collection {
+
+		.cmt-data-custom {
+
+		}
+	}
+}
+ */
+
+// == Custom Service ======================
+
+cmg.core.data.services.CustomService = function() {
+
+	// Default Handlebar Templates
+	this.addTemplate		= 'addCustomDataTemplate';
+	this.refreshTemplate	= 'refreshCustomDataTemplate';
+};
+
+cmg.core.data.services.CustomService.inherits( cmt.api.services.BaseService );
+
+cmg.core.data.services.CustomService.prototype.initListeners = function() {
+
+	var self = this;
+
+	var triggers = jQuery( '.cmt-data-custom-add' );
+
+	if( triggers.length == 0 ) {
+
+		return;
+	}
+
+	triggers.click( function() {
+
+		var container = jQuery( this ).closest( '.cmt-data-custom-crud' );
+
+		self.initAddForm( container );
+	});
+}
+
+cmg.core.data.services.CustomService.prototype.initAddForm = function( container ) {
+
+	var key = Math.random().toString( 36 ).substring( 2, 15 ) + Math.random().toString( 36 ).substring( 2, 15 );
+
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( { key: key } );
+
+	container.find( '.cmt-data-custom-collection' ).append( output );
+
+	// Find data
+	var custom = container.find( '.cmt-data-custom' ).last();
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'data', custom );
+
+	// Init Listeners
+	custom.find( '.btn-remove' ).click( function() {
+
+		custom.remove();
+	});
+}
+
+cmg.core.data.services.CustomService.prototype.refresh = function( container, custom, data ) {
+
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	custom.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'data', custom );
+}
+
+cmg.core.data.services.CustomService.prototype.remove = function( container, custom ) {
+
+	var actions = custom.find( '.cmt-actions' );
+
+	// Remove Actions
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-idx' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Data
+	custom.remove();
+}
+
+cmg.core.data.services.CustomService.prototype.findContainer = function( requestElement ) {
+
+	var container = requestElement.closest( '.cmt-data-custom-crud' );
+
+	// Find in Actions
+	if( container.length == 0 ) {
+
+		var listData = requestElement.closest( '.actions-list-data' );
+
+		if( listData.length == 1 ) {
+
+			var identifier = listData.attr( 'data-idx' );
+
+			var list = jQuery( '#actions-list-' + identifier );
+
+			container = list.closest( '.cmt-data-custom-crud' );
+		}
+	}
+
+	return container;
+}
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Services
 	app.mapService( 'file', 'cmg.core.services.FileService' );
 
 	// Event Listeners
@@ -1586,6 +2360,296 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 	uploader.find( '.name' ).val( '' );
 	uploader.find( '.file-clear' ).hide();
 	uploader.find( '.post-action' ).hide();
+}
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Services
+	app.mapService( 'galleryItem', 'cmg.core.gallery.services.ItemService' );
+
+	// Event Listeners
+	app.getService( 'galleryItem' ).initListeners();
+});
+
+// == App Namespace =======================
+
+var cmg = cmg || {};
+
+cmg.core = cmg.core || {};
+
+cmg.core.gallery = cmg.core.gallery || {};
+
+// == Service Namespace ===================
+
+cmg.core.gallery.services = cmg.core.gallery.services || {};
+
+// == UI Guide ============================
+
+/*
+// An independent component to perform CRUD operations of gallery items.
+
+.cmt-gallery-item-crud {
+
+	.cmt-gallery-item-add {
+		// Trigger to show the model form
+	}
+
+	.cmt-gallery-item-form {
+		// The form container to add/update model
+
+		.cmt-gallery-item-close {
+			// Hides the add/update form
+		}
+	}
+
+	.cmt-gallery-item-collection {
+		// Collection of existing models
+
+		.cmt-gallery-item {
+			// Renders all the models either using PHP or viewTemplate by making call to get models and iterating the result set
+			// Renders the model using viewTemplate after adding an model
+			// Refresh and partial render the model using refreshTemplate after updating an model
+
+			.cmt-gallery-item-header {
+				// Header
+			}
+
+			.cmt-gallery-item-data {
+				// Data
+			}
+		}
+	}
+}
+*/
+
+// == Item Service ========================
+
+cmg.core.gallery.services.ItemService = function() {
+
+	this.addTemplate		= 'addItemTemplate';
+	this.updateTemplate		= 'updateItemTemplate';
+	this.viewTemplate		= 'itemViewTemplate';
+	this.refreshTemplate	= 'itemRefreshTemplate';
+
+	this.hiddenForm = true; // Keep form hidden when not in use
+};
+
+cmg.core.gallery.services.ItemService.inherits( cmt.api.services.BaseService );
+
+cmg.core.gallery.services.ItemService.prototype.initListeners = function() {
+
+	var self = this;
+
+	var triggers = jQuery( '.cmt-gallery-item-add' );
+
+	if( triggers.length == 0 ) {
+
+		return;
+	}
+
+	triggers.click( function() {
+
+		var container = jQuery( this ).closest( '.cmt-gallery-item-crud' );
+
+		self.initAddForm( container );
+	});
+}
+
+cmg.core.gallery.services.ItemService.prototype.initAddForm = function( container ) {
+
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var data		= { };
+	var output 		= template( data );
+
+	var form = container.find( '.cmt-gallery-item-form' );
+
+	// Hide View
+	form.hide();
+
+	// Append View
+	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'gallery', form );
+
+	// Init Uploader
+	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
+
+	// Init Listeners
+	form.find( '.cmt-gallery-item-close' ).click( function() {
+
+		form.fadeOut( 'fast' );
+	});
+
+	// Show View
+	form.fadeIn( 'slow' );
+}
+
+cmg.core.gallery.services.ItemService.prototype.initUpdateForm = function( container, item, data ) {
+
+	var self = this;
+
+	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
+	var template	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	var form = container.find( '.cmt-gallery-item-form' );
+
+	// Hide View
+	form.hide();
+
+	// Append View
+	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'gallery', form );
+
+	// Copy image data
+	form.find( '.file-data' ).html( item.find( '.cmt-gallery-item-data' ).html() );
+
+	// Init Uploader
+	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
+
+	// Init Listeners
+	form.find( '.cmt-gallery-item-close' ).click( function() {
+
+		if( self.hiddenForm ) {
+
+			form.fadeOut( 'fast' );
+		}
+		else {
+
+			self.initAddForm( container );
+		}
+	});
+
+	// Show View
+	form.fadeIn( 'slow' );
+}
+
+cmg.core.gallery.services.ItemService.prototype.add = function( container, data ) {
+
+	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+	var collection	= container.find( '.cmt-gallery-item-collection' );
+	var item		= null;
+	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
+
+	// Add at first
+	switch( layout ) {
+
+		case 'cmt-layout-slider': {
+
+			collection.cmtSlider( 'addSlide', output );
+
+			item = collection.find( '.cmt-gallery-item[data-idx=0]' );
+
+			break;
+		}
+		default: {
+
+			collection.prepend( output );
+
+			item = collection.find( '.cmt-gallery-item' ).first();
+		}
+	}
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'gallery', item );
+
+	// Init Actions
+	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );
+
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-gallery-item-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
+}
+
+cmg.core.gallery.services.ItemService.prototype.refresh = function( container, item, data ) {
+
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	item.find( '.cmt-gallery-item-header .title' ).html( data.title );
+	item.find( '.cmt-gallery-item-data' ).replaceWith( output );
+
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-gallery-item-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
+}
+
+cmg.core.gallery.services.ItemService.prototype.remove = function( container, item ) {
+
+	var actions		= item.find( '.cmt-actions' );
+	var collection	= container.find( '.cmt-gallery-item-collection' );
+	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
+
+	// Remove Actions
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-idx' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Item
+	switch( layout ) {
+
+		case 'cmt-layout-slider': {
+
+			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'data-idx' ) ) );
+
+			break;
+		}
+		default: {
+
+			item.remove();
+		}
+	}
+}
+
+cmg.core.gallery.services.ItemService.prototype.findContainer = function( requestElement ) {
+
+	var container = requestElement.closest( '.cmt-gallery-item-crud' );
+
+	// Find in Actions
+	if( container.length == 0 ) {
+
+		var listData = requestElement.closest( '.actions-list-data' );
+
+		if( listData.length == 1 ) {
+
+			var identifier = listData.attr( 'data-idx' );
+
+			var list = jQuery( '#actions-list-' + identifier );
+
+			container = list.closest( '.cmt-gallery-item-crud' );
+		}
+	}
+
+	return container;
 }
 
 // == Additional Methods ==================
@@ -1919,6 +2983,90 @@ cmg.core.services.LocationService.prototype.refreshGoogleMap = function( target 
 			jQuery( '.cmt-location-ll-picker .search-box' ).val( location ).trigger( 'change' );
 		}
 	});
+}
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Services
+	app.mapService( 'autoMapper', 'cmg.core.mapper.services.AutoService' );
+});
+
+// == App Namespace =======================
+
+var cmg = cmg || {};
+
+cmg.core = cmg.core || {};
+
+cmg.core.mapper = cmg.core.mapper || {};
+
+// == Service Namespace ===================
+
+cmg.core.mapper.services = cmg.core.mapper.services || {};
+
+// == Auto Service ========================
+
+cmg.core.mapper.services.AutoService = function() {};
+
+cmg.core.mapper.services.AutoService.inherits( cmt.api.services.BaseService );
+
+cmg.core.mapper.services.AutoService.prototype.processAutoSearch = function( id, name, template ) {
+
+	// Template
+	var source 		= document.getElementById( template ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	// Map
+	var mapperItems	= jQuery( '.mapper-auto-categories' ).find( '.mapper-items' );
+	var itemsArr	= mapperItems.find( '.mapper-item' );
+	var itemsLength	= itemsArr.length;
+
+	// Reset search field
+	jQuery( '.mapper-auto-categories .search-name' ).val( '' );
+
+	if( itemsLength >= 5 ) {
+
+		alert( "No more mappings allowed." );
+
+		return;
+	}
+
+	var create	= true;
+
+	for( var i = 0; i < itemsLength; i++ ) {
+
+		var test = jQuery( itemsArr[ i ] ).find( '.id' ).val();
+
+		if( id == test ) {
+
+			create = false;
+
+			break;
+		}
+	}
+
+	if( create ) {
+
+		// Generate View
+		var data	= { id: id, name: name };
+		var output 	= template( data );
+
+		mapperItems.append( output );
+
+		itemsArr	= mapperItems.find( '.mapper-item' );
+		itemsLength	= itemsArr.length;
+
+		itemsArr.last().find( '.mapper-item-remove' ).click( function() {
+
+			jQuery( this ).closest( '.mapper-item' ).remove();
+		});
+	}
 }
 
 // == Additional Methods ==================
@@ -2499,6 +3647,153 @@ cmg.core.services.ModelService.prototype.findContainer = function( requestElemen
 // == Application =========================
 
 jQuery( document ).ready( function() {
+
+	// Register App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Services
+	app.mapService( 'social', 'cmg.core.services.SocialService' );
+
+	// Event Listeners
+	app.getService( 'social' ).initListeners();
+});
+
+// == UI Guide ============================
+
+/*
+// An independent component to perform CRUD operations of Data JSON.
+
+.cmt-data-social-crud {
+
+	.cmt-data-social-options {
+		// Option Chooser
+	}
+
+	.cmt-data-social-add {
+		// Trigger to show the add/update form
+	}
+
+	.cmt-data-social-collection {
+
+		.cmt-data-social {
+
+		}
+	}
+}
+ */
+
+// == Social Service ======================
+
+cmg.core.services.SocialService = function() {
+
+	// Default Handlebar Templates
+	this.addTemplate		= 'addSocialDataTemplate';
+	this.refreshTemplate	= 'refreshSocialDataTemplate';
+};
+
+cmg.core.services.SocialService.inherits( cmt.api.services.BaseService );
+
+cmg.core.services.SocialService.prototype.initListeners = function() {
+
+	var self = this;
+
+	var triggers = jQuery( '.cmt-data-social-add' );
+
+	if( triggers.length == 0 ) {
+
+		return;
+	}
+
+	triggers.click( function() {
+
+		var container = jQuery( this ).closest( '.cmt-data-social-crud' );
+
+		self.initAddForm( container );
+	});
+}
+
+cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
+
+	var select	= container.find( '.cmt-data-social-options' );
+	var icon	= select.val();
+	var sns		= select.find( 'option:selected' ).text();
+
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( { sns: sns, icon: icon } );
+
+	container.find( '.cmt-data-social-collection' ).append( output );
+
+	// Find data
+	var social = container.find( '.cmt-data-social' ).last();
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'data', social );
+
+	// Init Listeners
+	social.find( '.btn-remove' ).click( function() {
+
+		social.remove();
+	});
+}
+
+cmg.core.services.SocialService.prototype.refresh = function( container, social, data ) {
+
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	social.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'data', social );
+}
+
+cmg.core.services.SocialService.prototype.remove = function( container, social ) {
+
+	var actions = social.find( '.cmt-actions' );
+
+	// Remove Actions
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-idx' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Data
+	social.remove();
+}
+
+cmg.core.services.SocialService.prototype.findContainer = function( requestElement ) {
+
+	var container = requestElement.closest( '.cmt-data-social-crud' );
+
+	// Find in Actions
+	if( container.length == 0 ) {
+
+		var listData = requestElement.closest( '.actions-list-data' );
+
+		if( listData.length == 1 ) {
+
+			var identifier = listData.attr( 'data-idx' );
+
+			var list = jQuery( '#actions-list-' + identifier );
+
+			container = list.closest( '.cmt-data-social-crud' );
+		}
+	}
+
+	return container;
+}
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
 	
 	// Access App
 	var app	= cmt.api.root.getApplication( 'core' );
@@ -2548,13 +3843,46 @@ cmg.core.controllers.AutoloadController.inherits( cmt.api.controllers.RequestCon
 
 cmg.core.controllers.AutoloadController.prototype.autoloadActionSuccess = function( requestElement, response ) {
 
-	if( cmt.utils.object.hasProperty( response.data, 'widgetId' ) && cmt.utils.object.hasProperty( response.data, 'widgetHtml' ) ) {
+	var data = response.data;
 
-		var widget = jQuery( '#' + response.data.widgetId );
-		
+	// Deprecated - To be removed after confirmation
+
+	var autoloadOld	= cmt.utils.object.hasProperty( data, 'widgetId' ) && cmt.utils.object.hasProperty( data, 'widgetHtml' );
+
+	if( autoloadOld ) {
+
+		var widget = jQuery( '#' + data.widgetId );
+
 		if( widget.length > 0 ) {
 
-			widget.html( response.data.widgetHtml );
+			widget.html( data.widgetHtml );
+		}
+	}
+
+	// New Way
+
+	var html		= cmt.utils.object.hasProperty( data, 'html' );
+	var json		= cmt.utils.object.hasProperty( data, 'json' );
+	var autoload	= cmt.utils.object.hasProperty( data, 'id' ) && ( html || json );
+
+	if( autoload ) {
+
+		var autoloader = jQuery( '#' + data.id );
+
+		if( autoloader.length > 0 ) {
+
+			if( html ) {
+
+				autoloader.html( data.html );
+			}
+			else if( json ) {
+
+				var source 		= document.getElementById( data.id ).innerHTML;
+				var template	= Handlebars.compile( source );
+				var output 		= template( data.json );
+
+				autoloader.html( output );
+			}
 		}
 	}
 };
@@ -2562,6 +3890,8 @@ cmg.core.controllers.AutoloadController.prototype.autoloadActionSuccess = functi
 // == Direct Calls ========================
 
 // == Additional Methods ==================
+
+// == Widget Lazy Loading =======
 
 document.addEventListener( "DOMContentLoaded", initLazyWidgetObserver );
 
@@ -2648,7 +3978,7 @@ function initLazyWidgetListener( elements ) {
 }
 
 function processLazyWidget( element ) {
-	
+
 	cmt.api.utils.request.trigger( cmt.api.root.getApplication( 'autoload' ), element, false, element.find( '.cmt-click' ) );
 }
 
@@ -2658,672 +3988,11 @@ function processLazyWidget( element ) {
 jQuery( document ).ready( function() {
 
 	// Register App
-	var app	= cmt.api.root.registerApplication( 'data', 'cmt.api.Application', { basePath: ajaxUrl } );
-
-	// Map Controllers
-	app.mapController( 'custom', 'cmg.data.controllers.CustomController' );
-
-	// Map Services
-	app.mapService( 'custom', 'cmg.data.services.CustomService' );
-
-	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=data]' ) );
-
-	// Event Listeners
-	app.getService( 'custom' ).initListeners();
-});
-
-// == App Namespace =======================
-
-var cmg = cmg || {};
-
-cmg.data = cmg.data || {};
-
-// == Controller Namespace ================
-
-cmg.data.controllers = cmg.data.controllers || {};
-
-// == Service Namespace ===================
-
-cmg.data.services = cmg.data.services || {};
-
-// == UI Guide ============================
-
-/*
-// An independent component to perform CRUD operations of Data JSON.
-
-.cmt-data-custom-crud {
-
-	.cmt-data-custom-add {
-		// Trigger to show the address form
-	}
-
-	.cmt-data-custom-collection {
-
-		.cmt-data-custom {
-
-		}
-	}
-}
- */
-
-// == Custom Controller ===================
-
-cmg.data.controllers.CustomController = function() {
-
-	this.app = cmt.api.root.getApplication( 'data' );
-
-	this.modelService = this.app.getService( 'custom' );
-};
-
-cmg.data.controllers.CustomController.inherits( cmt.api.controllers.RequestController );
-
-cmg.data.controllers.CustomController.prototype.addActionPre = function( requestElement ) {
-
-	this.requestForm = requestElement.closest( '.cmt-data-custom' );
-
-	return true;
-}
-
-cmg.data.controllers.CustomController.prototype.addActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var custom		= requestElement.closest( '.cmt-data-custom' );
-
-	// Unset Form
-	this.requestForm = null;
-
-	// Refresh Data
-	this.modelService.refresh( container, custom, response.data );
-}
-
-cmg.data.controllers.CustomController.prototype.updateActionPre = function( requestElement ) {
-
-	this.requestForm = requestElement.closest( '.cmt-data-custom' );
-
-	return true;
-}
-
-cmg.data.controllers.CustomController.prototype.updateActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var custom		= requestElement.closest( '.cmt-data-custom' );
-
-	// Unset Form
-	this.requestForm = null;
-
-	// Refresh Data
-	this.modelService.refresh( container, custom, response.data );
-}
-
-cmg.data.controllers.CustomController.prototype.deleteActionPre = function( requestElement ) {
-
-	this.requestForm = requestElement.closest( '.cmt-data-custom' );
-
-	return true;
-}
-
-cmg.data.controllers.CustomController.prototype.deleteActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var custom		= requestElement.closest( '.cmt-data-custom' );
-
-	// Unset Form
-	this.requestForm = null;
-
-	// Remove Data
-	this.modelService.remove( container, custom );
-}
-
-// == Custom Service ======================
-
-cmg.data.services.CustomService = function() {
-
-	// Default Handlebar Templates
-	this.addTemplate		= 'addCustomDataTemplate';
-	this.refreshTemplate	= 'refreshCustomDataTemplate';
-};
-
-cmg.data.services.CustomService.inherits( cmt.api.services.BaseService );
-
-cmg.data.services.CustomService.prototype.initListeners = function() {
-
-	var self = this;
-
-	var triggers = jQuery( '.cmt-data-custom-add' );
-
-	if( triggers.length == 0 ) {
-
-		return;
-	}
-
-	triggers.click( function() {
-
-		var container = jQuery( this ).closest( '.cmt-data-custom-crud' );
-
-		self.initAddForm( container );
-	});
-}
-
-cmg.data.services.CustomService.prototype.initAddForm = function( container ) {
-
-	var key = Math.random().toString( 36 ).substring( 2, 15 ) + Math.random().toString( 36 ).substring( 2, 15 );
-
-	var source 		= document.getElementById( this.addTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var output 		= template( { key: key } );
-
-	container.find( '.cmt-data-custom-collection' ).append( output );
-
-	// Find data
-	var custom = container.find( '.cmt-data-custom' ).last();
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', custom );
-
-	// Init Listeners
-	custom.find( '.btn-remove' ).click( function() {
-
-		custom.remove();
-	});
-}
-
-cmg.data.services.CustomService.prototype.refresh = function( container, custom, data ) {
-
-	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var output 		= template( data );
-
-	custom.html( output );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', custom );
-}
-
-cmg.data.services.CustomService.prototype.remove = function( container, custom ) {
-
-	var actions = custom.find( '.cmt-actions' );
-
-	// Remove Actions
-	if( actions.length > 0 ) {
-
-		var index = actions.attr( 'data-idx' );
-
-		// Remove Actions List
-		jQuery( '#actions-list-data-' + index ).remove();
-	}
-
-	// Remove Data
-	custom.remove();
-}
-
-cmg.data.services.CustomService.prototype.findContainer = function( requestElement ) {
-
-	var container = requestElement.closest( '.cmt-data-custom-crud' );
-
-	// Find in Actions
-	if( container.length == 0 ) {
-
-		var listData = requestElement.closest( '.actions-list-data' );
-
-		if( listData.length == 1 ) {
-
-			var identifier = listData.attr( 'data-idx' );
-
-			var list = jQuery( '#actions-list-' + identifier );
-
-			container = list.closest( '.cmt-data-custom-crud' );
-		}
-	}
-
-	return container;
-}
-
-// == Direct Calls ========================
-
-function setDataByBase( base, id, key, value ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-data?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
-}
-
-function removeDataByBase( base, id, key ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-data?id=" + id, "Meta[key]=" + key );
-}
-
-function setAttributeByBase( base, id, key, value ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-attribute?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
-}
-
-function removeAttributeByBase( base, id, key ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-attribute?id=" + id, "Meta[key]=" + key );
-}
-
-function setConfigByBase( base, id, key, value ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-config?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
-}
-
-function removeConfigByBase( base, id, key ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-config?id=" + id, "Meta[key]=" + key );
-}
-
-function setSettingByBase( base, id, key, value ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/set-setting?id=" + id, "Meta[key]=" + key + "&Meta[value]=" + value );
-}
-
-function removeSettingByBase( base, id, key ) {
-
-	cmt.utils.ajax.triggerPost( ajaxUrl + base + "/remove-setting?id=" + id, "Meta[key]=" + key );
-}
-
-// == Additional Methods ==================
-
-function initDataCmtDirect() {
-
-	jQuery( '.cmt-data-direct' ).change( function() {
-
-		var element = jQuery( this );
-		var base	= element.attr( 'data-base' );
-		var id		= element.attr( 'data-id' );
-		var key		= element.attr( 'data-key' );
-		var type	= element.attr( 'data-type' );
-
-		switch( type ) {
-
-			case 'data': {
-
-				setDataByBase( base, id, key, element.val() );
-
-				break;
-			}
-			case 'attribute': {
-
-				setAttributeByBase( base, id, key, element.val() );
-
-				break;
-			}
-			case 'config': {
-
-				setConfigByBase( base, id, key, element.val() );
-
-				break;
-			}
-			case 'setting': {
-
-				setSettingByBase( base, id, key, element.val() );
-
-				break;
-			}
-		}
-	});
-}
-
-
-// == Application =========================
-
-jQuery( document ).ready( function() {
-
-	// Register App
-	var app	= cmt.api.root.registerApplication( 'gallery', 'cmt.api.Application', { basePath: ajaxUrl } );
-
-	// Map Controllers
-	app.mapController( 'item', 'cmg.controllers.gallery.ItemController' );
-
-	// Map Services
-	app.mapService( 'item', 'cmg.services.gallery.ItemService' );
-
-	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=gallery]' ) );
-
-	// Event Listeners
-	app.getService( 'item' ).initListeners();
-});
-
-// == Controller Namespace ================
-
-var cmg = cmg || {};
-
-cmg.controllers = cmg.controllers || {};
-
-cmg.controllers.gallery = cmg.controllers.gallery || {};
-
-// == Service Namespace ===================
-
-cmg.services = cmg.services || {};
-
-cmg.services.gallery = cmg.services.gallery || {};
-
-// == UI Guide ============================
-
-/*
-// An independent component to perform CRUD operations of gallery items.
-
-.cmt-gallery-item-crud {
-
-	.cmt-gallery-item-add {
-		// Trigger to show the model form
-	}
-
-	.cmt-gallery-item-form {
-		// The form container to add/update model
-
-		.cmt-gallery-item-close {
-			// Hides the add/update form
-		}
-	}
-
-	.cmt-gallery-item-collection {
-		// Collection of existing models
-
-		.cmt-gallery-item {
-			// Renders all the models either using PHP or viewTemplate by making call to get models and iterating the result set
-			// Renders the model using viewTemplate after adding an model
-			// Refresh and partial render the model using refreshTemplate after updating an model
-
-			.cmt-gallery-item-header {
-				// Header
-			}
-
-			.cmt-gallery-item-data {
-				// Data
-			}
-		}
-	}
-}
-*/
-
-// == Item Controller =====================
-
-cmg.controllers.gallery.ItemController = function() {
-
-	this.app = cmt.api.root.getApplication( 'gallery' );
-
-	this.modelService = this.app.getService( 'item' );
-};
-
-cmg.controllers.gallery.ItemController.inherits( cmt.api.controllers.RequestController );
-
-cmg.controllers.gallery.ItemController.prototype.getActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var item		= requestElement.closest( '.cmt-gallery-item' );
-
-	// Hide Actions
-	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
-
-	// Show Update Form
-	this.modelService.initUpdateForm( container, item, response.data );
-};
-
-cmg.controllers.gallery.ItemController.prototype.addActionSuccess = function( requestElement, response ) {
-
-	var container = this.modelService.findContainer( requestElement );
-
-	// Add Item to List
-	this.modelService.add( container, response.data );
-};
-
-cmg.controllers.gallery.ItemController.prototype.updateActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
-
-	this.modelService.refresh( container, item, response.data );
-};
-
-cmg.controllers.gallery.ItemController.prototype.deleteActionSuccess = function( requestElement, response ) {
-
-	var container	= this.modelService.findContainer( requestElement );
-	var item		= container.find( '.cmt-gallery-item[data-id=' + response.data.mid + ']' );
-
-	// Hide Actions
-	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
-
-	this.modelService.remove( container, item );
-};
-
-// == Item Service ========================
-
-cmg.services.gallery.ItemService = function() {
-
-	this.addTemplate		= 'addItemTemplate';
-	this.updateTemplate		= 'updateItemTemplate';
-	this.viewTemplate		= 'itemViewTemplate';
-	this.refreshTemplate	= 'itemRefreshTemplate';
-
-	this.hiddenForm = true; // Keep form hidden when not in use
-};
-
-cmg.services.gallery.ItemService.inherits( cmt.api.services.BaseService );
-
-cmg.services.gallery.ItemService.prototype.initListeners = function() {
-
-	var self = this;
-
-	var triggers = jQuery( '.cmt-gallery-item-add' );
-
-	if( triggers.length == 0 ) {
-
-		return;
-	}
-
-	triggers.click( function() {
-
-		var container = jQuery( this ).closest( '.cmt-gallery-item-crud' );
-
-		self.initAddForm( container );
-	});
-}
-
-cmg.services.gallery.ItemService.prototype.initAddForm = function( container ) {
-
-	var source 		= document.getElementById( this.addTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var data		= { };
-	var output 		= template( data );
-
-	var form = container.find( '.cmt-gallery-item-form' );
-
-	// Hide View
-	form.hide();
-
-	// Append View
-	form.html( output );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', form );
-
-	// Init Uploader
-	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
-
-	// Init Listeners
-	form.find( '.cmt-gallery-item-close' ).click( function() {
-
-		form.fadeOut( 'fast' );
-	});
-
-	// Show View
-	form.fadeIn( 'slow' );
-}
-
-cmg.services.gallery.ItemService.prototype.initUpdateForm = function( container, item, data ) {
-	
-	var self = this;
-
-	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
-	var template	= Handlebars.compile( source );
-	var output 		= template( data );
-
-	var form = container.find( '.cmt-gallery-item-form' );
-
-	// Hide View
-	form.hide();
-
-	// Append View
-	form.html( output );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', form );
-
-	// Copy image data
-	form.find( '.file-data' ).html( item.find( '.cmt-gallery-item-data' ).html() );
-
-	// Init Uploader
-	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
-
-	// Init Listeners
-	form.find( '.cmt-gallery-item-close' ).click( function() {
-
-		if( self.hiddenForm ) {
-
-			form.fadeOut( 'fast' );
-		}
-		else {
-
-			self.initAddForm( container );
-		}
-	});
-
-	// Show View
-	form.fadeIn( 'slow' );
-}
-
-cmg.services.gallery.ItemService.prototype.add = function( container, data ) {
-
-	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var output 		= template( data );
-	var collection	= container.find( '.cmt-gallery-item-collection' );
-	var item		= null;
-	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
-
-	// Add at first
-	switch( layout ) {
-
-		case 'cmt-layout-slider': {
-
-			collection.cmtSlider( 'addSlide', output );
-			
-			item = collection.find( '.cmt-gallery-item[data-idx=0]' );
-
-			break;
-		}
-		default: {
-
-			collection.prepend( output );
-
-			item = collection.find( '.cmt-gallery-item' ).first();
-		}
-	}
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', item );
-
-	// Init Actions
-	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );
-
-	if( this.hiddenForm ) {
-
-		container.find( '.cmt-gallery-item-form' ).fadeOut( 'fast' );
-	}
-	else {
-
-		this.initAddForm( container );
-	}
-}
-
-cmg.services.gallery.ItemService.prototype.refresh = function( container, item, data ) {
-
-	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var output 		= template( data );
-
-	item.find( '.cmt-gallery-item-header .title' ).html( data.title );
-	item.find( '.cmt-gallery-item-data' ).replaceWith( output );
-
-	if( this.hiddenForm ) {
-
-		container.find( '.cmt-gallery-item-form' ).fadeOut( 'fast' );
-	}
-	else {
-
-		this.initAddForm( container );
-	}
-}
-
-cmg.services.gallery.ItemService.prototype.remove = function( container, item ) {
-
-	var actions		= item.find( '.cmt-actions' );
-	var collection	= container.find( '.cmt-gallery-item-collection' );
-	var layout		= cmt.utils.data.hasAttribute( container, 'data-layout' ) ? container.attr( 'data-layout' ) : null;
-
-	// Remove Actions
-	if( actions.length > 0 ) {
-
-		var index = actions.attr( 'data-idx' );
-
-		// Remove Actions List
-		jQuery( '#actions-list-data-' + index ).remove();
-	}
-
-	// Remove Item
-	switch( layout ) {
-
-		case 'cmt-layout-slider': {
-
-			collection.cmtSlider( 'removeSlide', parseInt( item.attr( 'data-idx' ) ) );
-
-			break;
-		}
-		default: {
-
-			item.remove();
-		}
-	}
-}
-
-cmg.services.gallery.ItemService.prototype.findContainer = function( requestElement ) {
-
-	var container = requestElement.closest( '.cmt-gallery-item-crud' );
-
-	// Find in Actions
-	if( container.length == 0 ) {
-
-		var listData = requestElement.closest( '.actions-list-data' );
-
-		if( listData.length == 1 ) {
-
-			var identifier = listData.attr( 'data-idx' );
-
-			var list = jQuery( '#actions-list-' + identifier );
-
-			container = list.closest( '.cmt-gallery-item-crud' );
-		}
-	}
-
-	return container;
-}
-
-// == Direct Calls ========================
-
-// == Additional Methods ==================
-
-
-// == Application =========================
-
-jQuery( document ).ready( function() {
-	
-	// Register App
 	var app	= cmt.api.root.registerApplication( 'grid', 'cmt.api.Application', { basePath: ajaxUrl } );
 
 	// Map Controllers
 	app.mapController( 'crud', 'cmg.controllers.grid.CrudController' );
-	
+
 	// Register Listeners
 	cmt.api.utils.request.register( app, jQuery( '[cmt-app=grid]' ) );
 });
@@ -3378,584 +4047,15 @@ cmg.controllers.grid.CrudController.prototype.deleteActionFailure = function( re
 	alert( 'Failed to process your request.' );
 };
 
-// == Direct Calls ========================
+cmg.controllers.grid.CrudController.prototype.pageActionSuccess = function( requestElement, response ) {
 
-// == Additional Methods ==================
-
-
-// == Application =========================
-
-jQuery( document ).ready( function() {
-
-	// Register App
-	var app	= cmt.api.root.registerApplication( 'mapper', 'cmt.api.Application', { basePath: ajaxUrl } );
-
-	// Map Controllers
-	app.mapController( 'auto', 'cmg.controllers.mapper.AutoController' );
-	app.mapController( 'model', 'cmg.controllers.mapper.ModelController' );
-	app.mapController( 'csv', 'cmg.controllers.mapper.CsvController' );
-
-	// Map Services
-	app.mapService( 'auto', 'cmg.services.mapper.AutoService' );
-
-	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=mapper]' ) );
-});
-
-// == Controller Namespace ================
-
-var cmg = cmg || {};
-
-cmg.controllers = cmg.controllers || {};
-
-cmg.controllers.mapper = cmg.controllers.mapper || {};
-
-// == Service Namespace ===================
-
-cmg.services = cmg.services || {};
-
-cmg.services.mapper = cmg.services.mapper || {};
-
-// == Auto Controller =====================
-
-cmg.controllers.mapper.AutoController = function() {
-
-	this.singleRequest		= true;
-	this.previousLocation	= null;
+	cmt.utils.data.refreshGrid();
 };
 
-cmg.controllers.mapper.AutoController.inherits( cmt.api.controllers.RequestController );
+cmg.controllers.grid.CrudController.prototype.pageActionFailure = function( requestElement, response ) {
 
-cmg.controllers.mapper.AutoController.prototype.autoSearchActionPre = function( requestElement ) {
-
-	var autoFill = requestElement.closest( '.auto-fill' );
-
-	var name = autoFill.find( '.search-name' ).val();
-	var type = autoFill.find( '.search-type' );
-
-	if( name.length <= 0 ) {
-
-		autoFill.find( '.auto-fill-items' ).slideUp();
-		autoFill.find( '.auto-fill-target .target' ).val( '' );
-
-		return false;
-	}
-
-	if( type.length == 1 ) {
-
-		this.requestData = "name=" + name + "&type=" + type.val();
-	}
-	else {
-
-		this.requestData = "name=" + name;
-	}
-
-	return true;
+	alert( 'Failed to load the page.' );
 };
-
-cmg.controllers.mapper.AutoController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
-
-	var data			= response.data;
-	var listHtml		= '';
-	//var wrapItemList	= requestElement.find( '.auto-fill-items-wrap' );
-	var itemList		= requestElement.find( '.auto-fill-items' );
-
-	for( i = 0; i < data.length; i++ ) {
-
-		var obj = data[ i ];
-
-		listHtml += "<li class='auto-fill-item' data-id='" + obj.id + "'>" + obj.name + "</li>";
-	}
-
-	if( listHtml.length == 0 ) {
-
-		listHtml = "<li class='auto-fill-message'>No matching results found.</li>";
-
-		itemList.html( listHtml );
-	}
-	else {
-
-		itemList.html( listHtml );
-
-		requestElement.find( '.auto-fill-item' ).click( function() {
-
-			var target	= requestElement.closest( '.auto-fill' ).find( '.auto-fill-target' );
-			var id		= jQuery( this ).attr( 'data-id' );
-			var name	= jQuery( this ).html();
-
-			itemList.slideUp();
-
-			// Update Id and Name
-			target.find( '.target' ).val( id );
-			requestElement.find( '.auto-fill-text' ).val( name );
-		});
-	}
-
-	itemList.slideDown();
-};
-
-// == Mapper Controller ===================
-
-cmg.controllers.mapper.ModelController = function() {};
-
-cmg.controllers.mapper.ModelController.inherits( cmt.api.controllers.RequestController );
-
-cmg.controllers.mapper.ModelController.prototype.autoSearchActionPre = function( requestElement ) {
-
-	var autoFill	= requestElement.closest( '.auto-fill' );
-	var type 		= autoFill.find( 'input[name=type]' );
-	var keyword 	= autoFill.find( '.auto-fill-text' ).val();
-
-	var itemsLength	= requestElement.closest( '.mapper-auto-items' ).find( '.mapper-items' ).find( '.mapper-item' ).length;
-	var itemsLimit	= requestElement.closest( '.mapper-auto-items' ).attr( 'limit' );
-
-	if( keyword.length <= 0 ) {
-
-		autoFill.find( '.auto-fill-items' ).slideUp();
-		autoFill.find( '.trigger-map-item input[name=itemId]' ).val( '' );
-
-		return false;
-	}
-	
-	if( null !== itemsLimit && parseInt( itemsLimit ) <= itemsLength ) {
-		
-		alert( "No more mappings allowed." );
-	}
-
-	if( type.length == 1 ) {
-
-		this.requestData = "name=" + keyword + "&type=" + type.val();
-	}
-	else {
-
-		this.requestData = "name=" + keyword;
-	}
-
-	return true;
-};
-
-cmg.controllers.mapper.ModelController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
-
-	var data		= response.data;
-	var listHtml	= '';
-	var autoFill	= requestElement.closest( '.auto-fill' );
-	var itemList	= requestElement.find( '.auto-fill-items' );
-	var autoSubmit	= requestElement.attr( 'autoSubmit' ) || 'yes';
-	var template	= requestElement.attr( 'template' ) || '';
-	
-	for( i = 0; i < data.length; i++ ) {
-
-		var obj = data[ i ];
-
-		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + "</li>";
-	}
-
-	if( listHtml.length == 0 ) {
-
-		listHtml	= "<li class=\"auto-fill-message\">No matching results found.</li>";
-
-		itemList.html( listHtml );
-	}
-	else {
-
-		itemList.html( listHtml );
-
-		requestElement.find( '.auto-fill-item' ).click( function() {
-
-			var id = jQuery( this ).attr( 'data-id' );
-			var name = jQuery( this ).html();
-
-			itemList.slideUp();
-
-			if( autoSubmit === 'yes' ) {
-				
-				autoFill.find( '.trigger-map-item input[name=itemId]' ).val( id );
-				autoFill.find( '.trigger-map-item .cmt-click' )[ 0 ].click();
-			}
-			else {
-
-				cmt.api.root.getApplication( 'mapper' ).getService( 'auto' ).processAutoSearch( id, name, template );
-			}
-		});
-	}
-
-	itemList.slideDown();
-};
-
-cmg.controllers.mapper.ModelController.prototype.mapItemActionPre = function( requestElement ) {
-
-	var itemId	= requestElement.find( 'input[name=itemId]' ).val();
-	itemId		= parseInt( itemId );
-
-	if( itemId > 0 ) {
-
-		return true;
-	}
-
-	return false;
-};
-
-cmg.controllers.mapper.ModelController.prototype.mapItemActionSuccess = function( requestElement, response ) {
-
-	var autoItems	= requestElement.closest( '.mapper-auto-items' );
-
-	// Template
-	var source 		= document.getElementById( autoItems.attr( 'template' ) ).innerHTML;
-	var template 	= Handlebars.compile( source );
-
-	// Map
-	var mapperItems	= autoItems.find( '.mapper-items' );
-	var itemsArr	= mapperItems.find( '.mapper-item' );
-	var itemsLength	= itemsArr.length;
-
-	var cid			= response.data.cid;
-	var name		= response.data.name;
-
-	// Reset search field
-	autoItems.find( '.search-name' ).val( '' );
-
-	var create	= true;
-
-	for( var i = 0; i < itemsLength; i++ ) {
-
-		var test = jQuery( itemsArr[ i ] ).find( '.cid' ).val();
-
-		if( cid == test ) {
-
-			create = false;
-
-			break;
-		}
-	}
-
-	if( create ) {
-
-		// Generate View
-		var data	= { cid: cid, name: name };
-		var output 	= template( data );
-
-		mapperItems.append( output );
-
-		itemsArr	= mapperItems.find( '.mapper-item' );
-		itemsLength	= itemsArr.length;
-
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), itemsArr.last() );
-	}
-};
-
-cmg.controllers.mapper.ModelController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
-
-	requestElement.remove();
-};
-
-cmg.controllers.mapper.ModelController.prototype.toggleItemActionSuccess = function( requestElement, response ) {
-
-	// Handle response
-};
-
-// == Csv Controller ======================
-
-cmg.controllers.mapper.CsvController = function() {};
-
-cmg.controllers.mapper.CsvController.inherits( cmt.api.controllers.RequestController );
-
-cmg.controllers.mapper.CsvController.prototype.mapItemActionSuccess = function( requestElement, response ) {
-
-	var submitItems	= jQuery( '.mapper-submit-items' );
-	var mapperItems	= submitItems.find( '.mapper-items' );
-
-	var source 		= document.getElementById( submitItems.attr( 'template' ) ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var data		= { list: response.data };
-	var output 		= template( data );
-
-	mapperItems.html( output );
-
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), mapperItems.find( '[cmt-app=mapper]' ) );
-};
-
-cmg.controllers.mapper.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
-
-	requestElement.remove();
-};
-
-// == Auto Service ========================
-
-cmg.services.mapper.AutoService = function() {};
-
-cmg.services.mapper.AutoService.inherits( cmt.api.services.BaseService );
-
-cmg.services.mapper.AutoService.prototype.processAutoSearch = function( id, name, template ) {
-
-	// Template
-	var source 		= document.getElementById( template ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	// Map
-	var mapperItems	= jQuery( '.mapper-auto-categories' ).find( '.mapper-items' );
-	var itemsArr	= mapperItems.find( '.mapper-item' );
-	var itemsLength	= itemsArr.length;
-
-	// Reset search field
-	jQuery( '.mapper-auto-categories .search-name' ).val( '' );
-
-	if( itemsLength >= 5 ) {
-
-		alert( "No more mappings allowed." );
-
-		return;
-	}
-
-	var create	= true;
-
-	for( var i = 0; i < itemsLength; i++ ) {
-
-		var test = jQuery( itemsArr[ i ] ).find( '.id' ).val();
-
-		if( id == test ) {
-
-			create = false;
-
-			break;
-		}
-	}
-
-	if( create ) {
-
-		// Generate View
-		var data	= { id: id, name: name };
-		var output 	= template( data );
-
-		mapperItems.append( output );
-
-		itemsArr	= mapperItems.find( '.mapper-item' );
-		itemsLength	= itemsArr.length;
-
-		itemsArr.last().find( '.mapper-item-remove' ).click( function() {
-
-			jQuery( this ).closest( '.mapper-item' ).remove();
-		});
-	}
-}
-
-// == Direct Calls ========================
-
-// == Additional Methods ==================
-
-
-// == Application =========================
-
-jQuery( document ).ready( function() {
-
-	// Register App
-	var app	= cmt.api.root.getApplication( 'data' );
-
-	// Map Controllers
-	app.mapController( 'social', 'cmg.data.controllers.SocialController' );
-
-	// Map Services
-	app.mapService( 'social', 'cmg.data.services.SocialService' );
-
-	// Event Listeners
-	app.getService( 'social' ).initListeners();
-});
-
-// == UI Guide ============================
-
-/*
-// An independent component to perform CRUD operations of Data JSON.
-
-.cmt-data-social-crud {
-	
-	.cmt-data-social-options {
-		// Option Chooser
-	}
-
-	.cmt-data-social-add {
-		// Trigger to show the add/update form
-	}
-
-	.cmt-data-social-collection {
-
-		.cmt-data-social {
-
-		}
-	}
-}
- */
-
-// == Social Controller ===================
-
-cmg.data.controllers.SocialController = function() {
-
-	this.app = cmt.api.root.getApplication( 'data' );
-
-	this.modelService = this.app.getService( 'social' );
-};
-
-cmg.data.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
-
-cmg.data.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
-
-	this.requestForm = requestElement.closest( '.cmt-data-social' );
-
-	return true;
-}
-
-cmg.data.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
-	
-	var container	= this.modelService.findContainer( requestElement );
-	var social		= requestElement.closest( '.cmt-data-social' );
-
-	// Unset Form
-	this.requestForm = null;
-
-	// Refresh Data
-	this.modelService.refresh( container, social, response.data );
-}
-
-cmg.data.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
-
-	this.requestForm = requestElement.closest( '.cmt-data-social' );
-
-	return true;
-}
-
-cmg.data.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
-	
-	var container	= this.modelService.findContainer( requestElement );
-	var social		= requestElement.closest( '.cmt-data-social' );
-
-	// Unset Form
-	this.requestForm = null;
-
-	// Refresh Data
-	this.modelService.refresh( container, social, response.data );
-}
-
-cmg.data.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
-
-	this.requestForm = requestElement.closest( '.cmt-data-social' );
-
-	return true;
-}
-
-cmg.data.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
-	
-	var container	= this.modelService.findContainer( requestElement );
-	var social		= requestElement.closest( '.cmt-data-social' );
-
-	// Unset Form
-	this.requestForm = null;
-
-	// Remove Data
-	this.modelService.remove( container, social );
-}
-
-// == Social Service ======================
-
-cmg.data.services.SocialService = function() {
-
-	// Default Handlebar Templates
-	this.addTemplate		= 'addSocialDataTemplate';
-	this.refreshTemplate	= 'refreshSocialDataTemplate';
-};
-
-cmg.data.services.SocialService.inherits( cmt.api.services.BaseService );
-
-cmg.data.services.SocialService.prototype.initListeners = function() {
-
-	var self = this;
-	
-	var triggers = jQuery( '.cmt-data-social-add' );
-
-	if( triggers.length == 0 ) {
-
-		return;
-	}
-
-	triggers.click( function() {
-
-		var container = jQuery( this ).closest( '.cmt-data-social-crud' );
-
-		self.initAddForm( container );
-	});
-}
-
-cmg.data.services.SocialService.prototype.initAddForm = function( container ) {
-
-	var select	= container.find( '.cmt-data-social-options' );
-	var icon	= select.val();
-	var sns		= select.find( 'option:selected' ).text();
-
-	var source 		= document.getElementById( this.addTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var output 		= template( { sns: sns, icon: icon } );
-
-	container.find( '.cmt-data-social-collection' ).append( output );
-
-	// Find data
-	var social = container.find( '.cmt-data-social' ).last();
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', social );
-
-	// Init Listeners
-	social.find( '.btn-remove' ).click( function() {
-
-		social.remove();
-	});
-}
-
-cmg.data.services.SocialService.prototype.refresh = function( container, social, data ) {
-
-	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	var output 		= template( data );
-
-	social.html( output );
-
-	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', social );
-}
-
-cmg.data.services.SocialService.prototype.remove = function( container, social ) {
-
-	var actions = social.find( '.cmt-actions' );
-
-	// Remove Actions
-	if( actions.length > 0 ) {
-
-		var index = actions.attr( 'data-idx' );
-
-		// Remove Actions List
-		jQuery( '#actions-list-data-' + index ).remove();
-	}
-
-	// Remove Data
-	social.remove();
-}
-
-cmg.data.services.SocialService.prototype.findContainer = function( requestElement ) {
-
-	var container = requestElement.closest( '.cmt-data-social-crud' );
-
-	// Find in Actions
-	if( container.length == 0 ) {
-
-		var listData = requestElement.closest( '.actions-list-data' );
-
-		if( listData.length == 1 ) {
-
-			var identifier = listData.attr( 'data-idx' );
-
-			var list = jQuery( '#actions-list-' + identifier );
-
-			container = list.closest( '.cmt-data-social-crud' );
-		}
-	}
-
-	return container;
-}
 
 // == Direct Calls ========================
 
@@ -4007,12 +4107,12 @@ cmg.forms.controllers.FormController.inherits( cmt.api.controllers.RequestContro
 
 cmg.forms.controllers.FormController.prototype.defaultActionSuccess = function( requestElement, response ) {
 
-	console.log( 'form processed successfully.' );
+	cmg.logger.log( 'Form processed successfully.' );
 };
 
 cmg.forms.controllers.FormController.prototype.defaultActionFailure = function( requestElement, response ) {
 
-	console.log( 'form processing failed.' );
+	cmg.logger.log( 'Form processing failed.' );
 };
 
 // == Direct Calls ========================
