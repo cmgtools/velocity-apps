@@ -6,28 +6,28 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Controllers
-	app.mapController( 'social', 'cmg.core.controllers.SocialController' );
+	app.mapController( 'socialData', 'cmg.core.data.controllers.SocialController' );
 });
 
 // == Social Controller ===================
 
-cmg.core.controllers.SocialController = function() {
+cmg.core.data.controllers.SocialController = function() {
 
 	this.app = cmt.api.root.getApplication( 'core' );
 
-	this.modelService = this.app.getService( 'social' );
+	this.modelService = this.app.getService( 'socialData' );
 };
 
-cmg.core.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
+cmg.core.data.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
 
-cmg.core.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
+cmg.core.data.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.core.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
+cmg.core.data.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var social		= requestElement.closest( '.cmt-data-social' );
@@ -39,14 +39,14 @@ cmg.core.controllers.SocialController.prototype.addActionSuccess = function( req
 	this.modelService.refresh( container, social, response.data );
 }
 
-cmg.core.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
+cmg.core.data.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.core.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
+cmg.core.data.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var social		= requestElement.closest( '.cmt-data-social' );
@@ -58,14 +58,14 @@ cmg.core.controllers.SocialController.prototype.updateActionSuccess = function( 
 	this.modelService.refresh( container, social, response.data );
 }
 
-cmg.core.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
+cmg.core.data.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.core.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
+cmg.core.data.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var social		= requestElement.closest( '.cmt-data-social' );

@@ -6,10 +6,10 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Services
-	app.mapService( 'social', 'cmg.core.services.SocialService' );
+	app.mapService( 'socialData', 'cmg.core.data.services.SocialService' );
 
 	// Event Listeners
-	app.getService( 'social' ).initListeners();
+	app.getService( 'socialData' ).initListeners();
 });
 
 // == UI Guide ============================
@@ -38,16 +38,16 @@ jQuery( document ).ready( function() {
 
 // == Social Service ======================
 
-cmg.core.services.SocialService = function() {
+cmg.core.data.services.SocialService = function() {
 
 	// Default Handlebar Templates
 	this.addTemplate		= 'addSocialDataTemplate';
 	this.refreshTemplate	= 'refreshSocialDataTemplate';
 };
 
-cmg.core.services.SocialService.inherits( cmt.api.services.BaseService );
+cmg.core.data.services.SocialService.inherits( cmt.api.services.BaseService );
 
-cmg.core.services.SocialService.prototype.initListeners = function() {
+cmg.core.data.services.SocialService.prototype.initListeners = function() {
 
 	var self = this;
 
@@ -66,7 +66,7 @@ cmg.core.services.SocialService.prototype.initListeners = function() {
 	});
 }
 
-cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
+cmg.core.data.services.SocialService.prototype.initAddForm = function( container ) {
 
 	var select	= container.find( '.cmt-data-social-options' );
 	var icon	= select.val();
@@ -82,7 +82,7 @@ cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
 	var social = container.find( '.cmt-data-social' ).last();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', social );
+	cmt.api.utils.request.registerTargetApp( 'core', social );
 
 	// Init Listeners
 	social.find( '.btn-remove' ).click( function() {
@@ -91,7 +91,7 @@ cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
 	});
 }
 
-cmg.core.services.SocialService.prototype.refresh = function( container, social, data ) {
+cmg.core.data.services.SocialService.prototype.refresh = function( container, social, data ) {
 
 	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -100,10 +100,10 @@ cmg.core.services.SocialService.prototype.refresh = function( container, social,
 	social.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', social );
+	cmt.api.utils.request.registerTargetApp( 'core', social );
 }
 
-cmg.core.services.SocialService.prototype.remove = function( container, social ) {
+cmg.core.data.services.SocialService.prototype.remove = function( container, social ) {
 
 	var actions = social.find( '.cmt-actions' );
 
@@ -120,7 +120,7 @@ cmg.core.services.SocialService.prototype.remove = function( container, social )
 	social.remove();
 }
 
-cmg.core.services.SocialService.prototype.findContainer = function( requestElement ) {
+cmg.core.data.services.SocialService.prototype.findContainer = function( requestElement ) {
 
 	var container = requestElement.closest( '.cmt-data-social-crud' );
 

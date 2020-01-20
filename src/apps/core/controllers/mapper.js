@@ -173,7 +173,7 @@ cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = 
 			}
 			else {
 
-				cmt.api.root.getApplication( 'mapper' ).getService( 'autoMapper' ).processAutoSearch( id, name, template );
+				cmt.api.root.getApplication( 'core' ).getService( 'autoMapper' ).processAutoSearch( id, name, template );
 			}
 		});
 	}
@@ -238,7 +238,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), itemsArr.last() );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), itemsArr.last() );
 	}
 };
 
@@ -270,7 +270,7 @@ cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = funct
 
 	mapperItems.html( output );
 
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), mapperItems.find( '[cmt-app=mapper]' ) );
+	cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), mapperItems.find( '[cmt-app=core]' ) );
 };
 
 cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {

@@ -88,7 +88,7 @@ cmg.core.data.services.CustomService.prototype.initAddForm = function( container
 	var custom = container.find( '.cmt-data-custom' ).last();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', custom );
+	cmt.api.utils.request.registerTargetApp( 'core', custom );
 
 	// Init Listeners
 	custom.find( '.btn-remove' ).click( function() {
@@ -106,7 +106,7 @@ cmg.core.data.services.CustomService.prototype.refresh = function( container, cu
 	custom.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', custom );
+	cmt.api.utils.request.registerTargetApp( 'core', custom );
 }
 
 cmg.core.data.services.CustomService.prototype.remove = function( container, custom ) {

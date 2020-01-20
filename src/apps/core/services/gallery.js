@@ -112,7 +112,7 @@ cmg.core.gallery.services.ItemService.prototype.initAddForm = function( containe
 	form.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', form );
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
 	// Init Uploader
 	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
@@ -144,7 +144,7 @@ cmg.core.gallery.services.ItemService.prototype.initUpdateForm = function( conta
 	form.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', form );
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
 	// Copy image data
 	form.find( '.file-data' ).html( item.find( '.cmt-gallery-item-data' ).html() );
@@ -198,7 +198,7 @@ cmg.core.gallery.services.ItemService.prototype.add = function( container, data 
 	}
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', item );
+	cmt.api.utils.request.registerTargetApp( 'core', item );
 
 	// Init Actions
 	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );

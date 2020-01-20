@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-01-15
+ * Velocity Apps - v1.0.0-alpha1 - 2020-01-20
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1121,7 +1121,7 @@ cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = 
 			}
 			else {
 
-				cmt.api.root.getApplication( 'mapper' ).getService( 'autoMapper' ).processAutoSearch( id, name, template );
+				cmt.api.root.getApplication( 'core' ).getService( 'autoMapper' ).processAutoSearch( id, name, template );
 			}
 		});
 	}
@@ -1186,7 +1186,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), itemsArr.last() );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), itemsArr.last() );
 	}
 };
 
@@ -1218,7 +1218,7 @@ cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = funct
 
 	mapperItems.html( output );
 
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), mapperItems.find( '[cmt-app=mapper]' ) );
+	cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), mapperItems.find( '[cmt-app=core]' ) );
 };
 
 cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
@@ -1502,28 +1502,28 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Controllers
-	app.mapController( 'social', 'cmg.core.controllers.SocialController' );
+	app.mapController( 'socialData', 'cmg.core.data.controllers.SocialController' );
 });
 
 // == Social Controller ===================
 
-cmg.core.controllers.SocialController = function() {
+cmg.core.data.controllers.SocialController = function() {
 
 	this.app = cmt.api.root.getApplication( 'core' );
 
-	this.modelService = this.app.getService( 'social' );
+	this.modelService = this.app.getService( 'socialData' );
 };
 
-cmg.core.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
+cmg.core.data.controllers.SocialController.inherits( cmt.api.controllers.RequestController );
 
-cmg.core.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
+cmg.core.data.controllers.SocialController.prototype.addActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.core.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
+cmg.core.data.controllers.SocialController.prototype.addActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var social		= requestElement.closest( '.cmt-data-social' );
@@ -1535,14 +1535,14 @@ cmg.core.controllers.SocialController.prototype.addActionSuccess = function( req
 	this.modelService.refresh( container, social, response.data );
 }
 
-cmg.core.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
+cmg.core.data.controllers.SocialController.prototype.updateActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.core.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
+cmg.core.data.controllers.SocialController.prototype.updateActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var social		= requestElement.closest( '.cmt-data-social' );
@@ -1554,14 +1554,14 @@ cmg.core.controllers.SocialController.prototype.updateActionSuccess = function( 
 	this.modelService.refresh( container, social, response.data );
 }
 
-cmg.core.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
+cmg.core.data.controllers.SocialController.prototype.deleteActionPre = function( requestElement ) {
 
 	this.requestForm = requestElement.closest( '.cmt-data-social' );
 
 	return true;
 }
 
-cmg.core.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
+cmg.core.data.controllers.SocialController.prototype.deleteActionSuccess = function( requestElement, response ) {
 
 	var container	= this.modelService.findContainer( requestElement );
 	var social		= requestElement.closest( '.cmt-data-social' );
@@ -2204,7 +2204,7 @@ cmg.core.data.services.CustomService.prototype.initAddForm = function( container
 	var custom = container.find( '.cmt-data-custom' ).last();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', custom );
+	cmt.api.utils.request.registerTargetApp( 'core', custom );
 
 	// Init Listeners
 	custom.find( '.btn-remove' ).click( function() {
@@ -2222,7 +2222,7 @@ cmg.core.data.services.CustomService.prototype.refresh = function( container, cu
 	custom.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', custom );
+	cmt.api.utils.request.registerTargetApp( 'core', custom );
 }
 
 cmg.core.data.services.CustomService.prototype.remove = function( container, custom ) {
@@ -2479,7 +2479,7 @@ cmg.core.gallery.services.ItemService.prototype.initAddForm = function( containe
 	form.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', form );
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
 	// Init Uploader
 	form.find( '.cmt-gallery-item-uploader' ).cmtFileUploader();
@@ -2511,7 +2511,7 @@ cmg.core.gallery.services.ItemService.prototype.initUpdateForm = function( conta
 	form.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', form );
+	cmt.api.utils.request.registerTargetApp( 'core', form );
 
 	// Copy image data
 	form.find( '.file-data' ).html( item.find( '.cmt-gallery-item-data' ).html() );
@@ -2565,7 +2565,7 @@ cmg.core.gallery.services.ItemService.prototype.add = function( container, data 
 	}
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'gallery', item );
+	cmt.api.utils.request.registerTargetApp( 'core', item );
 
 	// Init Actions
 	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );
@@ -3652,10 +3652,10 @@ jQuery( document ).ready( function() {
 	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Services
-	app.mapService( 'social', 'cmg.core.services.SocialService' );
+	app.mapService( 'socialData', 'cmg.core.data.services.SocialService' );
 
 	// Event Listeners
-	app.getService( 'social' ).initListeners();
+	app.getService( 'socialData' ).initListeners();
 });
 
 // == UI Guide ============================
@@ -3684,16 +3684,16 @@ jQuery( document ).ready( function() {
 
 // == Social Service ======================
 
-cmg.core.services.SocialService = function() {
+cmg.core.data.services.SocialService = function() {
 
 	// Default Handlebar Templates
 	this.addTemplate		= 'addSocialDataTemplate';
 	this.refreshTemplate	= 'refreshSocialDataTemplate';
 };
 
-cmg.core.services.SocialService.inherits( cmt.api.services.BaseService );
+cmg.core.data.services.SocialService.inherits( cmt.api.services.BaseService );
 
-cmg.core.services.SocialService.prototype.initListeners = function() {
+cmg.core.data.services.SocialService.prototype.initListeners = function() {
 
 	var self = this;
 
@@ -3712,7 +3712,7 @@ cmg.core.services.SocialService.prototype.initListeners = function() {
 	});
 }
 
-cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
+cmg.core.data.services.SocialService.prototype.initAddForm = function( container ) {
 
 	var select	= container.find( '.cmt-data-social-options' );
 	var icon	= select.val();
@@ -3728,7 +3728,7 @@ cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
 	var social = container.find( '.cmt-data-social' ).last();
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', social );
+	cmt.api.utils.request.registerTargetApp( 'core', social );
 
 	// Init Listeners
 	social.find( '.btn-remove' ).click( function() {
@@ -3737,7 +3737,7 @@ cmg.core.services.SocialService.prototype.initAddForm = function( container ) {
 	});
 }
 
-cmg.core.services.SocialService.prototype.refresh = function( container, social, data ) {
+cmg.core.data.services.SocialService.prototype.refresh = function( container, social, data ) {
 
 	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
 	var template 	= Handlebars.compile( source );
@@ -3746,10 +3746,10 @@ cmg.core.services.SocialService.prototype.refresh = function( container, social,
 	social.html( output );
 
 	// Init Request
-	cmt.api.utils.request.registerTargetApp( 'data', social );
+	cmt.api.utils.request.registerTargetApp( 'core', social );
 }
 
-cmg.core.services.SocialService.prototype.remove = function( container, social ) {
+cmg.core.data.services.SocialService.prototype.remove = function( container, social ) {
 
 	var actions = social.find( '.cmt-actions' );
 
@@ -3766,7 +3766,7 @@ cmg.core.services.SocialService.prototype.remove = function( container, social )
 	social.remove();
 }
 
-cmg.core.services.SocialService.prototype.findContainer = function( requestElement ) {
+cmg.core.data.services.SocialService.prototype.findContainer = function( requestElement ) {
 
 	var container = requestElement.closest( '.cmt-data-social-crud' );
 
