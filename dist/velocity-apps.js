@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-01-20
+ * Velocity Apps - v1.0.0-alpha1 - 2020-02-03
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -786,6 +786,85 @@ cmg.core.controllers.FileController.prototype.clearActionFailure = function( req
 // == Direct Calls ========================
 
 // == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Register App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Controllers
+	app.mapController( 'follower', 'cmg.core.controllers.FollowerController' );
+});
+
+// == Follower Controller =================
+
+cmg.core.controllers.FollowerController = function() {
+
+	this.app = cmt.api.root.getApplication( 'core' );
+
+	this.modelService = this.app.getService( 'follower' );
+};
+
+cmg.core.controllers.FollowerController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.controllers.FollowerController.prototype.likeActionPre = function( requestElement, response ) {
+
+	return true;
+};
+
+cmg.core.controllers.FollowerController.prototype.likeActionSuccess = function( requestElement, response ) {
+
+	var follower	= response.data.follower;
+	var counts		= response.data.counts;
+
+	this.modelService.processClasses( requestElement, follower, counts );
+
+	// TODO: Handle dislike icons
+};
+
+cmg.core.controllers.FollowerController.prototype.dislikeActionPre = function( requestElement, response ) {
+
+	return true;
+};
+
+cmg.core.controllers.FollowerController.prototype.dislikeActionSuccess = function( requestElement, response ) {
+
+	var follower	= response.data.follower;
+	var counts		= response.data.counts;
+
+	this.modelService.processClasses( requestElement, follower, counts );
+
+	// TODO: Handle like icons
+};
+
+cmg.core.controllers.FollowerController.prototype.followActionPre = function( requestElement, response ) {
+
+	return true;
+};
+
+cmg.core.controllers.FollowerController.prototype.followActionSuccess = function( requestElement, response ) {
+
+	var follower	= response.data.follower;
+	var counts		= response.data.counts;
+
+	this.modelService.processClasses( requestElement, follower, counts );
+};
+
+cmg.core.controllers.FollowerController.prototype.wishActionPre = function( requestElement, response ) {
+
+	return true;
+};
+
+cmg.core.controllers.FollowerController.prototype.wishActionSuccess = function( requestElement, response ) {
+
+	var follower	= response.data.follower;
+	var counts		= response.data.counts;
+
+	this.modelService.processClasses( requestElement, follower, counts );
+};
 
 
 // == Application =========================
@@ -2360,6 +2439,54 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 	uploader.find( '.name' ).val( '' );
 	uploader.find( '.file-clear' ).hide();
 	uploader.find( '.post-action' ).hide();
+}
+
+// == Additional Methods ==================
+
+
+// == Application =========================
+
+jQuery( document ).ready( function() {
+
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
+
+	// Map Services
+	app.mapService( 'follower', 'cmg.core.services.FollowerService' );
+
+	// Event Listeners
+	app.getService( 'follower' ).initListeners();
+});
+
+// == File Service ========================
+
+cmg.core.services.FollowerService = function() {};
+
+cmg.core.services.FollowerService.inherits( cmt.api.services.BaseService );
+
+cmg.core.services.FollowerService.prototype.initListeners = function() {
+
+	var self = this;
+}
+
+cmg.core.services.FollowerService.prototype.processClasses = function( requestElement, follower, counts ) {
+
+	var upClass		= requestElement.attr( 'data-class-up' );
+	var downClass	= requestElement.attr( 'data-class-down' );
+	var modelClass	= requestElement.attr( 'data-class-model' );
+
+	var models = jQuery( '.' + modelClass + '-' + follower.parentId + ' .icon' );
+
+	if( follower.active ) {
+
+		models.removeClass( downClass );
+		models.addClass( upClass );
+	}
+	else {
+
+		models.removeClass( upClass );
+		models.addClass( downClass );
+	}
 }
 
 // == Additional Methods ==================
