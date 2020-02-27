@@ -75,6 +75,13 @@ cmg.core.controllers.CommentController.prototype.deleteActionSuccess = function(
 	requestElement.closest( '.actions-list-data' ).slideUp();
 };
 
+// Used for permanent delete in exceptional cases
+cmg.core.controllers.CommentController.prototype.pdeleteActionSuccess = function( requestElement, response ) {
+
+	// Reload Page
+	location.reload();
+};
+
 // == Review Controller ===================
 
 cmg.core.controllers.ReviewController = function() {};
