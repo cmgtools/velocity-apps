@@ -9,6 +9,7 @@ jQuery( document ).ready( function() {
 	app.mapController( 'comment', 'cmg.core.controllers.CommentController' );
 	app.mapController( 'review', 'cmg.core.controllers.ReviewController' );
 	app.mapController( 'feedback', 'cmg.core.controllers.FeedbackController' );
+	app.mapController( 'testimonial', 'cmg.core.controllers.TestimonialController' );
 });
 
 // == Comment Controller ==================
@@ -21,6 +22,64 @@ cmg.core.controllers.CommentController.prototype.createActionSuccess = function(
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
+};
+
+cmg.core.controllers.CommentController.prototype.spamActionPre = function( requestElement, response ) {
+
+	var result = confirm( 'Are you sure you want to submit admin request to mark it as spam?' );
+
+	if( result ) {
+
+	    return true;
+	}
+
+	return false;
+};
+
+cmg.core.controllers.CommentController.prototype.spamActionSuccess = function( requestElement, response ) {
+
+	requestElement.closest( '.actions-list-data' ).slideUp();
+};
+
+cmg.core.controllers.CommentController.prototype.approveActionPre = function( requestElement, response ) {
+
+	var result = confirm( 'Are you sure you want to submit admin request to approve it?' );
+
+	if( result ) {
+
+	    return true;
+	}
+
+	return false;
+};
+
+cmg.core.controllers.CommentController.prototype.approveActionSuccess = function( requestElement, response ) {
+
+	requestElement.closest( '.actions-list-data' ).slideUp();
+};
+
+cmg.core.controllers.CommentController.prototype.deleteActionPre = function( requestElement, response ) {
+
+	var result = confirm( 'Are you sure you want to submit admin request to delete it?' );
+
+	if( result ) {
+
+	    return true;
+	}
+
+	return false;
+};
+
+cmg.core.controllers.CommentController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	requestElement.closest( '.actions-list-data' ).slideUp();
+};
+
+// Used for permanent delete in exceptional cases
+cmg.core.controllers.CommentController.prototype.pdeleteActionSuccess = function( requestElement, response ) {
+
+	// Reload Page
+	location.reload();
 };
 
 // == Review Controller ===================
@@ -48,6 +107,21 @@ cmg.core.controllers.FeedbackController.prototype.createActionSuccess = function
 
 	// Empty Images
 	requestElement.find( '.gallery-feedback' ).html( '' );
+
+	// Reset rating
+	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
+};
+
+// == Testimonial Controller ==============
+
+cmg.core.controllers.TestimonialController = function() {};
+
+cmg.core.controllers.TestimonialController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.controllers.TestimonialController.prototype.createActionSuccess = function( requestElement, response ) {
+
+	// Empty Images
+	requestElement.find( '.gallery-testimonial' ).html( '' );
 
 	// Reset rating
 	requestElement.find( '.cmt-rating' ).cmtRate( 'reset' );
@@ -212,36 +286,12 @@ cmg.core.controllers.ReviewController.prototype.deleteActionPost = function( suc
 	}
 };
 
-cmg.core.controllers.ReviewController.prototype.spamRequestActionPre = function( requestElement, response ) {
-
-	var result = confirm( 'Are you sure you want to submit admin request to mark it as spam ?' );
-
-	if( result ) {
-
-	    return true;
-	}
-
-	return false;
-};
-
 cmg.core.controllers.ReviewController.prototype.spamRequestActionPost = function( success, requestElement, response ) {
 
 	if( success ) {
 
 		jQuery( requestElement ).html( "<a class='btn disabled'><i class='fa fa-ban'></i><span class='width width-5 inline-block'></span>Requested For Spam </a>" );
 	}
-};
-
-cmg.core.controllers.ReviewController.prototype.deleteRequestActionPre = function( requestElement, response ) {
-
-	var result = confirm( 'Are you sure you want to submit admin request to delete it ?' );
-
-	if( result ) {
-
-	    return true;
-	}
-
-	return false;
 };
 
 cmg.core.controllers.ReviewController.prototype.deleteRequestActionPost = function( success, requestElement, response ) {

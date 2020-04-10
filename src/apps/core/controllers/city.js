@@ -13,16 +13,15 @@ jQuery( document ).ready( function() {
 
 cmg.core.controllers.CityController	= function() {};
 
-cmg.core.controllers.CityController.inherits( cmt.api.controllers.BaseController );
+cmg.core.controllers.CityController.inherits( cmt.api.controllers.RequestController );
 
 cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( requestElement ) {
 
 	var form		= requestElement.closest( '.cmt-location' );
 	var autoFill	= requestElement.closest( '.auto-fill' );
-
-	var provinceId 	= form.find( '.cmt-location-province' ).val();
-	var regionId	= form.find( '.cmt-location-region' ).val();
-	var cityName 	= form.find( '.auto-fill-text' ).val();
+	var cityName 	= autoFill.find( '.auto-fill-text' ).val();
+	var limit		= autoFill.find( '.limit' );
+	var autoCache	= autoFill.find( '.auto-cache' );
 
 	if( cityName.length <= 0 ) {
 
@@ -32,7 +31,44 @@ cmg.core.controllers.CityController.prototype.autoSearchActionPre = function( re
 		return false;
 	}
 
-	this.requestData = "province-id=" + provinceId + "&region-id=" + regionId + "&name=" + cityName;
+	// Only one request at a time
+	this.singleRequest = true;
+
+	if( form.length > 0 ) {
+
+		var province	= form.find( '.cmt-location-province' );
+		var region		= form.find( '.cmt-location-region' );
+
+		var params = [];
+
+		if( province.length > 0 ) {
+
+			params.push( "provinceId=" + province.val() );
+		}
+
+		if( region.length > 0 ) {
+
+			params.push( "regionId=" + region.val() );
+		}
+
+		params.push( "name=" + cityName );
+
+		this.requestData = params.join( '&' );
+	}
+	else {
+
+		this.requestData = "name=" + cityName;
+	}
+
+	if( limit.length > 0 ) {
+
+		this.requestData += "&limit=" + limit.val();
+	}
+
+	if( autoCache.length > 0 ) {
+
+		this.requestData += "&autoCache=" + autoCache.val();
+	}
 
 	return true;
 };

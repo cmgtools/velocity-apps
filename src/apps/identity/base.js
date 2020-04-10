@@ -1,26 +1,26 @@
 // == Application =========================
 
 jQuery( document ).ready( function() {
-	
+
 	// Register App
-	var app = cmt.api.root.registerApplication( 'bank', 'cmt.api.Application', { basePath: ajaxUrl } );
-	
+	var app = cmt.api.root.registerApplication( 'identity', 'cmt.api.Application', { basePath: ajaxUrl } );
+
 	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=bank]' ) );
+	cmt.api.utils.request.register( app, jQuery( '[cmt-app=identity]' ) );
 });
 
 // == App Namespace =======================
 
 var cmg = cmg || {};
 
-cmg.bank = cmg.bank || {};
+cmg.identity = cmg.identity || {};
 
 // == Controller Namespace ================
 
-cmg.bank.controllers = cmg.bank.controllers || {};
+cmg.identity.controllers = cmg.identity.controllers || {};
 
 // == Service Namespace ===================
 
-cmg.bank.services = cmg.bank.services || {};
+cmg.identity.services = cmg.identity.services || {};
 
 // == Additional Methods ==================

@@ -2,46 +2,30 @@
 
 jQuery( document ).ready( function() {
 
-	// Register App
-	var app	= cmt.api.root.registerApplication( 'mapper', 'cmt.api.Application', { basePath: ajaxUrl } );
+	// Access App
+	var app	= cmt.api.root.getApplication( 'core' );
 
 	// Map Controllers
-	app.mapController( 'auto', 'cmg.controllers.mapper.AutoController' );
-	app.mapController( 'model', 'cmg.controllers.mapper.ModelController' );
-	app.mapController( 'csv', 'cmg.controllers.mapper.CsvController' );
-
-	// Map Services
-	app.mapService( 'auto', 'cmg.services.mapper.AutoService' );
-
-	// Register Listeners
-	cmt.api.utils.request.register( app, jQuery( '[cmt-app=mapper]' ) );
+	app.mapController( 'autoMapper', 'cmg.core.mapper.controllers.AutoController' );
+	app.mapController( 'modelMapper', 'cmg.core.mapper.controllers.ModelController' );
+	app.mapController( 'csvMapper', 'cmg.core.mapper.controllers.CsvController' );
 });
 
 // == Controller Namespace ================
 
-var cmg = cmg || {};
-
-cmg.controllers = cmg.controllers || {};
-
-cmg.controllers.mapper = cmg.controllers.mapper || {};
-
-// == Service Namespace ===================
-
-cmg.services = cmg.services || {};
-
-cmg.services.mapper = cmg.services.mapper || {};
+cmg.core.mapper.controllers = cmg.core.mapper.controllers || {};
 
 // == Auto Controller =====================
 
-cmg.controllers.mapper.AutoController = function() {
+cmg.core.mapper.controllers.AutoController = function() {
 
 	this.singleRequest		= true;
 	this.previousLocation	= null;
 };
 
-cmg.controllers.mapper.AutoController.inherits( cmt.api.controllers.RequestController );
+cmg.core.mapper.controllers.AutoController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.mapper.AutoController.prototype.autoSearchActionPre = function( requestElement ) {
+cmg.core.mapper.controllers.AutoController.prototype.autoSearchActionPre = function( requestElement ) {
 
 	var autoFill = requestElement.closest( '.auto-fill' );
 
@@ -68,7 +52,7 @@ cmg.controllers.mapper.AutoController.prototype.autoSearchActionPre = function( 
 	return true;
 };
 
-cmg.controllers.mapper.AutoController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.AutoController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
 
 	var data			= response.data;
 	var listHtml		= '';
@@ -111,11 +95,11 @@ cmg.controllers.mapper.AutoController.prototype.autoSearchActionSuccess = functi
 
 // == Mapper Controller ===================
 
-cmg.controllers.mapper.ModelController = function() {};
+cmg.core.mapper.controllers.ModelController = function() {};
 
-cmg.controllers.mapper.ModelController.inherits( cmt.api.controllers.RequestController );
+cmg.core.mapper.controllers.ModelController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.mapper.ModelController.prototype.autoSearchActionPre = function( requestElement ) {
+cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionPre = function( requestElement ) {
 
 	var autoFill	= requestElement.closest( '.auto-fill' );
 	var type 		= autoFill.find( 'input[name=type]' );
@@ -131,9 +115,9 @@ cmg.controllers.mapper.ModelController.prototype.autoSearchActionPre = function(
 
 		return false;
 	}
-	
+
 	if( null !== itemsLimit && parseInt( itemsLimit ) <= itemsLength ) {
-		
+
 		alert( "No more mappings allowed." );
 	}
 
@@ -149,7 +133,7 @@ cmg.controllers.mapper.ModelController.prototype.autoSearchActionPre = function(
 	return true;
 };
 
-cmg.controllers.mapper.ModelController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
 
 	var data		= response.data;
 	var listHtml	= '';
@@ -157,7 +141,7 @@ cmg.controllers.mapper.ModelController.prototype.autoSearchActionSuccess = funct
 	var itemList	= requestElement.find( '.auto-fill-items' );
 	var autoSubmit	= requestElement.attr( 'autoSubmit' ) || 'yes';
 	var template	= requestElement.attr( 'template' ) || '';
-	
+
 	for( i = 0; i < data.length; i++ ) {
 
 		var obj = data[ i ];
@@ -183,13 +167,13 @@ cmg.controllers.mapper.ModelController.prototype.autoSearchActionSuccess = funct
 			itemList.slideUp();
 
 			if( autoSubmit === 'yes' ) {
-				
+
 				autoFill.find( '.trigger-map-item input[name=itemId]' ).val( id );
 				autoFill.find( '.trigger-map-item .cmt-click' )[ 0 ].click();
 			}
 			else {
 
-				cmt.api.root.getApplication( 'mapper' ).getService( 'auto' ).processAutoSearch( id, name, template );
+				cmt.api.root.getApplication( 'core' ).getService( 'autoMapper' ).processAutoSearch( id, name, template );
 			}
 		});
 	}
@@ -197,7 +181,7 @@ cmg.controllers.mapper.ModelController.prototype.autoSearchActionSuccess = funct
 	itemList.slideDown();
 };
 
-cmg.controllers.mapper.ModelController.prototype.mapItemActionPre = function( requestElement ) {
+cmg.core.mapper.controllers.ModelController.prototype.mapItemActionPre = function( requestElement ) {
 
 	var itemId	= requestElement.find( 'input[name=itemId]' ).val();
 	itemId		= parseInt( itemId );
@@ -210,9 +194,9 @@ cmg.controllers.mapper.ModelController.prototype.mapItemActionPre = function( re
 	return false;
 };
 
-cmg.controllers.mapper.ModelController.prototype.mapItemActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = function( requestElement, response ) {
 
-	var autoItems	= requestElement.closest( '.mapper-auto-items' );
+	var autoItems = requestElement.closest( '.mapper-auto-items' );
 
 	// Template
 	var source 		= document.getElementById( autoItems.attr( 'template' ) ).innerHTML;
@@ -223,8 +207,8 @@ cmg.controllers.mapper.ModelController.prototype.mapItemActionSuccess = function
 	var itemsArr	= mapperItems.find( '.mapper-item' );
 	var itemsLength	= itemsArr.length;
 
-	var cid			= response.data.cid;
-	var name		= response.data.name;
+	var cid		= response.data.cid;
+	var name	= response.data.name;
 
 	// Reset search field
 	autoItems.find( '.search-name' ).val( '' );
@@ -254,27 +238,27 @@ cmg.controllers.mapper.ModelController.prototype.mapItemActionSuccess = function
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), itemsArr.last() );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), itemsArr.last() );
 	}
 };
 
-cmg.controllers.mapper.ModelController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.ModelController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
 
 	requestElement.remove();
 };
 
-cmg.controllers.mapper.ModelController.prototype.toggleItemActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.ModelController.prototype.toggleItemActionSuccess = function( requestElement, response ) {
 
 	// Handle response
 };
 
 // == Csv Controller ======================
 
-cmg.controllers.mapper.CsvController = function() {};
+cmg.core.mapper.controllers.CsvController = function() {};
 
-cmg.controllers.mapper.CsvController.inherits( cmt.api.controllers.RequestController );
+cmg.core.mapper.controllers.CsvController.inherits( cmt.api.controllers.RequestController );
 
-cmg.controllers.mapper.CsvController.prototype.mapItemActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = function( requestElement, response ) {
 
 	var submitItems	= jQuery( '.mapper-submit-items' );
 	var mapperItems	= submitItems.find( '.mapper-items' );
@@ -286,71 +270,13 @@ cmg.controllers.mapper.CsvController.prototype.mapItemActionSuccess = function( 
 
 	mapperItems.html( output );
 
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'mapper' ), mapperItems.find( '[cmt-app=mapper]' ) );
+	cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), mapperItems.find( '[cmt-app=core]' ) );
 };
 
-cmg.controllers.mapper.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
+cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
 
 	requestElement.remove();
 };
-
-// == Auto Service ========================
-
-cmg.services.mapper.AutoService = function() {};
-
-cmg.services.mapper.AutoService.inherits( cmt.api.services.BaseService );
-
-cmg.services.mapper.AutoService.prototype.processAutoSearch = function( id, name, template ) {
-
-	// Template
-	var source 		= document.getElementById( template ).innerHTML;
-	var template 	= Handlebars.compile( source );
-	// Map
-	var mapperItems	= jQuery( '.mapper-auto-categories' ).find( '.mapper-items' );
-	var itemsArr	= mapperItems.find( '.mapper-item' );
-	var itemsLength	= itemsArr.length;
-
-	// Reset search field
-	jQuery( '.mapper-auto-categories .search-name' ).val( '' );
-
-	if( itemsLength >= 5 ) {
-
-		alert( "No more mappings allowed." );
-
-		return;
-	}
-
-	var create	= true;
-
-	for( var i = 0; i < itemsLength; i++ ) {
-
-		var test = jQuery( itemsArr[ i ] ).find( '.id' ).val();
-
-		if( id == test ) {
-
-			create = false;
-
-			break;
-		}
-	}
-
-	if( create ) {
-
-		// Generate View
-		var data	= { id: id, name: name };
-		var output 	= template( data );
-
-		mapperItems.append( output );
-
-		itemsArr	= mapperItems.find( '.mapper-item' );
-		itemsLength	= itemsArr.length;
-
-		itemsArr.last().find( '.mapper-item-remove' ).click( function() {
-
-			jQuery( this ).closest( '.mapper-item' ).remove();
-		});
-	}
-}
 
 // == Direct Calls ========================
 

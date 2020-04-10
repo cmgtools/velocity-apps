@@ -18,6 +18,8 @@ var cmg = cmg || {};
 
 cmg.core = cmg.core || {};
 
+cmg.logger = cmg.logger || {};
+
 // == Controller Namespace ================
 
 cmg.core.controllers = cmg.core.controllers || {};
@@ -26,4 +28,18 @@ cmg.core.controllers = cmg.core.controllers || {};
 
 cmg.core.services = cmg.core.services || {};
 
+// == Settings ============================
+
+cmg.log = true;
+
+// == Direct Calls ========================
+
 // == Additional Methods ==================
+
+cmg.logger.log = function( message ) {
+
+	if( cmg.log ) {
+
+		console.log( message );
+	}
+}

@@ -85,7 +85,7 @@ cmg.core.services.MetaService.prototype.initListeners = function() {
 	containers.each( function() {
 
 		var container	= jQuery( this );
-		var layout		= container.attr( 'ldata-layout' );
+		var layout		= container.attr( 'data-layout' );
 
 		switch( layout ) {
 
@@ -110,11 +110,14 @@ cmg.core.services.MetaService.prototype.initPopups = function( container ) {
 
 	container.find(  '.cmt-meta-add' ).click( function() {
 
+		jQuery( '#popup-attribute-add .message' ).hide();
+		jQuery( '#popup-attribute-add .error' ).html( '' );
+
 		showPopup( '#popup-attribute-add' );
 
 		cmt.utils.data.bindEditor( '#popup-attribute-add .late-editor' );
 	});
-	
+
 	this.initPopupTriggers( container.find( '.cmt-meta' ) );
 }
 
@@ -123,6 +126,9 @@ cmg.core.services.MetaService.prototype.initPopupTriggers = function( meta ) {
 	var self = this;
 
 	meta.find( '.btn-edit' ).click( function() {
+
+		jQuery( '#popup-attribute-update .message' ).hide();
+		jQuery( '#popup-attribute-update .error' ).html( '' );
 
 		showPopup( '#popup-attribute-update' );
 
@@ -191,7 +197,7 @@ cmg.core.services.MetaService.prototype.initUpdateForm = function( container, me
 
 		form.fadeOut( 'fast' );
 	});
-	
+
 	// Show View
 	form.fadeIn( 'slow' );
 }
@@ -202,7 +208,7 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 	var template 	= Handlebars.compile( source );
 	var output 		= template( data );
 	var collection	= container.find( '.cmt-meta-collection' );
-	var layout		= container.attr( 'ldata-layout' );
+	var layout		= container.attr( 'data-layout' );
 
 	// Add at first
 	collection.prepend( output );
@@ -214,12 +220,12 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 		case 'popup': {
 
 			closePopup( '#popup-attribute-add' );
-			
+
 			this.initPopupTriggers( meta );
 
 			// Init Scroller
 			meta.find( '.cscroller' ).mCustomScrollbar( { autoHideScrollbar: true } );
-	
+
 			break;
 		}
 		default: {
@@ -238,7 +244,7 @@ cmg.core.services.MetaService.prototype.add = function( container, data ) {
 
 cmg.core.services.MetaService.prototype.refresh = function( container, meta, data ) {
 
-	var layout = container.attr( 'ldata-layout' );
+	var layout = container.attr( 'data-layout' );
 
 	switch( layout ) {
 
@@ -248,7 +254,7 @@ cmg.core.services.MetaService.prototype.refresh = function( container, meta, dat
 			meta.find( '.cmt-meta-data .mCSB_container' ).html( data.value );
 
 			closePopup( '#popup-attribute-update' );
-	
+
 			break;
 		}
 		default: {
@@ -273,14 +279,14 @@ cmg.core.services.MetaService.prototype.remove = function( container, meta ) {
 	// Remove Actions
 	if( actions.length > 0 ) {
 
-		var index = actions.attr( 'ldata-id' );
+		var index = actions.attr( 'data-idx' );
 
 		// Remove Actions List
 		jQuery( '#actions-list-data-' + index ).remove();
 	}
 
 	// Remove meta
-	switch( container.attr( 'ldata-layout' ) ) {
+	switch( container.attr( 'data-layout' ) ) {
 
 		case 'popup': {
 
@@ -322,13 +328,13 @@ cmg.core.services.MetaService.prototype.findContainer = function( requestElement
 
 	// Find in Actions
 	if( container.length == 0 ) {
-		
+
 		var listData	= requestElement.closest( '.actions-list-data' );
 		var popupData	= requestElement.closest( '.popup-content-wrap' );
 
 		if( listData.length == 1 ) {
 
-			var identifier = listData.attr( 'ldata-id' );
+			var identifier = listData.attr( 'data-idx' );
 
 			var list = jQuery( '#actions-list-' + identifier );
 

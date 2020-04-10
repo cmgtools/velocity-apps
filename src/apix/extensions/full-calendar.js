@@ -79,14 +79,14 @@ function getFullCalendarEvent( event ) {
 		//contentType: 'application/json;charset=UTF-8',
 		success: function( response, textStatus, XMLHttpRequest ) {
 
-			var source 		= document.getElementById( 'calendarEventTemplate' ).innerHTML;
+			var source 		= document.getElementById( 'viewCalendarEventTemplate' ).innerHTML;
 			var template 	= Handlebars.compile( source );
 			var output 		= template( response.data );
-			
+
 			var popup = jQuery( '#popup-data-event' );
 
 			popup.find( '.popup-content-wrap .popup-content' ).html( output );
-			
+
 			showPopup( '#popup-data-event' );
 		},
 		complete: function(  jqXHR, textStatus ) {

@@ -15,12 +15,12 @@ cmg.forms.controllers.FormController.inherits( cmt.api.controllers.RequestContro
 
 cmg.forms.controllers.FormController.prototype.defaultActionSuccess = function( requestElement, response ) {
 
-	console.log( 'form processed successfully.' );
+	cmg.logger.log( 'Form processed successfully.' );
 };
 
 cmg.forms.controllers.FormController.prototype.defaultActionFailure = function( requestElement, response ) {
 
-	console.log( 'form processing failed.' );
+	cmg.logger.log( 'Form processing failed.' );
 };
 
 // == Direct Calls ========================
