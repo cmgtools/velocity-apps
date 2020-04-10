@@ -1,0 +1,16 @@
+{
+	"name": "cmgtools/velocity-apps",
+	"description": "Velocity Apps provides generic applications and controllers used to communicate with backend including CMSGears modules.",
+	"homepage": "https://www.cmgtools.org",
+	"type": "project",
+	"keywords": [
+		"js", "web", "front-end", "framework", "velocity"
+	],
+	"support": {
+		"resources": "https://www.cmgtools.org"
+	},
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{ "name": "Bhagwat Singh Chouhan", "email": "bhagwat.chouhan@gmail.com" }
+	]
+}
