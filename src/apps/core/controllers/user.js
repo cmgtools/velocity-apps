@@ -1,7 +1,7 @@
 // == Application =========================
 
 jQuery( document ).ready( function() {
-	
+
 	// Access App
 	var app	= cmt.api.root.getApplication( 'core' );
 
@@ -40,6 +40,10 @@ cmg.core.controllers.UserController.prototype.clearAvatarActionSuccess = functio
 
 	// Update Uploader
 	uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-user"></i>');
+
+	uploader.find( '.id' ).val( '' );
+	uploader.find( '.change' ).val( '' );
+	uploader.find( '.name' ).val( '' );
 	uploader.find( '.file-clear' ).hide();
 	uploader.find( '.post-action' ).hide();
 };
