@@ -123,6 +123,9 @@ cmg.core.gallery.services.ItemService.prototype.initAddForm = function( containe
 		form.fadeOut( 'fast' );
 	});
 
+	// Init Texture Picker
+	form.find( '.icon-picker-wrap' ).cmtIconPicker();
+
 	// Show View
 	form.fadeIn( 'slow' );
 }
@@ -164,6 +167,9 @@ cmg.core.gallery.services.ItemService.prototype.initUpdateForm = function( conta
 			self.initAddForm( container );
 		}
 	});
+
+	// Init Texture Picker
+	form.find( '.icon-picker-wrap' ).cmtIconPicker();
 
 	// Show View
 	form.fadeIn( 'slow' );
