@@ -48,16 +48,29 @@ cmg.notify.controllers.NotificationController.prototype.hreadActionSuccess = fun
 
 	if( response.data.consumed ) {
 
+		var headerCounter = jQuery( ".count-header.count-header-all" );
+
+		if( headerCounter.length > 0 ) {
+
+			var val = parseInt( headerCounter.html() ) - 1;
+
+			headerCounter.html( val );
+		}
+
 		jQuery( ".count-header.count-" + type ).html( count );
 		jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).html( count );
 		jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).html( count );
 
 		if( count == 0 ) {
 
+			jQuery( ".count-header.count-header-all" ).fadeOut( 'fast' );
 			jQuery( ".count-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).fadeOut( 'fast' );
 		}
+
+		clickBtn.removeClass( 'link' );
+		clickBtn.addClass( 'text text-gray' );
 	}
 
 	if( requestElement.is( '[redirect]' ) ) {
