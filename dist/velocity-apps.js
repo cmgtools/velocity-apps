@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-08-22
+ * Velocity Apps - v1.0.0-alpha1 - 2020-09-09
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -4245,7 +4245,16 @@ cmg.controllers.grid.CrudController.prototype.bulkActionSuccess = function( requ
 
 cmg.controllers.grid.CrudController.prototype.bulkActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to process your request.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 cmg.controllers.grid.CrudController.prototype.genericActionSuccess = function( requestElement, response ) {
@@ -4255,7 +4264,16 @@ cmg.controllers.grid.CrudController.prototype.genericActionSuccess = function( r
 
 cmg.controllers.grid.CrudController.prototype.genericActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to process your request.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 cmg.controllers.grid.CrudController.prototype.deleteActionSuccess = function( requestElement, response ) {
@@ -4265,7 +4283,16 @@ cmg.controllers.grid.CrudController.prototype.deleteActionSuccess = function( re
 
 cmg.controllers.grid.CrudController.prototype.deleteActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to process your request.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 cmg.controllers.grid.CrudController.prototype.pageActionSuccess = function( requestElement, response ) {
@@ -4275,7 +4302,16 @@ cmg.controllers.grid.CrudController.prototype.pageActionSuccess = function( requ
 
 cmg.controllers.grid.CrudController.prototype.pageActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to load the page.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 // == Direct Calls ========================
