@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-09-09
+ * Velocity Apps - v1.0.0-alpha1 - 2020-10-09
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1240,6 +1240,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 	var mapperItems	= autoItems.find( '.mapper-items' );
 	var itemsArr	= mapperItems.find( '.mapper-item' );
 	var itemsLength	= itemsArr.length;
+	var singleItem	= cmt.utils.data.hasAttribute( mapperItems, 'data-single' );
 
 	var cid		= response.data.cid;
 	var name	= response.data.name;
@@ -1267,7 +1268,14 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 		var data	= { cid: cid, name: name };
 		var output 	= template( data );
 
-		mapperItems.append( output );
+		if( singleItem ) {
+
+			mapperItems.html( output );
+		}
+		else {
+
+			mapperItems.prepend( output );
+		}
 
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
