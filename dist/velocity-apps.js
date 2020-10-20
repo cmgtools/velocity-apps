@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-10-09
+ * Velocity Apps - v1.0.0-alpha1 - 2020-10-20
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1504,7 +1504,7 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 cmg.core.controllers.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
@@ -1556,7 +1556,7 @@ cmg.core.controllers.RegionController.prototype.optionsListActionPre = function(
 
 cmg.core.controllers.RegionController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
