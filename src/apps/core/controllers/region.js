@@ -26,9 +26,10 @@ cmg.core.controllers.RegionController.inherits( cmt.api.controllers.BaseControll
 
 cmg.core.controllers.RegionController.prototype.optionsListActionPre = function( requestElement ) {
 
-	var province = requestElement.find( 'select' );
+	var country		= requestElement.closest( '.cmt-location' ).find( '.cmt-location-countries select' );
+	var province	= requestElement.find( 'select' );
 
-	this.requestData = "provinceId=" + province.val();
+	this.requestData = "provinceId=" + country.attr( 'data-province' );
 
 	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 

@@ -125,6 +125,7 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'notificationData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-notification' );
 
 	if( data.hasOwnProperty( 'notifications' ) ) {
 
@@ -139,7 +140,14 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 		if( data.notifications.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			}
 		}
 		else {
 
@@ -158,6 +166,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'reminderData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-reminder' );
 
 	if( data.hasOwnProperty( 'reminders' ) ) {
 
@@ -172,7 +181,14 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 		if( data.reminders.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			}
 		}
 		else {
 
