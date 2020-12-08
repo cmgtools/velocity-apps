@@ -29,7 +29,16 @@ cmg.core.controllers.RegionController.prototype.optionsListActionPre = function(
 	var country		= requestElement.closest( '.cmt-location' ).find( '.cmt-location-countries select' );
 	var province	= requestElement.find( 'select' );
 
-	this.requestData = "provinceId=" + country.attr( 'data-province' );
+	this.requestData = '';
+
+	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
+
+		this.requestData = "provinceId=" + country.attr( 'data-province' );
+	}
+	else {
+
+		this.requestData = "provinceId=" + province.val();
+	}
 
 	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 

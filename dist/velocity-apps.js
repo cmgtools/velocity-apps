@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-10-20
+ * Velocity Apps - v1.0.0-alpha1 - 2020-12-08
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1542,9 +1542,19 @@ cmg.core.controllers.RegionController.inherits( cmt.api.controllers.BaseControll
 
 cmg.core.controllers.RegionController.prototype.optionsListActionPre = function( requestElement ) {
 
-	var province = requestElement.find( 'select' );
+	var country		= requestElement.closest( '.cmt-location' ).find( '.cmt-location-countries select' );
+	var province	= requestElement.find( 'select' );
 
-	this.requestData = "provinceId=" + province.val();
+	this.requestData = '';
+
+	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
+
+		this.requestData = "provinceId=" + country.attr( 'data-province' );
+	}
+	else {
+
+		this.requestData = "provinceId=" + province.val();
+	}
 
 	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 
@@ -4540,6 +4550,7 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'notificationData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-notification' );
 
 	if( data.hasOwnProperty( 'notifications' ) ) {
 
@@ -4554,7 +4565,14 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 		if( data.notifications.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			}
 		}
 		else {
 
@@ -4573,6 +4591,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'reminderData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-reminder' );
 
 	if( data.hasOwnProperty( 'reminders' ) ) {
 
@@ -4587,7 +4606,14 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 		if( data.reminders.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			}
 		}
 		else {
 
