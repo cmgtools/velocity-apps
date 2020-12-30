@@ -151,7 +151,7 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 		}
 		else {
 
-			output = "Notifications not found.";
+			output = "<li>Notifications not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -192,7 +192,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 		}
 		else {
 
-			output = "Reminders not found.";
+			output = "<li>Reminders not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -226,7 +226,7 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 		}
 		else {
 
-			output = "Activites not found.";
+			output = "<li>Activites not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -260,7 +260,7 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 		}
 		else {
 
-			output = "Announcements not found.";
+			output = "<li>Announcements not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
