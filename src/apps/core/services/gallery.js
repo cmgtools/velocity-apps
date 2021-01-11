@@ -67,10 +67,10 @@ cmg.core.gallery.services = cmg.core.gallery.services || {};
 
 cmg.core.gallery.services.ItemService = function() {
 
-	this.addTemplate		= 'addItemTemplate';
-	this.updateTemplate		= 'updateItemTemplate';
-	this.viewTemplate		= 'itemViewTemplate';
-	this.refreshTemplate	= 'itemRefreshTemplate';
+	this.addTemplate		= 'addGalleryItemTemplate';
+	this.updateTemplate		= 'updateGalleryItemTemplate';
+	this.viewTemplate		= 'viewGalleryItemTemplate';
+	this.refreshTemplate	= 'refreshGalleryItemTemplate';
 
 	this.hiddenForm = true; // Keep form hidden when not in use
 };

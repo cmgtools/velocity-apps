@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-12-30
+ * Velocity Apps - v1.0.0-alpha1 - 2021-01-11
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -764,7 +764,7 @@ cmg.core.controllers.FileController.prototype.clearActionPre = function( request
 	var idElement	= uploader.find( '.id' );
 
 	if( idElement.length > 0 && idElement.val().length > 0 && parseInt( idElement.val() ) > 0 ) {
-	
+
 		return true;
 	}
 
@@ -788,6 +788,47 @@ cmg.core.controllers.FileController.prototype.clearActionFailure = function( req
 
 	// Clear Form
 	this.modelService.clear( uploader );
+};
+
+// == Mapper Calls ========================
+
+cmg.core.controllers.FileController.prototype.getActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= requestElement.closest( '.cmt-file' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	// Show Update Form
+	this.modelService.initUpdateForm( container, item, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.addActionSuccess = function( requestElement, response ) {
+
+	var container = this.modelService.findContainer( requestElement );
+
+	// Add Item to List
+	this.modelService.add( container, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.updateActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-file[data-id=' + response.data.mid + ']' );
+
+	this.modelService.refresh( container, item, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-file[data-id=' + response.data.mid + ']' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	this.modelService.remove( container, item );
 };
 
 // == Direct Calls ========================
@@ -1989,7 +2030,7 @@ jQuery( document ).ready( function() {
 			.cmt-location-region { }
 
 			.cmt-location-city-fill {
-				
+
 				.target { }
 				.auto-fill-text { }
 			}
@@ -2028,8 +2069,8 @@ cmg.core.services.AddressService = function() {
 	// Default Handlebar Templates
 	this.addTemplate		= 'addAddressTemplate';
 	this.updateTemplate		= 'updateAddressTemplate';
-	this.viewTemplate		= 'addressViewTemplate';
-	this.refreshTemplate	= 'addressRefreshTemplate';
+	this.viewTemplate		= 'viewAddressTemplate';
+	this.refreshTemplate	= 'refreshAddressTemplate';
 };
 
 cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
@@ -2037,7 +2078,7 @@ cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
 cmg.core.services.AddressService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-address-add' );
 
 	if( triggers.length == 0 ) {
@@ -2199,7 +2240,7 @@ cmg.core.services.AddressService.prototype.refresh = function( container, addres
 cmg.core.services.AddressService.prototype.remove = function( container, address ) {
 
 	var actions = address.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -2286,7 +2327,7 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 		country.length > 0 ? address.push( country ) : null;
 		province.length > 0 ? address.push( province ) : null;
 		zip.length > 0 ? address.push( zip ) : null;
-		
+
 		var addressStr = address.join();
 
 		if( addressStr.length > 10 ) {
@@ -2466,15 +2507,214 @@ jQuery( document ).ready( function() {
 	app.getService( 'file' ).initListeners();
 });
 
+// == UI Guide ============================
+
+/*
+// An independent component to perform CRUD operations of model files.
+
+.cmt-file-crud {
+
+	.cmt-file-add {
+		// Trigger to show the model form
+	}
+
+	.cmt-file-form {
+		// The form container to add/update model
+
+		.cmt-file-close {
+			// Hides the add/update form
+		}
+	}
+
+	.cmt-file-collection {
+		// Collection of existing models
+
+		.cmt-file {
+			// Renders all the models either using PHP or viewTemplate by making call to get models and iterating the result set
+			// Renders the model using viewTemplate after adding an model
+			// Refresh and partial render the model using refreshTemplate after updating an model
+
+			.cmt-file-header {
+				// Header
+			}
+
+			.cmt-file-data {
+				// Data
+			}
+		}
+	}
+}
+*/
+
 // == File Service ========================
 
-cmg.core.services.FileService = function() {};
+cmg.core.services.FileService = function() {
+
+	this.addTemplate		= 'addFileTemplate';
+	this.updateTemplate		= 'updateFileTemplate';
+	this.viewTemplate		= 'viewFileTemplate';
+	this.refreshTemplate	= 'refreshFileTemplate';
+
+	this.hiddenForm = true; // Keep form hidden when not in use
+};
 
 cmg.core.services.FileService.inherits( cmt.api.services.BaseService );
 
 cmg.core.services.FileService.prototype.initListeners = function() {
 
 	var self = this;
+
+	var triggers = jQuery( '.cmt-file-add' );
+
+	if( triggers.length == 0 ) {
+
+		return;
+	}
+
+	triggers.click( function() {
+
+		var container = jQuery( this ).closest( '.cmt-file-crud' );
+
+		self.initAddForm( container );
+	});
+}
+
+cmg.core.services.FileService.prototype.initAddForm = function( container ) {
+
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var data		= { };
+	var output 		= template( data );
+
+	var form = container.find( '.cmt-file-form' );
+
+	// Hide View
+	form.hide();
+
+	// Append View
+	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', form );
+
+	// Init Uploader
+	form.find( '.cmt-file-uploader' ).cmtFileUploader();
+
+	// Init Listeners
+	form.find( '.cmt-file-close' ).click( function() {
+
+		form.fadeOut( 'fast' );
+	});
+
+	// Show View
+	form.fadeIn( 'slow' );
+}
+
+cmg.core.services.FileService.prototype.initUpdateForm = function( container, item, data ) {
+
+	var self = this;
+
+	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
+	var template	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	var form = container.find( '.cmt-file-form' );
+
+	// Hide View
+	form.hide();
+
+	// Append View
+	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', form );
+
+	// Copy file data
+	form.find( '.file-data' ).html( item.find( '.cmt-file-data' ).html() );
+
+	// Init Uploader
+	form.find( '.cmt-file-uploader' ).cmtFileUploader();
+
+	// Init Listeners
+	form.find( '.cmt-file-close' ).click( function() {
+
+		if( self.hiddenForm ) {
+
+			form.fadeOut( 'fast' );
+		}
+		else {
+
+			self.initAddForm( container );
+		}
+	});
+
+	// Show View
+	form.fadeIn( 'slow' );
+}
+
+cmg.core.services.FileService.prototype.add = function( container, data ) {
+
+	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+	var collection	= container.find( '.cmt-file-collection' );
+
+	// Add at first
+	collection.prepend( output );
+
+	var item = collection.find( '.cmt-file' ).first();
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', item );
+
+	// Init Actions
+	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );
+
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-file-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
+}
+
+cmg.core.services.FileService.prototype.refresh = function( container, item, data ) {
+
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	item.find( '.cmt-file-header .title' ).html( data.title );
+	item.find( '.cmt-file-data' ).replaceWith( output );
+
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-file-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
+}
+
+cmg.core.services.FileService.prototype.remove = function( container, item ) {
+
+	var actions		= item.find( '.cmt-actions' );
+	var collection	= container.find( '.cmt-file-collection' );
+
+	// Remove Actions
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-idx' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Item
+	item.remove();
 }
 
 cmg.core.services.FileService.prototype.findContainer = function( requestElement ) {
@@ -2502,7 +2742,7 @@ cmg.core.services.FileService.prototype.findContainer = function( requestElement
 cmg.core.services.FileService.prototype.clear = function( uploader ) {
 
 	var type = uploader.attr( 'type' );
-	
+
 	type = uploader.attr( 'directory' ) == 'avatar' ? 'avatar' : type;
 
 	// Update Uploader
@@ -2515,15 +2755,15 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 			break;
 		}
 		case 'image': {
-			
+
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-image"></i>' );
-			
+
 			break;
 		}
 		case 'video': {
-			
+
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-file-video"></i>' );
-			
+
 			break;
 		}
 		case 'compressed': {
@@ -2533,9 +2773,9 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 			break;
 		}
 		default: {
-			
+
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="icon cmti cmti-5x cmti-file"></i>' );
-			
+
 			break;
 		}
 	}
@@ -2667,10 +2907,10 @@ cmg.core.gallery.services = cmg.core.gallery.services || {};
 
 cmg.core.gallery.services.ItemService = function() {
 
-	this.addTemplate		= 'addItemTemplate';
-	this.updateTemplate		= 'updateItemTemplate';
-	this.viewTemplate		= 'itemViewTemplate';
-	this.refreshTemplate	= 'itemRefreshTemplate';
+	this.addTemplate		= 'addGalleryItemTemplate';
+	this.updateTemplate		= 'updateGalleryItemTemplate';
+	this.viewTemplate		= 'viewGalleryItemTemplate';
+	this.refreshTemplate	= 'refreshGalleryItemTemplate';
 
 	this.hiddenForm = true; // Keep form hidden when not in use
 };
@@ -2939,7 +3179,7 @@ jQuery( document ).ready( function() {
 			.cmt-location-region { }
 
 			.cmt-location-city-fill {
-				
+
 				.target { }
 				.auto-fill-text { }
 			}
@@ -2976,8 +3216,8 @@ cmg.core.services.LocationService = function() {
 	// Default Handlebar Templates
 	this.addTemplate		= 'addLocationTemplate';
 	this.updateTemplate		= 'updateLocationTemplate';
-	this.viewTemplate		= 'locationViewTemplate';
-	this.refreshTemplate	= 'locationRefreshTemplate';
+	this.viewTemplate		= 'viewLocationTemplate';
+	this.refreshTemplate	= 'refreshLocationTemplate';
 };
 
 cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
@@ -2985,7 +3225,7 @@ cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
 cmg.core.services.LocationService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-location-add' );
 
 	if( triggers.length == 0 ) {
@@ -3135,7 +3375,7 @@ cmg.core.services.LocationService.prototype.refresh = function( container, locat
 cmg.core.services.LocationService.prototype.remove = function( container, location ) {
 
 	var actions = location.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -3203,7 +3443,7 @@ cmg.core.services.LocationService.prototype.refreshGoogleMap = function( target 
 
 	// Address Map
 	jQuery( target ).find( '.cmt-location-ll-picker .title, .cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
-		
+
 		var title		= jQuery( '.cmt-location-ll-picker .title' );
 		var location	= '';
 

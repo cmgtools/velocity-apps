@@ -43,7 +43,7 @@ jQuery( document ).ready( function() {
 			.cmt-location-region { }
 
 			.cmt-location-city-fill {
-				
+
 				.target { }
 				.auto-fill-text { }
 			}
@@ -82,8 +82,8 @@ cmg.core.services.AddressService = function() {
 	// Default Handlebar Templates
 	this.addTemplate		= 'addAddressTemplate';
 	this.updateTemplate		= 'updateAddressTemplate';
-	this.viewTemplate		= 'addressViewTemplate';
-	this.refreshTemplate	= 'addressRefreshTemplate';
+	this.viewTemplate		= 'viewAddressTemplate';
+	this.refreshTemplate	= 'refreshAddressTemplate';
 };
 
 cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
@@ -91,7 +91,7 @@ cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
 cmg.core.services.AddressService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-address-add' );
 
 	if( triggers.length == 0 ) {
@@ -253,7 +253,7 @@ cmg.core.services.AddressService.prototype.refresh = function( container, addres
 cmg.core.services.AddressService.prototype.remove = function( container, address ) {
 
 	var actions = address.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -340,7 +340,7 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 		country.length > 0 ? address.push( country ) : null;
 		province.length > 0 ? address.push( province ) : null;
 		zip.length > 0 ? address.push( zip ) : null;
-		
+
 		var addressStr = address.join();
 
 		if( addressStr.length > 10 ) {
