@@ -21,7 +21,7 @@ cmg.core.controllers.UserController.prototype.assignAvatarActionSuccess = functi
 	var uploader = requestElement.closest( '.file-uploader' );
 
 	// Update Header Popuout
-	jQuery( '.popout-group-main .wrap-user .fa-user' ).remove();
+	jQuery( '.popout-group-main .wrap-user .icon' ).remove();
 	jQuery( '.popout-group-main .wrap-user .user-avatar' ).remove();
 	jQuery( '.popout-group-main .wrap-user' ).prepend( '<img class="user-avatar" src="' + response.data.thumbUrl + '" />' );
 
@@ -31,12 +31,14 @@ cmg.core.controllers.UserController.prototype.assignAvatarActionSuccess = functi
 
 cmg.core.controllers.UserController.prototype.clearAvatarActionSuccess = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader	= requestElement.closest( '.file-uploader' );
+	var wrapper		= jQuery( '.popout-group-main .wrap-user' );
+	var icon		= wrapper.attr( 'data-icon' );
 
 	// Update Header Popuout
-	jQuery( '.popout-group-main .wrap-user .fa-user' ).remove();
-	jQuery( '.popout-group-main .wrap-user .user-avatar' ).remove();
-	jQuery( '.popout-group-main .wrap-user' ).prepend( '<span class="fa fa-user icon"></span>' );
+	wrapper.find( '.icon' ).remove();
+	wrapper.find( '.user-avatar' ).remove();
+	wrapper.prepend( '<span class="icon ' + icon + '"></span>' );
 
 	// Update Uploader
 	uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-user"></i>');
