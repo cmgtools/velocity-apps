@@ -312,8 +312,8 @@ cmg.core.services.MetaService.prototype.copyData = function( meta, selector ) {
 	// Reset Form
 	var form = jQuery( selector ).find( 'form' );
 
-	form.find( '.name' ).val( name );
-	form.find( '.description' ).val( value );
+	form.find( '.name' ).val( name.trim() );
+	form.find( '.description' ).val( value.trim() );
 	form.find( '.message.success' ).val();
 	form.find( '.message.error' ).val();
 

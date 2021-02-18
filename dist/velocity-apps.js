@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2021-01-29
+ * Velocity Apps - v1.0.0-alpha1 - 2021-02-18
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1226,7 +1226,7 @@ cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = 
 
 	if( listHtml.length == 0 ) {
 
-		listHtml	= "<li class=\"auto-fill-message\">No matching results found.</li>";
+		listHtml = "<li class=\"auto-fill-message\">No matching results found.</li>";
 
 		itemList.html( listHtml );
 	}
@@ -1289,7 +1289,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 	// Reset search field
 	autoItems.find( '.search-name' ).val( '' );
 
-	var create	= true;
+	var create = true;
 
 	for( var i = 0; i < itemsLength; i++ ) {
 
@@ -1321,7 +1321,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), itemsArr.last() );
+		cmt.api.utils.request.registerTargetApp( 'core', itemsArr.first(), false );
 	}
 };
 
@@ -1353,7 +1353,7 @@ cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = funct
 
 	mapperItems.html( output );
 
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), mapperItems.find( '[cmt-app=core]' ) );
+	cmt.api.utils.request.registerTargetApp( 'core', mapperItems );
 };
 
 cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
@@ -3867,8 +3867,8 @@ cmg.core.services.MetaService.prototype.copyData = function( meta, selector ) {
 	// Reset Form
 	var form = jQuery( selector ).find( 'form' );
 
-	form.find( '.name' ).val( name );
-	form.find( '.description' ).val( value );
+	form.find( '.name' ).val( name.trim() );
+	form.find( '.description' ).val( value.trim() );
 	form.find( '.message.success' ).val();
 	form.find( '.message.error' ).val();
 
