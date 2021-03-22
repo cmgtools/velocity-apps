@@ -48,16 +48,29 @@ cmg.notify.controllers.NotificationController.prototype.hreadActionSuccess = fun
 
 	if( response.data.consumed ) {
 
+		var headerCounter = jQuery( ".count-header.count-header-all" );
+
+		if( headerCounter.length > 0 ) {
+
+			var val = parseInt( headerCounter.html() ) - 1;
+
+			headerCounter.html( val );
+		}
+
 		jQuery( ".count-header.count-" + type ).html( count );
 		jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).html( count );
 		jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).html( count );
 
 		if( count == 0 ) {
 
+			jQuery( ".count-header.count-header-all" ).fadeOut( 'fast' );
 			jQuery( ".count-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).fadeOut( 'fast' );
 		}
+
+		clickBtn.removeClass( 'link' );
+		clickBtn.addClass( 'text text-gray' );
 	}
 
 	if( requestElement.is( '[redirect]' ) ) {
@@ -112,6 +125,7 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'notificationData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-notification' );
 
 	if( data.hasOwnProperty( 'notifications' ) ) {
 
@@ -126,11 +140,18 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 		if( data.notifications.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			}
 		}
 		else {
 
-			output = "Notifications not found.";
+			output = "<li>Notifications not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -145,6 +166,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'reminderData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-reminder' );
 
 	if( data.hasOwnProperty( 'reminders' ) ) {
 
@@ -159,11 +181,18 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 		if( data.reminders.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			}
 		}
 		else {
 
-			output = "Reminders not found.";
+			output = "<li>Reminders not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -197,7 +226,7 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 		}
 		else {
 
-			output = "Activites not found.";
+			output = "<li>Activites not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -231,7 +260,7 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 		}
 		else {
 
-			output = "Announcements not found.";
+			output = "<li>Announcements not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";

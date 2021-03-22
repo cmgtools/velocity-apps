@@ -151,7 +151,7 @@ cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = 
 
 	if( listHtml.length == 0 ) {
 
-		listHtml	= "<li class=\"auto-fill-message\">No matching results found.</li>";
+		listHtml = "<li class=\"auto-fill-message\">No matching results found.</li>";
 
 		itemList.html( listHtml );
 	}
@@ -206,6 +206,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 	var mapperItems	= autoItems.find( '.mapper-items' );
 	var itemsArr	= mapperItems.find( '.mapper-item' );
 	var itemsLength	= itemsArr.length;
+	var singleItem	= cmt.utils.data.hasAttribute( mapperItems, 'data-single' );
 
 	var cid		= response.data.cid;
 	var name	= response.data.name;
@@ -213,7 +214,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 	// Reset search field
 	autoItems.find( '.search-name' ).val( '' );
 
-	var create	= true;
+	var create = true;
 
 	for( var i = 0; i < itemsLength; i++ ) {
 
@@ -233,12 +234,19 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 		var data	= { cid: cid, name: name };
 		var output 	= template( data );
 
-		mapperItems.append( output );
+		if( singleItem ) {
+
+			mapperItems.html( output );
+		}
+		else {
+
+			mapperItems.prepend( output );
+		}
 
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), itemsArr.last() );
+		cmt.api.utils.request.registerTargetApp( 'core', itemsArr.first(), false );
 	}
 };
 
@@ -270,7 +278,7 @@ cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = funct
 
 	mapperItems.html( output );
 
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), mapperItems.find( '[cmt-app=core]' ) );
+	cmt.api.utils.request.registerTargetApp( 'core', mapperItems );
 };
 
 cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {

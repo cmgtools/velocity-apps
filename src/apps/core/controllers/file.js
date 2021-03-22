@@ -34,7 +34,7 @@ cmg.core.controllers.FileController.prototype.clearActionPre = function( request
 	var idElement	= uploader.find( '.id' );
 
 	if( idElement.length > 0 && idElement.val().length > 0 && parseInt( idElement.val() ) > 0 ) {
-	
+
 		return true;
 	}
 
@@ -58,6 +58,47 @@ cmg.core.controllers.FileController.prototype.clearActionFailure = function( req
 
 	// Clear Form
 	this.modelService.clear( uploader );
+};
+
+// == Mapper Calls ========================
+
+cmg.core.controllers.FileController.prototype.getActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= requestElement.closest( '.cmt-file' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	// Show Update Form
+	this.modelService.initUpdateForm( container, item, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.addActionSuccess = function( requestElement, response ) {
+
+	var container = this.modelService.findContainer( requestElement );
+
+	// Add Item to List
+	this.modelService.add( container, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.updateActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-file[data-id=' + response.data.mid + ']' );
+
+	this.modelService.refresh( container, item, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-file[data-id=' + response.data.mid + ']' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	this.modelService.remove( container, item );
 };
 
 // == Direct Calls ========================

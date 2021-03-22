@@ -40,7 +40,7 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 cmg.core.controllers.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };

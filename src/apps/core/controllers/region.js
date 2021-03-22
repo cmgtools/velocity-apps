@@ -26,9 +26,19 @@ cmg.core.controllers.RegionController.inherits( cmt.api.controllers.BaseControll
 
 cmg.core.controllers.RegionController.prototype.optionsListActionPre = function( requestElement ) {
 
-	var province = requestElement.find( 'select' );
+	var country		= requestElement.closest( '.cmt-location' ).find( '.cmt-location-countries select' );
+	var province	= requestElement.find( 'select' );
 
-	this.requestData = "provinceId=" + province.val();
+	this.requestData = '';
+
+	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
+
+		this.requestData = "provinceId=" + country.attr( 'data-province' );
+	}
+	else {
+
+		this.requestData = "provinceId=" + province.val();
+	}
 
 	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 
@@ -40,7 +50,7 @@ cmg.core.controllers.RegionController.prototype.optionsListActionPre = function(
 
 cmg.core.controllers.RegionController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };

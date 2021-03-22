@@ -43,7 +43,7 @@ jQuery( document ).ready( function() {
 			.cmt-location-region { }
 
 			.cmt-location-city-fill {
-				
+
 				.target { }
 				.auto-fill-text { }
 			}
@@ -80,8 +80,8 @@ cmg.core.services.LocationService = function() {
 	// Default Handlebar Templates
 	this.addTemplate		= 'addLocationTemplate';
 	this.updateTemplate		= 'updateLocationTemplate';
-	this.viewTemplate		= 'locationViewTemplate';
-	this.refreshTemplate	= 'locationRefreshTemplate';
+	this.viewTemplate		= 'viewLocationTemplate';
+	this.refreshTemplate	= 'refreshLocationTemplate';
 };
 
 cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
@@ -89,7 +89,7 @@ cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
 cmg.core.services.LocationService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-location-add' );
 
 	if( triggers.length == 0 ) {
@@ -239,7 +239,7 @@ cmg.core.services.LocationService.prototype.refresh = function( container, locat
 cmg.core.services.LocationService.prototype.remove = function( container, location ) {
 
 	var actions = location.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -307,7 +307,7 @@ cmg.core.services.LocationService.prototype.refreshGoogleMap = function( target 
 
 	// Address Map
 	jQuery( target ).find( '.cmt-location-ll-picker .title, .cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
-		
+
 		var title		= jQuery( '.cmt-location-ll-picker .title' );
 		var location	= '';
 

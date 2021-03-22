@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2020-04-10
+ * Velocity Apps - v1.0.0-alpha1 - 2021-02-18
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -764,7 +764,7 @@ cmg.core.controllers.FileController.prototype.clearActionPre = function( request
 	var idElement	= uploader.find( '.id' );
 
 	if( idElement.length > 0 && idElement.val().length > 0 && parseInt( idElement.val() ) > 0 ) {
-	
+
 		return true;
 	}
 
@@ -788,6 +788,47 @@ cmg.core.controllers.FileController.prototype.clearActionFailure = function( req
 
 	// Clear Form
 	this.modelService.clear( uploader );
+};
+
+// == Mapper Calls ========================
+
+cmg.core.controllers.FileController.prototype.getActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= requestElement.closest( '.cmt-file' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	// Show Update Form
+	this.modelService.initUpdateForm( container, item, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.addActionSuccess = function( requestElement, response ) {
+
+	var container = this.modelService.findContainer( requestElement );
+
+	// Add Item to List
+	this.modelService.add( container, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.updateActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-file[data-id=' + response.data.mid + ']' );
+
+	this.modelService.refresh( container, item, response.data );
+};
+
+cmg.core.controllers.FileController.prototype.deleteActionSuccess = function( requestElement, response ) {
+
+	var container	= this.modelService.findContainer( requestElement );
+	var item		= container.find( '.cmt-file[data-id=' + response.data.mid + ']' );
+
+	// Hide Actions
+	requestElement.closest( '.actions-list-data' ).slideUp( 'fast' );
+
+	this.modelService.remove( container, item );
 };
 
 // == Direct Calls ========================
@@ -1185,7 +1226,7 @@ cmg.core.mapper.controllers.ModelController.prototype.autoSearchActionSuccess = 
 
 	if( listHtml.length == 0 ) {
 
-		listHtml	= "<li class=\"auto-fill-message\">No matching results found.</li>";
+		listHtml = "<li class=\"auto-fill-message\">No matching results found.</li>";
 
 		itemList.html( listHtml );
 	}
@@ -1240,6 +1281,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 	var mapperItems	= autoItems.find( '.mapper-items' );
 	var itemsArr	= mapperItems.find( '.mapper-item' );
 	var itemsLength	= itemsArr.length;
+	var singleItem	= cmt.utils.data.hasAttribute( mapperItems, 'data-single' );
 
 	var cid		= response.data.cid;
 	var name	= response.data.name;
@@ -1247,7 +1289,7 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 	// Reset search field
 	autoItems.find( '.search-name' ).val( '' );
 
-	var create	= true;
+	var create = true;
 
 	for( var i = 0; i < itemsLength; i++ ) {
 
@@ -1267,12 +1309,19 @@ cmg.core.mapper.controllers.ModelController.prototype.mapItemActionSuccess = fun
 		var data	= { cid: cid, name: name };
 		var output 	= template( data );
 
-		mapperItems.append( output );
+		if( singleItem ) {
+
+			mapperItems.html( output );
+		}
+		else {
+
+			mapperItems.prepend( output );
+		}
 
 		itemsArr	= mapperItems.find( '.mapper-item' );
 		itemsLength	= itemsArr.length;
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), itemsArr.last() );
+		cmt.api.utils.request.registerTargetApp( 'core', itemsArr.first(), false );
 	}
 };
 
@@ -1304,7 +1353,7 @@ cmg.core.mapper.controllers.CsvController.prototype.mapItemActionSuccess = funct
 
 	mapperItems.html( output );
 
-	cmt.api.utils.request.register( cmt.api.root.getApplication( 'core' ), mapperItems.find( '[cmt-app=core]' ) );
+	cmt.api.utils.request.registerTargetApp( 'core', mapperItems );
 };
 
 cmg.core.mapper.controllers.CsvController.prototype.deleteItemActionSuccess = function( requestElement, response ) {
@@ -1496,7 +1545,7 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 cmg.core.controllers.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
@@ -1534,9 +1583,19 @@ cmg.core.controllers.RegionController.inherits( cmt.api.controllers.BaseControll
 
 cmg.core.controllers.RegionController.prototype.optionsListActionPre = function( requestElement ) {
 
-	var province = requestElement.find( 'select' );
+	var country		= requestElement.closest( '.cmt-location' ).find( '.cmt-location-countries select' );
+	var province	= requestElement.find( 'select' );
 
-	this.requestData = "provinceId=" + province.val();
+	this.requestData = '';
+
+	if( cmt.utils.data.hasAttribute( country, 'data-province' ) ) {
+
+		this.requestData = "provinceId=" + country.attr( 'data-province' );
+	}
+	else {
+
+		this.requestData = "provinceId=" + province.val();
+	}
 
 	if( cmt.utils.data.hasAttribute( province, 'data-region' ) ) {
 
@@ -1548,7 +1607,7 @@ cmg.core.controllers.RegionController.prototype.optionsListActionPre = function(
 
 cmg.core.controllers.RegionController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-regions .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };
@@ -1574,6 +1633,83 @@ jQuery( document ).ready( function() {
 cmg.core.controllers.SiteController = function() {};
 
 cmg.core.controllers.SiteController.inherits( cmt.api.controllers.RequestController );
+
+cmg.core.controllers.SiteController.prototype.autoSearchActionPre = function( requestElement ) {
+
+	var autoFill	= requestElement.closest( '.auto-fill' );
+	var name		= autoFill.find( '.auto-fill-text' ).val();
+	var limit		= autoFill.find( '.limit' );
+	var autoCache	= autoFill.find( '.auto-cache' );
+
+	if( name.length <= 0 ) {
+
+		autoFill.find( '.auto-fill-items' ).slideUp();
+		autoFill.find( '.target' ).val( '' );
+
+		return false;
+	}
+
+	// Only one request at a time
+	this.singleRequest = true;
+
+	this.requestData = "name=" + name;
+
+	if( limit.length > 0 ) {
+
+		this.requestData += "&limit=" + limit.val();
+	}
+
+	if( autoCache.length > 0 ) {
+
+		this.requestData += "&autoCache=" + autoCache.val();
+	}
+
+	return true;
+};
+
+cmg.core.controllers.SiteController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+
+	var data			= response.data;
+	var listHtml		= '';
+	var autoFill		= requestElement.closest( '.auto-fill' );
+	//var wrapItemList	= autoFill.find( '.auto-fill-items-wrap' );
+	var itemList		= autoFill.find( '.auto-fill-items' );
+
+	for( i = 0; i < data.length; i++ ) {
+
+		var obj = data[ i ];
+
+		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + "</li>";
+	}
+
+	if( listHtml.length == 0 ) {
+
+		listHtml = "<li class=\"auto-fill-message\">No matching results found.</li>";
+
+		itemList.html( listHtml );
+	}
+	else {
+
+		itemList.html( listHtml );
+
+		requestElement.find( '.auto-fill-item' ).click( function() {
+
+			var target	= autoFill.find( '.target' );
+			var id		= jQuery( this ).attr( 'data-id' );
+			var name	= jQuery( this ).html();
+
+			itemList.slideUp();
+
+			// Update Id & Name
+			target.val( id );
+			requestElement.find( '.auto-fill-text' ).val( name );
+			autoFill.find( '.error' ).html( '' );
+			autoFill.find( '.error' ).hide();
+		});
+	}
+
+	itemList.slideDown();
+};
 
 // == Direct Calls ========================
 
@@ -1667,7 +1803,7 @@ cmg.core.data.controllers.SocialController.prototype.deleteActionSuccess = funct
 // == Application =========================
 
 jQuery( document ).ready( function() {
-	
+
 	// Access App
 	var app	= cmt.api.root.getApplication( 'core' );
 
@@ -1687,7 +1823,7 @@ cmg.core.controllers.UserController.prototype.assignAvatarActionSuccess = functi
 	var uploader = requestElement.closest( '.file-uploader' );
 
 	// Update Header Popuout
-	jQuery( '.popout-group-main .wrap-user .fa-user' ).remove();
+	jQuery( '.popout-group-main .wrap-user .icon' ).remove();
 	jQuery( '.popout-group-main .wrap-user .user-avatar' ).remove();
 	jQuery( '.popout-group-main .wrap-user' ).prepend( '<img class="user-avatar" src="' + response.data.thumbUrl + '" />' );
 
@@ -1697,15 +1833,21 @@ cmg.core.controllers.UserController.prototype.assignAvatarActionSuccess = functi
 
 cmg.core.controllers.UserController.prototype.clearAvatarActionSuccess = function( requestElement, response ) {
 
-	var uploader = requestElement.closest( '.file-uploader' );
+	var uploader	= requestElement.closest( '.file-uploader' );
+	var wrapper		= jQuery( '.popout-group-main .wrap-user' );
+	var icon		= wrapper.attr( 'data-icon' );
 
 	// Update Header Popuout
-	jQuery( '.popout-group-main .wrap-user .fa-user' ).remove();
-	jQuery( '.popout-group-main .wrap-user .user-avatar' ).remove();
-	jQuery( '.popout-group-main .wrap-user' ).prepend( '<span class="fa fa-user icon"></span>' );
+	wrapper.find( '.icon' ).remove();
+	wrapper.find( '.user-avatar' ).remove();
+	wrapper.prepend( '<span class="icon ' + icon + '"></span>' );
 
 	// Update Uploader
 	uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-user"></i>');
+
+	uploader.find( '.id' ).val( '' );
+	uploader.find( '.change' ).val( '' );
+	uploader.find( '.name' ).val( '' );
 	uploader.find( '.file-clear' ).hide();
 	uploader.find( '.post-action' ).hide();
 };
@@ -1890,7 +2032,7 @@ jQuery( document ).ready( function() {
 			.cmt-location-region { }
 
 			.cmt-location-city-fill {
-				
+
 				.target { }
 				.auto-fill-text { }
 			}
@@ -1929,8 +2071,8 @@ cmg.core.services.AddressService = function() {
 	// Default Handlebar Templates
 	this.addTemplate		= 'addAddressTemplate';
 	this.updateTemplate		= 'updateAddressTemplate';
-	this.viewTemplate		= 'addressViewTemplate';
-	this.refreshTemplate	= 'addressRefreshTemplate';
+	this.viewTemplate		= 'viewAddressTemplate';
+	this.refreshTemplate	= 'refreshAddressTemplate';
 };
 
 cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
@@ -1938,7 +2080,7 @@ cmg.core.services.AddressService.inherits( cmt.api.services.BaseService );
 cmg.core.services.AddressService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-address-add' );
 
 	if( triggers.length == 0 ) {
@@ -2100,7 +2242,7 @@ cmg.core.services.AddressService.prototype.refresh = function( container, addres
 cmg.core.services.AddressService.prototype.remove = function( container, address ) {
 
 	var actions = address.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -2187,7 +2329,7 @@ cmg.core.services.AddressService.prototype.refreshGoogleMap = function( target )
 		country.length > 0 ? address.push( country ) : null;
 		province.length > 0 ? address.push( province ) : null;
 		zip.length > 0 ? address.push( zip ) : null;
-		
+
 		var addressStr = address.join();
 
 		if( addressStr.length > 10 ) {
@@ -2367,15 +2509,214 @@ jQuery( document ).ready( function() {
 	app.getService( 'file' ).initListeners();
 });
 
+// == UI Guide ============================
+
+/*
+// An independent component to perform CRUD operations of model files.
+
+.cmt-file-crud {
+
+	.cmt-file-add {
+		// Trigger to show the model form
+	}
+
+	.cmt-file-form {
+		// The form container to add/update model
+
+		.cmt-file-close {
+			// Hides the add/update form
+		}
+	}
+
+	.cmt-file-collection {
+		// Collection of existing models
+
+		.cmt-file {
+			// Renders all the models either using PHP or viewTemplate by making call to get models and iterating the result set
+			// Renders the model using viewTemplate after adding an model
+			// Refresh and partial render the model using refreshTemplate after updating an model
+
+			.cmt-file-header {
+				// Header
+			}
+
+			.cmt-file-data {
+				// Data
+			}
+		}
+	}
+}
+*/
+
 // == File Service ========================
 
-cmg.core.services.FileService = function() {};
+cmg.core.services.FileService = function() {
+
+	this.addTemplate		= 'addFileTemplate';
+	this.updateTemplate		= 'updateFileTemplate';
+	this.viewTemplate		= 'viewFileTemplate';
+	this.refreshTemplate	= 'refreshFileTemplate';
+
+	this.hiddenForm = true; // Keep form hidden when not in use
+};
 
 cmg.core.services.FileService.inherits( cmt.api.services.BaseService );
 
 cmg.core.services.FileService.prototype.initListeners = function() {
 
 	var self = this;
+
+	var triggers = jQuery( '.cmt-file-add' );
+
+	if( triggers.length == 0 ) {
+
+		return;
+	}
+
+	triggers.click( function() {
+
+		var container = jQuery( this ).closest( '.cmt-file-crud' );
+
+		self.initAddForm( container );
+	});
+}
+
+cmg.core.services.FileService.prototype.initAddForm = function( container ) {
+
+	var source 		= document.getElementById( this.addTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var data		= { };
+	var output 		= template( data );
+
+	var form = container.find( '.cmt-file-form' );
+
+	// Hide View
+	form.hide();
+
+	// Append View
+	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', form );
+
+	// Init Uploader
+	form.find( '.cmt-file-uploader' ).cmtFileUploader();
+
+	// Init Listeners
+	form.find( '.cmt-file-close' ).click( function() {
+
+		form.fadeOut( 'fast' );
+	});
+
+	// Show View
+	form.fadeIn( 'slow' );
+}
+
+cmg.core.services.FileService.prototype.initUpdateForm = function( container, item, data ) {
+
+	var self = this;
+
+	var source 		= document.getElementById( this.updateTemplate ).innerHTML;
+	var template	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	var form = container.find( '.cmt-file-form' );
+
+	// Hide View
+	form.hide();
+
+	// Append View
+	form.html( output );
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', form );
+
+	// Copy file data
+	form.find( '.file-data' ).html( item.find( '.cmt-file-data' ).html() );
+
+	// Init Uploader
+	form.find( '.cmt-file-uploader' ).cmtFileUploader();
+
+	// Init Listeners
+	form.find( '.cmt-file-close' ).click( function() {
+
+		if( self.hiddenForm ) {
+
+			form.fadeOut( 'fast' );
+		}
+		else {
+
+			self.initAddForm( container );
+		}
+	});
+
+	// Show View
+	form.fadeIn( 'slow' );
+}
+
+cmg.core.services.FileService.prototype.add = function( container, data ) {
+
+	var source 		= document.getElementById( this.viewTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+	var collection	= container.find( '.cmt-file-collection' );
+
+	// Add at first
+	collection.prepend( output );
+
+	var item = collection.find( '.cmt-file' ).first();
+
+	// Init Request
+	cmt.api.utils.request.registerTargetApp( 'core', item );
+
+	// Init Actions
+	cmt.utils.ui.initActionsElement( item.find( '.cmt-actions' ) );
+
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-file-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
+}
+
+cmg.core.services.FileService.prototype.refresh = function( container, item, data ) {
+
+	var source 		= document.getElementById( this.refreshTemplate ).innerHTML;
+	var template 	= Handlebars.compile( source );
+	var output 		= template( data );
+
+	item.find( '.cmt-file-header .title' ).html( data.title );
+	item.find( '.cmt-file-data' ).replaceWith( output );
+
+	if( this.hiddenForm ) {
+
+		container.find( '.cmt-file-form' ).fadeOut( 'fast' );
+	}
+	else {
+
+		this.initAddForm( container );
+	}
+}
+
+cmg.core.services.FileService.prototype.remove = function( container, item ) {
+
+	var actions		= item.find( '.cmt-actions' );
+	var collection	= container.find( '.cmt-file-collection' );
+
+	// Remove Actions
+	if( actions.length > 0 ) {
+
+		var index = actions.attr( 'data-idx' );
+
+		// Remove Actions List
+		jQuery( '#actions-list-data-' + index ).remove();
+	}
+
+	// Remove Item
+	item.remove();
 }
 
 cmg.core.services.FileService.prototype.findContainer = function( requestElement ) {
@@ -2403,7 +2744,7 @@ cmg.core.services.FileService.prototype.findContainer = function( requestElement
 cmg.core.services.FileService.prototype.clear = function( uploader ) {
 
 	var type = uploader.attr( 'type' );
-	
+
 	type = uploader.attr( 'directory' ) == 'avatar' ? 'avatar' : type;
 
 	// Update Uploader
@@ -2416,15 +2757,15 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 			break;
 		}
 		case 'image': {
-			
+
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-image"></i>' );
-			
+
 			break;
 		}
 		case 'video': {
-			
+
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="cmti cmti-5x cmti-file-video"></i>' );
-			
+
 			break;
 		}
 		case 'compressed': {
@@ -2434,9 +2775,9 @@ cmg.core.services.FileService.prototype.clear = function( uploader ) {
 			break;
 		}
 		default: {
-			
+
 			uploader.find( '.file-wrap .file-data' ).html( '<i class="icon cmti cmti-5x cmti-file"></i>' );
-			
+
 			break;
 		}
 	}
@@ -2568,10 +2909,10 @@ cmg.core.gallery.services = cmg.core.gallery.services || {};
 
 cmg.core.gallery.services.ItemService = function() {
 
-	this.addTemplate		= 'addItemTemplate';
-	this.updateTemplate		= 'updateItemTemplate';
-	this.viewTemplate		= 'itemViewTemplate';
-	this.refreshTemplate	= 'itemRefreshTemplate';
+	this.addTemplate		= 'addGalleryItemTemplate';
+	this.updateTemplate		= 'updateGalleryItemTemplate';
+	this.viewTemplate		= 'viewGalleryItemTemplate';
+	this.refreshTemplate	= 'refreshGalleryItemTemplate';
 
 	this.hiddenForm = true; // Keep form hidden when not in use
 };
@@ -2624,6 +2965,9 @@ cmg.core.gallery.services.ItemService.prototype.initAddForm = function( containe
 		form.fadeOut( 'fast' );
 	});
 
+	// Init Texture Picker
+	form.find( '.icon-picker-wrap' ).cmtIconPicker();
+
 	// Show View
 	form.fadeIn( 'slow' );
 }
@@ -2665,6 +3009,9 @@ cmg.core.gallery.services.ItemService.prototype.initUpdateForm = function( conta
 			self.initAddForm( container );
 		}
 	});
+
+	// Init Texture Picker
+	form.find( '.icon-picker-wrap' ).cmtIconPicker();
 
 	// Show View
 	form.fadeIn( 'slow' );
@@ -2834,7 +3181,7 @@ jQuery( document ).ready( function() {
 			.cmt-location-region { }
 
 			.cmt-location-city-fill {
-				
+
 				.target { }
 				.auto-fill-text { }
 			}
@@ -2871,8 +3218,8 @@ cmg.core.services.LocationService = function() {
 	// Default Handlebar Templates
 	this.addTemplate		= 'addLocationTemplate';
 	this.updateTemplate		= 'updateLocationTemplate';
-	this.viewTemplate		= 'locationViewTemplate';
-	this.refreshTemplate	= 'locationRefreshTemplate';
+	this.viewTemplate		= 'viewLocationTemplate';
+	this.refreshTemplate	= 'refreshLocationTemplate';
 };
 
 cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
@@ -2880,7 +3227,7 @@ cmg.core.services.LocationService.inherits( cmt.api.services.BaseService );
 cmg.core.services.LocationService.prototype.initListeners = function() {
 
 	var self = this;
-	
+
 	var triggers = jQuery( '.cmt-location-add' );
 
 	if( triggers.length == 0 ) {
@@ -3030,7 +3377,7 @@ cmg.core.services.LocationService.prototype.refresh = function( container, locat
 cmg.core.services.LocationService.prototype.remove = function( container, location ) {
 
 	var actions = location.find( '.cmt-actions' );
-	
+
 	// Remove Actions
 	if( actions.length > 0 ) {
 
@@ -3098,7 +3445,7 @@ cmg.core.services.LocationService.prototype.refreshGoogleMap = function( target 
 
 	// Address Map
 	jQuery( target ).find( '.cmt-location-ll-picker .title, .cmt-location-ll-picker .line1, .cmt-location-ll-picker .line2, .cmt-location-ll-picker .line3, .cmt-location-ll-picker .city, .cmt-location-ll-picker .zip' ).keyup( function() {
-		
+
 		var title		= jQuery( '.cmt-location-ll-picker .title' );
 		var location	= '';
 
@@ -3520,8 +3867,8 @@ cmg.core.services.MetaService.prototype.copyData = function( meta, selector ) {
 	// Reset Form
 	var form = jQuery( selector ).find( 'form' );
 
-	form.find( '.name' ).val( name );
-	form.find( '.description' ).val( value );
+	form.find( '.name' ).val( name.trim() );
+	form.find( '.description' ).val( value.trim() );
 	form.find( '.message.success' ).val();
 	form.find( '.message.error' ).val();
 
@@ -4158,7 +4505,16 @@ cmg.controllers.grid.CrudController.prototype.bulkActionSuccess = function( requ
 
 cmg.controllers.grid.CrudController.prototype.bulkActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to process your request.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 cmg.controllers.grid.CrudController.prototype.genericActionSuccess = function( requestElement, response ) {
@@ -4168,7 +4524,16 @@ cmg.controllers.grid.CrudController.prototype.genericActionSuccess = function( r
 
 cmg.controllers.grid.CrudController.prototype.genericActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to process your request.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 cmg.controllers.grid.CrudController.prototype.deleteActionSuccess = function( requestElement, response ) {
@@ -4178,7 +4543,16 @@ cmg.controllers.grid.CrudController.prototype.deleteActionSuccess = function( re
 
 cmg.controllers.grid.CrudController.prototype.deleteActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to process your request.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 cmg.controllers.grid.CrudController.prototype.pageActionSuccess = function( requestElement, response ) {
@@ -4188,7 +4562,16 @@ cmg.controllers.grid.CrudController.prototype.pageActionSuccess = function( requ
 
 cmg.controllers.grid.CrudController.prototype.pageActionFailure = function( requestElement, response ) {
 
-	alert( 'Failed to load the page.' );
+	if( cmt.utils.object.hasProperty( response, 'data' ) && null != response.data && cmt.utils.object.hasProperty( response.data, 'alert' ) ) {
+
+		var data = response.data;
+
+		alert( data.alert );
+	}
+	else {
+
+		alert( 'Failed to process your request.' );
+	}
 };
 
 // == Direct Calls ========================
@@ -4332,16 +4715,29 @@ cmg.notify.controllers.NotificationController.prototype.hreadActionSuccess = fun
 
 	if( response.data.consumed ) {
 
+		var headerCounter = jQuery( ".count-header.count-header-all" );
+
+		if( headerCounter.length > 0 ) {
+
+			var val = parseInt( headerCounter.html() ) - 1;
+
+			headerCounter.html( val );
+		}
+
 		jQuery( ".count-header.count-" + type ).html( count );
 		jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).html( count );
 		jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).html( count );
 
 		if( count == 0 ) {
 
+			jQuery( ".count-header.count-header-all" ).fadeOut( 'fast' );
 			jQuery( ".count-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-header.count-" + type ).fadeOut( 'fast' );
 			jQuery( ".count-sidebar.count-sidebar-content.count-" + type ).fadeOut( 'fast' );
 		}
+
+		clickBtn.removeClass( 'link' );
+		clickBtn.addClass( 'text text-gray' );
 	}
 
 	if( requestElement.is( '[redirect]' ) ) {
@@ -4396,6 +4792,7 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'notificationData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-notification' );
 
 	if( data.hasOwnProperty( 'notifications' ) ) {
 
@@ -4410,11 +4807,18 @@ cmg.notify.controllers.NotificationController.prototype.notificationDataActionSu
 
 		if( data.notifications.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/notification/all">View All</a></li>';
+			}
 		}
 		else {
 
-			output = "Notifications not found.";
+			output = "<li>Notifications not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -4429,6 +4833,7 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 	var data	= response.data;
 	var source 	= document.getElementById( 'reminderData' ).innerHTML;
+	var action	= jQuery( '#popuout-action-notify-reminder' );
 
 	if( data.hasOwnProperty( 'reminders' ) ) {
 
@@ -4443,11 +4848,18 @@ cmg.notify.controllers.NotificationController.prototype.reminderDataActionSucces
 
 		if( data.reminders.length > 0 ) {
 
-			output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			if( action.length > 0 && cmt.utils.data.hasAttribute( action, 'data-status' ) ) {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all?status=' + action.attr( 'data-status' ) + '">View All</a></li>';
+			}
+			else {
+
+				output += '<li class="align align-center"><a href="' + siteUrl + 'notify/reminder/all">View All</a></li>';
+			}
 		}
 		else {
 
-			output = "Reminders not found.";
+			output = "<li>Reminders not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -4481,7 +4893,7 @@ cmg.notify.controllers.NotificationController.prototype.activityDataActionSucces
 		}
 		else {
 
-			output = "Activites not found.";
+			output = "<li>Activites not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
@@ -4515,7 +4927,7 @@ cmg.notify.controllers.NotificationController.prototype.announcementDataActionSu
 		}
 		else {
 
-			output = "Announcements not found.";
+			output = "<li>Announcements not found.</li>";
 		}
 
 		output = "<ul>" + output +"</ul>";
