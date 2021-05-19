@@ -6,21 +6,22 @@ jQuery( document ).ready( function() {
 	var app = cmt.api.root.getApplication( 'newsletter' );
 
 	// Map Controllers
-	app.mapController( 'newsletter', 'cmg.newsletter.controllers.NewsletterController' );
+	app.mapController( 'edition', 'cmg.newsletter.controllers.EditionController' );
 });
 
-// == Newsletter Controller ===============
+// == Edition Controller ==================
 
-cmg.newsletter.controllers.NewsletterController = function() {};
+cmg.newsletter.controllers.EditionController = function() {};
 
-cmg.newsletter.controllers.NewsletterController.inherits( cmt.api.controllers.BaseController );
+cmg.newsletter.controllers.EditionController.inherits( cmt.api.controllers.BaseController );
 
-cmg.newsletter.controllers.NewsletterController.prototype.autoSearchActionPre = function( requestElement ) {
+cmg.newsletter.controllers.EditionController.prototype.autoSearchActionPre = function( requestElement ) {
 
 	var autoFill = requestElement.closest( '.auto-fill' );
 
-	var name = autoFill.find( '.search-name' ).val();
-	var type = autoFill.find( '.search-type' );
+	var name	= autoFill.find( '.search-name' ).val();
+	var type	= autoFill.find( '.search-type' );
+	var nid		= autoFill.find( '.search-nid' );
 
 	if( name.length <= 0 ) {
 
@@ -39,10 +40,15 @@ cmg.newsletter.controllers.NewsletterController.prototype.autoSearchActionPre = 
 		this.requestData = "name=" + name;
 	}
 
+	if( nid.length == 1 ) {
+
+		this.requestData += "&nid=" + nid.val();
+	}
+
 	return true;
 };
 
-cmg.newsletter.controllers.NewsletterController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
+cmg.newsletter.controllers.EditionController.prototype.autoSearchActionSuccess = function( requestElement, response ) {
 
 	var data			= response.data;
 	var listHtml		= '';
@@ -77,21 +83,6 @@ cmg.newsletter.controllers.NewsletterController.prototype.autoSearchActionSucces
 			// Update Id and Name
 			target.find( '.target' ).val( id );
 			requestElement.find( '.auto-fill-text' ).val( name );
-
-			// Update Edition
-			var parent = requestElement.closest( '.cmt-newsletter-wrap' );
-
-			if( parent.length == 1 ) {
-
-				var editionFill = parent.find( '.cmt-edition-fill' );
-
-				if( editionFill.length == 1 ) {
-
-					editionFill.find( '.search-name' ).val( '' );
-					editionFill.find( '.target' ).val( '' );
-					editionFill.find( '.search-nid' ).val( id );
-				}
-			}
 		});
 	}
 
