@@ -108,7 +108,7 @@ cmg.core.controllers.UserController.prototype.autoSearchActionSuccess = function
 
 		var obj = data[ i ];
 
-		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + ", " + obj.email + "</li>";
+		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + ", " + obj.username + ", " + obj.email + "</li>";
 	}
 
 	if( listHtml.length == 0 ) {

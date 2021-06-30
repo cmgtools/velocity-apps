@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2021-05-19
+ * Velocity Apps - v1.0.0-alpha1 - 2021-06-30
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1910,7 +1910,7 @@ cmg.core.controllers.UserController.prototype.autoSearchActionSuccess = function
 
 		var obj = data[ i ];
 
-		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + ", " + obj.email + "</li>";
+		listHtml += "<li class=\"auto-fill-item\" data-id=\"" + obj.id + "\">" + obj.name + ", " + obj.username + ", " + obj.email + "</li>";
 	}
 
 	if( listHtml.length == 0 ) {
