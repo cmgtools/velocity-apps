@@ -40,9 +40,18 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 cmg.core.controllers.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .select-wrap' );
+	var location = requestElement.closest( '.cmt-location' );
+
+	var selectWrap = location.find( '.cmt-location-provinces .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
+
+	if( location.find( '.cmt-location-regions' ).length > 0 ) {
+
+		selectWrap = location.find( '.cmt-location-regions .select-wrap' );
+
+		jQuery.fn.cmtSelect.resetSelect( selectWrap, "<option value='0'>Choose Region</option>" );
+	}
 };
 
 // == Direct Calls ========================

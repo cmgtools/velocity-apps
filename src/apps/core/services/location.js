@@ -11,7 +11,7 @@ jQuery( document ).ready( function() {
 	// Event Listeners
 	app.getService( 'location' ).initListeners();
 
-	app.getService( 'location' ).refreshGoogleMap( jQuery( '.frm-location' ) );
+	app.getService( 'location' ).refreshGoogleMap( jQuery( '.cmt-location' ) );
 });
 
 // == UI Guide ============================

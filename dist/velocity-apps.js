@@ -1,5 +1,5 @@
 /**
- * Velocity Apps - v1.0.0-alpha1 - 2021-06-30
+ * Velocity Apps - v1.0.0-alpha1 - 2021-07-21
  * Description: Velocity Apps is application and controllers library for CMSGears.
  * License: GPL-3.0-or-later
  * Author: Bhagwat Singh Chouhan
@@ -1545,9 +1545,18 @@ cmg.core.controllers.ProvinceController.prototype.optionsListActionPre = functio
 
 cmg.core.controllers.ProvinceController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-location' ).find( '.cmt-location-provinces .select-wrap' );
+	var location = requestElement.closest( '.cmt-location' );
+
+	var selectWrap = location.find( '.cmt-location-provinces .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
+
+	if( location.find( '.cmt-location-regions' ).length > 0 ) {
+
+		selectWrap = location.find( '.cmt-location-regions .select-wrap' );
+
+		jQuery.fn.cmtSelect.resetSelect( selectWrap, "<option value='0'>Choose Region</option>" );
+	}
 };
 
 // == Direct Calls ========================
@@ -2202,6 +2211,10 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 	this.refreshProvinces( form, province.attr( 'pid' ) );
 
 	this.refreshRegions( form, region.attr( 'rid' ) );
+
+	// Clear attributes
+	form.find( '.cmt-location-country' ).removeAttr( 'data-province' );
+	form.find( '.cmt-location-province' ).removeAttr( 'data-region' );
 }
 
 cmg.core.services.AddressService.prototype.add = function( container, data ) {
@@ -2294,7 +2307,7 @@ cmg.core.services.AddressService.prototype.refreshRegions = function( target, re
 
 cmg.core.services.AddressService.prototype.clearCity = function( target ) {
 
-	target.find( '.cmt-location-province, .cmt-location-region' ).change( function() {
+	target.find( '.cmt-location-country, .cmt-location-province, .cmt-location-region' ).change( function() {
 
 		var cityFill = jQuery( this ).closest( '.cmt-location' ).find( '.cmt-location-city-fill' );
 
@@ -3149,7 +3162,7 @@ jQuery( document ).ready( function() {
 	// Event Listeners
 	app.getService( 'location' ).initListeners();
 
-	app.getService( 'location' ).refreshGoogleMap( jQuery( '.frm-location' ) );
+	app.getService( 'location' ).refreshGoogleMap( jQuery( '.cmt-location' ) );
 });
 
 // == UI Guide ============================
