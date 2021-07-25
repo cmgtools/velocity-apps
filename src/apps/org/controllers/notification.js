@@ -18,7 +18,7 @@ jQuery( document ).ready( function() {
 
 	if( jQuery( '[cmt-app=orgNotify]' ).length > 0 ) {
 
-		cmt.api.utils.request.triggerDirect( app, 'notification', 'stats', 'org/notify/stats/stats', 'get' );
+		cmt.api.utils.request.triggerDirect( app, 'notification', 'stats', 'orgnotify/stats/stats', 'get' );
 	}
 });
 
@@ -166,7 +166,7 @@ cmg.org.controllers.NotificationController.prototype.notificationDataActionSucce
 
 		jQuery( "#popout-notification" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-notification').find( '[cmt-app=notify]' ) );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-notification').find( '[cmt-app=orgNotify]' ) );
 	}
 }
 
@@ -207,7 +207,7 @@ cmg.org.controllers.NotificationController.prototype.reminderDataActionSuccess =
 
 		jQuery( "#popout-reminder" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-reminder').find( '[cmt-app=notify]' ) );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery('#popout-reminder').find( '[cmt-app=orgNotify]' ) );
 	}
 }
 
@@ -241,7 +241,7 @@ cmg.org.controllers.NotificationController.prototype.activityDataActionSuccess =
 
 		jQuery( "#popout-activity" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-activity' ).find( '[cmt-app=notify]' ) );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-activity' ).find( '[cmt-app=orgNotify]' ) );
 	}
 }
 
@@ -275,7 +275,7 @@ cmg.org.controllers.NotificationController.prototype.announcementDataActionSucce
 
 		jQuery( "#popout-announcement" ).find( ".popout-content" ).html( output );
 
-		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-announcement' ).find( '[cmt-app=notify]' ) );
+		cmt.api.utils.request.register( cmt.api.root.getApplication( 'notify' ), jQuery( '#popout-announcement' ).find( '[cmt-app=orgNotify]' ) );
 	}
 }
 
