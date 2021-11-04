@@ -31,7 +31,7 @@ cmg.identity.controllers.DocController.prototype.optionsListActionPre = function
 
 cmg.identity.controllers.DocController.prototype.optionsListActionSuccess = function( requestElement, response ) {
 
-	var selectWrap = requestElement.closest( '.cmt-identity' ).find( '.cmt-identity-docs .cmt-select-wrap' );
+	var selectWrap = requestElement.closest( '.cmt-identity' ).find( '.cmt-identity-docs .select-wrap' );
 
 	jQuery.fn.cmtSelect.resetSelect( selectWrap, response.data );
 };

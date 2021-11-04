@@ -213,6 +213,10 @@ cmg.core.services.AddressService.prototype.initUpdateForm = function( container,
 	this.refreshProvinces( form, province.attr( 'pid' ) );
 
 	this.refreshRegions( form, region.attr( 'rid' ) );
+
+	// Clear attributes
+	form.find( '.cmt-location-country' ).removeAttr( 'data-province' );
+	form.find( '.cmt-location-province' ).removeAttr( 'data-region' );
 }
 
 cmg.core.services.AddressService.prototype.add = function( container, data ) {
@@ -305,7 +309,7 @@ cmg.core.services.AddressService.prototype.refreshRegions = function( target, re
 
 cmg.core.services.AddressService.prototype.clearCity = function( target ) {
 
-	target.find( '.cmt-location-province, .cmt-location-region' ).change( function() {
+	target.find( '.cmt-location-country, .cmt-location-province, .cmt-location-region' ).change( function() {
 
 		var cityFill = jQuery( this ).closest( '.cmt-location' ).find( '.cmt-location-city-fill' );
 
